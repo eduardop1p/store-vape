@@ -3,7 +3,7 @@
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { FaImages } from 'react-icons/fa';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -21,8 +21,9 @@ const zodSchema = z.object({
   mark: z.string().trim().min(1, 'Marca é obrigatótia'),
   price: z
     .any()
-    .transform(val => +replaceCurrency(val) / 100)
+    .transform(val => replaceCurrency(val) / 100)
     .refine(val => val, 'Um preço é obrigatótio'),
+  descount: z.string().optional(),
   stock: z.string().trim().min(1, 'Quantidate em estoque é obrigatótio'),
   status: z.string().trim().optional(),
   category: z
@@ -56,15 +57,28 @@ export default function AddProductsForm() {
     msg: '',
     severity: 'success',
   });
+  let isRemoveKey = useRef(false);
+
+  useEffect(() => {
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Backspace' || event.key === 'Delete')
+        isRemoveKey.current = true;
+    };
+    window.addEventListener('keydown', event => onKeydown(event));
+
+    return () => window.removeEventListener('keydown', onKeydown);
+  }, []);
 
   const handleFormSubmit: SubmitHandler<BodyType> = async body => {
     if (isLoading) return;
 
     const formData = new FormData();
     Array.from(body.files).forEach(val => formData.append('productFiles', val));
+    const newDescount = replaceCurrency(body.descount!) / 100;
     formData.append('name', body.name);
     formData.append('mark', body.mark);
     formData.append('price', body.price.toString());
+    formData.append('descount', (newDescount / 100).toString());
     formData.append('stock', body.stock);
     formData.append('status', body.status || '');
     formData.append('category', body.category);
@@ -123,6 +137,22 @@ export default function AddProductsForm() {
       style: 'currency',
     });
     currentTarget.value = value;
+  };
+
+  const handleMaskPercentage = (event: FormEvent<HTMLInputElement>) => {
+    const currentTarget = event.currentTarget;
+
+    if (!isRemoveKey.current) {
+      let value = currentTarget.value.replace(/[^\d]/g, '');
+      const newValue = +value / 100;
+      const percentage = (newValue / 100).toLocaleString(undefined, {
+        style: 'percent',
+        minimumFractionDigits: 2,
+      });
+      setValue('descount', percentage);
+      return;
+    }
+    isRemoveKey.current = false;
   };
 
   return (
@@ -206,9 +236,10 @@ export default function AddProductsForm() {
             />
             {errors.mark && <ErrorMsg msg={errors.mark.message!} />}
           </div>
+
           <div className="flex flex-col gap-1">
             <label htmlFor="price" className=" text-3d3d3d text-sm font-medium">
-              Preço
+              Preço R$
             </label>
             <input
               type="text"
@@ -220,6 +251,24 @@ export default function AddProductsForm() {
             />
             {errors.price && <ErrorMsg msg={errors.price.message!} />}
           </div>
+
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="descount"
+              className=" text-3d3d3d text-sm font-medium"
+            >
+              Desconto %
+            </label>
+            <input
+              type="text"
+              id="descount"
+              placeholder="00,0%"
+              className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
+              {...register('descount')}
+              onInput={handleMaskPercentage}
+            />
+          </div>
+
           <div className="flex flex-col gap-1">
             <label htmlFor="stock" className=" text-3d3d3d text-sm font-medium">
               Estoque
