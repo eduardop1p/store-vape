@@ -204,9 +204,13 @@ export default function Links() {
   ];
 
   useEffect(() => {
+    let lastScrollTop = 0;
     const onscroll = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
-      scrollY > 30 ? setHideLinks(true) : setHideLinks(false);
+      scrollY > 100 && scrollY > lastScrollTop
+        ? setHideLinks(true)
+        : setHideLinks(false);
+      lastScrollTop = scrollY <= 0 ? 0 : scrollY;
     };
     window.addEventListener('scroll', onscroll);
 
