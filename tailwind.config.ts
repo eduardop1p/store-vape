@@ -27,6 +27,7 @@ const config: Config = {
         '0000001F': '#0000001F',
         efefef: '#efefef',
         '0006': '#0006',
+        '7a7a7a': '#7a7a7a',
       },
     },
   },
