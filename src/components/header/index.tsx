@@ -9,7 +9,7 @@ import Links from './links';
 
 export default function Header() {
   return (
-    <header className="bg-3d3d3d w-full px-12 py-5 flex flex-col items-center fixed top-0 left-0 z-10">
+    <header className="bg-3d3d3d w-full px-12 py-4 flex flex-col items-center fixed top-0 left-0 z-10">
       <div className="w-[80%] flex justify-between gap-4 items-center">
         <Link className="flex gap-1 items-center" href="/">
           <div className="flex flex-col gap-1 items-center">

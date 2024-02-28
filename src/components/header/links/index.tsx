@@ -1,11 +1,207 @@
 'use client';
 
+import replaceStringToLink from '@/services/replaceStringToLink';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 
+interface DataMenuType {
+  name: string;
+  leftPoint: string;
+  type?: 'menu-1' | 'menu-2' | 'menu-3';
+  menu?: {
+    title?: string;
+    titles?: string[];
+    name?: string;
+    names?: string[];
+  }[];
+}
+
 export default function Links() {
   const [hideLinks, setHideLinks] = useState(false);
+  const dataMenu: DataMenuType[] = [
+    {
+      name: 'Pod Descartável',
+      leftPoint: '6.3%',
+      type: 'menu-1',
+      menu: [
+        { name: 'Pod Descartável Atacado' },
+        {
+          name: 'Pod Descartável 2500 a 5000 Puffs',
+        },
+        {
+          name: 'Pod Descartável 5000 a 10000 Puffs',
+        },
+      ],
+    },
+    {
+      name: 'Aparelhos',
+      leftPoint: '21.5%',
+      type: 'menu-2',
+      menu: [
+        {
+          title: 'Vapes',
+          names: [
+            'Kits Avançados',
+            'Kits Intermediários',
+            'Kits Iniciante',
+            'Mods',
+          ],
+        },
+        {
+          title: 'Pods System',
+          names: ['Aparelhos', 'Pods juul'],
+        },
+      ],
+    },
+    {
+      name: 'E-Liquids',
+      leftPoint: '35%',
+      type: 'menu-2',
+      menu: [
+        {
+          title: 'Free[15px]',
+          names: [
+            'Atabacados - Cigarro',
+            'Café',
+            'Mentolados - Gelados',
+            'Frutados',
+            'Doces - Sobremesas',
+            'Refrigerante - Bebidas',
+            'Chicletes - Balas',
+          ],
+        },
+        {
+          title: 'Nic Salt',
+          names: [
+            'Refrigerante / Bebidas',
+            'Tabaco / Cigarros',
+            'Café',
+            'Mentolados / Gelados',
+            'Frutados',
+            'Doces / Sobremesas',
+            'Chicletes / Balas',
+          ],
+        },
+        {
+          title: 'CBD',
+        },
+      ],
+    },
+    {
+      name: 'Acessórios',
+      leftPoint: '48.3%',
+      type: 'menu-3',
+      menu: [
+        {
+          titles: ['Tanques - Vidros', 'Atomizadores', 'Atomizadores RDA'],
+        },
+        {
+          titles: [
+            'Atomizadores RTA',
+            'Atomizadores Sub Ohm',
+            'Algodão Para Vape',
+          ],
+        },
+        {
+          titles: [
+            'Baterias Para Vape',
+            'Bobinas e Resistências - Vape',
+            'Capas - Cases',
+          ],
+        },
+        {
+          titles: [
+            'Carregadores',
+            'Kit de Ferramentas',
+            'Cartuchos e Resistências - Pod System',
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Vapes de ervas',
+      leftPoint: '63.5%',
+    },
+    {
+      name: 'Marcas',
+      leftPoint: '77.7%',
+      type: 'menu-3',
+      menu: [
+        {
+          titles: [
+            'SMOK',
+            'VAPORESSO',
+            'GEEKVAPE',
+            'VOOPOO',
+            'Hellvape',
+            'AIR FACTORY',
+            'BAZOOKA',
+            'BIG BOOTLE CO',
+            'BLACK NOTE',
+            'BLVK',
+            'CLOWN',
+          ],
+        },
+        {
+          titles: [
+            'CUTTWOOD',
+            'DINNER LADY',
+            'DION',
+            'ELEMENT',
+            'GLAS VAPOR',
+            'GOLD LEAF LIQUIDS',
+            'HALO',
+            'HORNY FLAVA',
+            'JOYETECH J',
+            'JOY E TECH PREMIUM',
+            'KILO',
+          ],
+        },
+        {
+          titles: [
+            'KING SCREST',
+            'MAGNA',
+            'MR. FREEZE',
+            'MSML MARSHMALLOW',
+            'NAKED',
+            'NASTY JUICE',
+            'COLD BREW',
+            'NKTR',
+            'PACHAMAMA',
+            'PROJECT CLOUD',
+            'RIOT SQUAD',
+          ],
+        },
+        {
+          titles: [
+            'SALT NICOTINE',
+            'SECRET SAUCE',
+            'THE MILKMAN',
+            'TOP CLASS',
+            'TRUST',
+            'TWIT E-LIQUID',
+            'V8 E-JUICE',
+            'VAPETASIA',
+            'VGOD',
+            'ZOMO',
+            'RIPE VAPES',
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Ofertas especiais',
+      leftPoint: '92.5%',
+      type: 'menu-2',
+      menu: [
+        {
+          title: 'PROMOÇÕES',
+          names: ['PROMOÇÕES ATOMIZADORES'],
+        },
+      ],
+    },
+  ];
 
   useEffect(() => {
     const onscroll = () => {
@@ -19,29 +215,98 @@ export default function Links() {
 
   return (
     // eslint-disable-next-line
-    <div className={`w-[85%] flex items-center gap-1 justify-between transition-all duration-200 ${hideLinks ? 'h-[0px] overflow-hidden' : 'h-[50px] mt-1'}`}>
-      <LinkCustom link="/pod-descartavel" title="Pod Descartável" />
-      <LinkCustom link="/aparelhos" title="Aparelhos" />
-      <LinkCustom link="/e-liquids" title="E-Liquids" />
-      <LinkCustom link="/acessorios" title="Acessórios" />
-      <LinkCustom link="/vapes-ervas" title="Vapes de ervas" />
-      <LinkCustom link="/marcas" title="Marcas" />
-      <LinkCustom link="/ofertas-especiais" title="Ofertas especiais" />
-      <div className="h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm">
-        +Categorias
-      </div>
+    <div className={`w-[85%] relative flex items-center gap-1 justify-between transition-all duration-200 ${hideLinks ? 'h-[0px] overflow-hidden' : 'h-[50px] mt-2'}`}>
+      {dataMenu.map((entries, index) => (
+        <LinkCustom key={index} {...entries} />
+      ))}
     </div>
   );
 }
 
-const LinkCustom = ({ link, title }: { link: string; title: string }) => {
+const LinkCustom = ({ name, leftPoint, menu, type }: DataMenuType) => {
+  const [showMenu, setShowMenu] = useState(false);
   return (
-    <Link
-      href={link}
-      className="whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm"
+    <div
+      className="flex flex-col"
+      onMouseEnter={() => setShowMenu(true)}
+      onMouseLeave={() => setShowMenu(false)}
     >
-      {title}
-      <IoIosArrowDown size={16} fill="#fff" />
-    </Link>
+      <Link
+        href={`/${replaceStringToLink(name)}`}
+        className={`relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
+      >
+        {name}
+        {menu && <IoIosArrowDown size={16} fill="#fff" />}
+      </Link>
+
+      {menu && (
+        <div
+          tabIndex={0}
+          className={`border border-solid border-3d3d3d absolute bg-primary left-0 top-16 w-full min-h-48 p-6 cursor-default z-[2] rounded-2xl transition-all duration-200 ${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'}`} // eslint-disable-line
+        >
+          <div
+            className={`absolute bg-primary w-3 h-3 top-[3px] z-[-2]`}
+            style={{
+              transform: 'scaleY(2) rotate(45deg)',
+              left: leftPoint,
+            }}
+          ></div>
+
+          {type === 'menu-1' && (
+            <div className="flex justify-start gap-12">
+              {menu.map(val => (
+                <Link
+                  key={val.name}
+                  className="hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
+                  href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.name!)}`}
+                >
+                  {val.name}
+                </Link>
+              ))}
+            </div>
+          )}
+          {type === 'menu-2' && (
+            <div className="flex gap-12">
+              {menu.map(val => (
+                <div key={val.title} className="flex flex-col gap-1">
+                  <Link
+                    href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.title!)}`}
+                    className="text-[15px] text-secudary font-medium underline mb-1 hover:text-gray-500 transition-colors duration-200"
+                  >
+                    {val.title}
+                  </Link>
+                  {val.names?.map(val2Names => (
+                    <Link
+                      key={val2Names}
+                      href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.title!)}/${replaceStringToLink(val2Names!)}`}
+                      className="text-sm text-secudary font-normal underline hover:text-gray-500 transition-colors duration-200 "
+                    >
+                      {val2Names}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          {type === 'menu-3' && (
+            <div className="flex justify-start gap-12">
+              {menu.map((val, index) => (
+                <div key={index} className="flex flex-col gap-1">
+                  {val.titles?.map(valTitles => (
+                    <Link
+                      key={valTitles}
+                      className="hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
+                      href={`/${replaceStringToLink(name)}/${replaceStringToLink(valTitles)}`}
+                    >
+                      {valTitles}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
