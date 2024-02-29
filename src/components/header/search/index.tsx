@@ -1,14 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { IoSearch } from 'react-icons/io5';
+import { useRouter } from 'next/navigation';
 
 export default function Search() {
+  const router = useRouter();
+
   const [inputFocus, setInputFocus] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!searchValue) return;
+
+    router.push(`/search?query=${searchValue}`);
+  };
 
   return (
-    <div
+    <form
       className={`w-full flex items-center ${inputFocus ? 'bg-primary' : 'bg-2f2e2e'} rounded-3xl px-4 h-[50px] gap-2 overflow-hidden`} // eslint-diable-line
+      onSubmit={handleSubmit}
     >
       <input
         className="w-full h-full text-sm font-normal text-secudary bg-inherit"
@@ -16,14 +28,18 @@ export default function Search() {
         id="search"
         name="search"
         placeholder="Buscar"
+        value={searchValue}
         onFocus={() => setInputFocus(true)}
-        onBlur={() => setInputFocus(false)}
+        onBlur={event => !event.currentTarget.value && setInputFocus(false)}
+        onChange={event => setSearchValue(event.currentTarget.value)}
       />
-      <IoSearch
-        fill={inputFocus ? '#000' : '#fff'}
-        size={18}
-        className="flex-none"
-      />
-    </div>
+      <button type="submit" className="bg-transparent">
+        <IoSearch
+          fill={inputFocus ? '#000' : '#fff'}
+          size={18}
+          className="flex-none"
+        />
+      </button>
+    </form>
   );
 }

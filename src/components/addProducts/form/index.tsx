@@ -20,9 +20,8 @@ const zodSchema = z.object({
   name: z.string().trim().min(1, 'Nome é obrigatótio'),
   mark: z.string().trim().min(1, 'Marca é obrigatótia'),
   price: z
-    .any()
-    .transform(val => replaceCurrency(val) / 100)
-    .refine(val => val, 'Um preço é obrigatótio'),
+    .string()
+    .refine(val => val && replaceCurrency(val), 'Um preço é obrigatótio'),
   descount: z.string().optional(),
   stock: z.string().trim().min(1, 'Quantidate em estoque é obrigatótio'),
   category: z
@@ -48,6 +47,7 @@ export default function AddProductsForm() {
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm<BodyType>({
     resolver: zodResolver(zodSchema),
   });
@@ -94,9 +94,10 @@ export default function AddProductsForm() {
     const formData = new FormData();
     Array.from(body.files).forEach(val => formData.append('productFiles', val));
     const newDescount = replaceCurrency(body.descount!) / 100;
+    const newPrice = replaceCurrency(body.price) / 100;
     formData.append('name', body.name);
     formData.append('mark', body.mark);
-    formData.append('price', body.price.toString());
+    formData.append('price', newPrice.toString());
     formData.append('descount', (newDescount / 100).toString());
     formData.append('stock', body.stock);
     formData.append('status', JSON.stringify(body.status));
@@ -134,7 +135,17 @@ export default function AddProductsForm() {
         open: true,
         severity: 'success',
       });
+      setPreviewImages([]);
+      setFlavors([]);
+      setColors([]);
+      setWithBattery({
+        check1: false,
+        check2: false,
+        check3: true,
+      });
+      reset();
     } catch (err) {
+      console.log(err);
       setOpenAlert({
         msg: 'Internal server error',
         open: true,

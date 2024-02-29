@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
+import NextTopLoader from 'nextjs-toploader';
+
 import './globals.css';
+
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 
@@ -29,6 +32,7 @@ export default function RootLayout({
         <link rel="icon" href="/assets/imgs/logo.png" sizes="80x80" />
       </head>
       <body className={inter.className}>
+        <NextTopLoader showSpinner={false} color="#549cffff" shadow={false} />
         <Header />
         {children}
         <Footer />

@@ -28,6 +28,7 @@ const config: Config = {
         efefef: '#efefef',
         '0006': '#0006',
         '7a7a7a': '#7a7a7a',
+        ccba00: '#ccba00',
       },
     },
   },

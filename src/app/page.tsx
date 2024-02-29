@@ -1,11 +1,12 @@
 import Image from 'next/image';
 
 import Main from '@/components/main';
+import Container90 from '@/components/container90';
 
 export default async function Page() {
   return (
     <Main>
-      <div className="px-12 py-8 w-[90%] mx-auto min-h-screen flex flex-col gap-10">
+      <Container90 className="gap-10">
         <div className="flex justify-between gap-4 w-full">
           <div className="flex gap-2 w-1/4">
             <Image
@@ -89,7 +90,7 @@ export default async function Page() {
           </p>
           <div className="mt-4">{/*  Produtos Mais Vendido */}</div>
         </div>
-      </div>
+      </Container90>
       <div className="w-full h-[1px] bg-555555"></div>
     </Main>
   );
