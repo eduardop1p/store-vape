@@ -20,7 +20,7 @@ export default function FooterNoAuth() {
         <FormFooterNoAuth />
       </div>
       <div className="bg-3d3d3d px-12 py-8">
-        <div className=" w-[80%]  mx-auto flex justify-between gap-4">
+        <div className=" w-[90%]  mx-auto flex justify-between gap-4">
           <div className="flex flex-col gap-1">
             <Link
               href="/como-comprar"
@@ -111,7 +111,7 @@ export default function FooterNoAuth() {
         </div>
       </div>
       <div className="bg-primary px-12 py-4">
-        <p className="w-[80%] mx-auto text-left text-[13px] font-normal text-secudary">
+        <p className="w-[90%] mx-auto text-left text-[13px] font-normal text-secudary">
           A King Vapes é uma das lojas que mais se preocupa com você amigo e
           cliente, sempre trazendo novidades e preço justo. Buscamos levar o que
           há de melhor, vapes, juices, acessórios, coils e muito mais. Fazemos

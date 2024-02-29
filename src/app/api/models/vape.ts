@@ -15,6 +15,7 @@ export interface VapeType {
   nicotina?: string;
   ml?: string;
   qtdItems?: string;
+  qtdIBuyItems?: number;
   fileNames: string[];
 }
 
@@ -35,6 +36,7 @@ const vapeSchema = new Schema<VapeDocumentType>({
   nicotina: { type: String, required: false },
   ml: { type: String, required: false },
   qtdItems: { type: String, required: false },
+  qtdIBuyItems: { type: Number, required: false },
   fileNames: [String],
 });
 
