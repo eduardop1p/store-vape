@@ -9,6 +9,12 @@ export interface VapeType {
   status?: string;
   category: string;
   flavors?: string[];
+  colors?: string[];
+  withBattery: boolean;
+  ohm?: string;
+  nicotina?: string;
+  ml?: string;
+  qtdItems?: string;
   fileNames: string[];
 }
 
@@ -23,6 +29,12 @@ const vapeSchema = new Schema<VapeDocumentType>({
   status: { type: String, required: false },
   category: { type: String, required: true },
   flavors: [String],
+  colors: [String],
+  withBattery: { type: Boolean, required: false },
+  ohm: { type: String, required: false },
+  nicotina: { type: String, required: false },
+  ml: { type: String, required: false },
+  qtdItems: { type: String, required: false },
   fileNames: [String],
 });
 
