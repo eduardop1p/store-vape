@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Container90 from '@/components/container90';
 import Main from '@/components/main';
 import CustomSeparator from '@/components/breadcrumb';
-import Classify from '@/components/classify';
+import Filters from '@/components/filters';
 
 interface Props {
   searchParams: { query: string };
@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: Props) {
           <span className="text-555555 text-sm font-normal">Pesquisar</span>
         </CustomSeparator>
         <div className="w-full justify-between gap-4">
-          <Classify />
+          <Filters />
         </div>
       </Container90>
     </Main>
