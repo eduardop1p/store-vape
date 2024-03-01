@@ -16,7 +16,9 @@ export interface VapeType {
   ml?: string;
   qtdItems?: string;
   qtdIBuyItems?: number;
+  relevance?: number;
   fileNames: string[];
+  createdIn?: string;
 }
 
 export interface VapeDocumentType extends VapeType, Document {}
@@ -37,6 +39,8 @@ const vapeSchema = new Schema<VapeDocumentType>({
   ml: { type: String, required: false },
   qtdItems: { type: String, required: false },
   qtdIBuyItems: { type: Number, required: false },
+  relevance: { type: Number, required: false },
+  createdIn: { type: Date, required: false, default: Date.now },
   fileNames: [String],
 });
 

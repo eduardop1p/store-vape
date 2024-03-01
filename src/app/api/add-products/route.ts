@@ -47,22 +47,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const mark = body.get('mark') as string;
     const price = +body.get('price')!;
     let descount = JSON.parse(body.get('descount') as string);
-    descount = descount ? descount : undefined;
+    // descount = descount ? descount : undefined;
     const stock = +body.get('stock')!;
     let status = JSON.parse(body.get('status') as string);
-    status = status ? status : undefined;
+    // status = status ? status : undefined;
     const category = body.get('category') as string;
     const flavors = JSON.parse(body.get('flavors') as string);
     const colors = JSON.parse(body.get('colors') as string);
     const withBattery = JSON.parse(body.get('withBattery') as string);
     let ohm = JSON.parse(body.get('ohm') as string);
-    ohm = ohm ? ohm : undefined;
+    // ohm = ohm ? ohm : undefined;
     let nicotina = JSON.parse(body.get('nicotina') as string);
-    nicotina = nicotina ? nicotina : undefined;
+    // nicotina = nicotina ? nicotina : undefined;
     let ml = JSON.parse(body.get('ml') as string);
-    ml = ml ? ml : undefined;
+    // ml = ml ? ml : undefined;
     let qtdItems = JSON.parse(body.get('qtdItems') as string);
-    qtdItems = qtdItems ? qtdItems : undefined;
+    // qtdItems = qtdItems ? qtdItems : undefined;
     const newBody: VapeType = {
       fileNames,
       name,
