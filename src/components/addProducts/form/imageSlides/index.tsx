@@ -51,7 +51,11 @@ export default function ImageSlides({
     let currentValue = imgs[i];
     newArr.splice(index.current, 0, currentValue);
 
-    index.current++;
+    if (index.current == imgs.length - 2) {
+      index.current = 0;
+    } else {
+      index.current++;
+    }
     setPreviewImages(newArr);
   };
 
