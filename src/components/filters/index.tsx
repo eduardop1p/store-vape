@@ -4,6 +4,7 @@ import { Checkbox } from '@mui/material';
 import { useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 import { FiltersDbType } from '@/app/api/filters/route';
+import { upperFirst } from 'lodash';
 
 interface FiltersType {
   name: string;
@@ -163,28 +164,32 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
             </div>
             {val.active && val.data.length ? (
               <div className="flex flex-col gap-2">
-                {val.data.map((_v, _i) => (
-                  <div
-                    key={_i}
-                    className="flex items-center gap-1 cursor-pointer group w-fit"
-                    onClick={() => {
-                      let newArr = [...filtersData]; // eslint-disable-line
-                      newArr[i].data[_i].checked = !newArr[i].data[_i].checked;
-                      setFiltersData(newArr);
-                    }}
-                  >
-                    <Checkbox
-                      checked={_v.checked}
-                      size="small"
-                      className="!p-0 text-secudary font-normal group-hover:text-blue-500"
-                    />
-                    <span
-                      className={`${_v.checked ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} font-medium text-[13px]  duration-200 transition-colors`}
-                    >
-                      {_v.value}
-                    </span>
-                  </div>
-                ))}
+                {val.data.map(
+                  (_v, _i) =>
+                    _v.value && (
+                      <div
+                        key={_i}
+                        className="flex items-center gap-1 cursor-pointer group w-fit"
+                        onClick={() => {
+                          let newArr = [...filtersData]; // eslint-disable-line
+                          newArr[i].data[_i].checked =
+                            !newArr[i].data[_i].checked;
+                          setFiltersData(newArr);
+                        }}
+                      >
+                        <Checkbox
+                          checked={_v.checked}
+                          size="small"
+                          className="!p-0 text-secudary font-normal group-hover:text-blue-500"
+                        />
+                        <span
+                          className={`${_v.checked ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} font-medium text-[13px]  duration-200 transition-colors`}
+                        >
+                          {upperFirst(_v.value)}
+                        </span>
+                      </div>
+                    )
+                )}
               </div>
             ) : null}
           </div>

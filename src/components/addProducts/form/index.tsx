@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { FaImages } from 'react-icons/fa';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
+import { upperCase, upperFirst } from 'lodash';
 
 import ImageSlides, { ImagesTypes } from './imageSlides';
 import replaceCurrency from '@/services/replaceCurrency';
@@ -71,8 +72,11 @@ export default function AddProductsForm() {
 
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Backspace' || event.key === 'Delete')
+      if (event.key === 'Backspace' || event.key === 'Delete') {
         isRemoveKey.current = true;
+      } else {
+        isRemoveKey.current = false;
+      }
     };
     window.addEventListener('keydown', event => onKeydown(event));
 
@@ -95,20 +99,20 @@ export default function AddProductsForm() {
     previewImages.forEach(val => formData.append('productFiles', val.blob));
     const newDescount = replaceCurrency(body.descount!) / 100;
     const newPrice = replaceCurrency(body.price) / 100;
-    formData.append('name', body.name);
-    formData.append('mark', body.mark);
+    formData.append('name', upperCase(body.name));
+    formData.append('mark', body.mark.toUpperCase());
     formData.append('price', newPrice.toString());
     formData.append('descount', (newDescount / 100).toString());
     formData.append('stock', body.stock);
     formData.append('status', JSON.stringify(body.status));
-    formData.append('category', body.category);
+    formData.append('category', upperFirst(body.category));
     formData.append('flavors', JSON.stringify(flavors));
 
     formData.append('colors', JSON.stringify(colors));
     formData.append('withBattery', JSON.stringify(body.withBattery));
-    formData.append('ohm', JSON.stringify(body.ohm));
-    formData.append('nicotina', JSON.stringify(body.nicotina));
-    formData.append('ml', JSON.stringify(body.ml));
+    formData.append('ohm', JSON.stringify(upperFirst(body.ohm)));
+    formData.append('nicotina', JSON.stringify(upperFirst(body.nicotina)));
+    formData.append('ml', JSON.stringify(upperFirst(body.ml)));
     formData.append('qtdItems', JSON.stringify(body.qtdItems));
 
     try {
@@ -169,6 +173,7 @@ export default function AddProductsForm() {
   const handleMaskMoney = (event: FormEvent<HTMLInputElement>) => {
     const currentTarget = event.currentTarget;
     let value = currentTarget.value.replace(/\D/g, '');
+    if (!value) return;
     value = (+value / 100).toLocaleString('pt-BR', {
       currency: 'BRL',
       style: 'currency',
@@ -181,15 +186,29 @@ export default function AddProductsForm() {
 
     if (!isRemoveKey.current) {
       let value = currentTarget.value.replace(/[^\d]/g, '');
+      if (!value) return;
       const newValue = +value / 100;
       const percentage = (newValue / 100).toLocaleString(undefined, {
         style: 'percent',
         minimumFractionDigits: 2,
       });
       setValue('descount', percentage);
-      return;
     }
-    isRemoveKey.current = false;
+  };
+
+  const handleMaskItems = (event: FormEvent<HTMLInputElement>) => {
+    const currentTarget = event.currentTarget;
+
+    if (!isRemoveKey.current) {
+      let value = currentTarget.value.replace(/[^\d]/g, '');
+      if (!value) return;
+      if (+value > 1) {
+        value = `${value} Itens`;
+      } else {
+        value = `${value} Item`;
+      }
+      setValue('qtdItems', value);
+    }
   };
 
   return (
@@ -409,7 +428,8 @@ export default function AddProductsForm() {
                 placeholder="0 itens"
                 className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
                 {...register('qtdItems')}
-                onInput={(event) => event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')} // eslint-disable-line
+                onInput={handleMaskItems}
+                onBlur={handleMaskItems}
               />
             </div>
           </div>
@@ -436,7 +456,7 @@ export default function AddProductsForm() {
                 className="hover:scale-105 duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
                 onClick={() => {
                   if (watch('colors')) {
-                    setColors(state => [...state, watch('colors')!]);
+                    setColors(state => [...state, upperFirst(watch('colors'))]);
                     setTimeout(() => {
                       setValue('colors', '');
                     }, 50);
@@ -484,7 +504,10 @@ export default function AddProductsForm() {
                 className="hover:scale-105 duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
                 onClick={() => {
                   if (watch('flavors')) {
-                    setFlavors(state => [...state, watch('flavors')!]);
+                    setFlavors(state => [
+                      ...state,
+                      upperFirst(watch('flavors')),
+                    ]);
                     setTimeout(() => {
                       setValue('flavors', '');
                     }, 50);
