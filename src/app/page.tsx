@@ -8,13 +8,13 @@ export default async function Page() {
     <Main>
       <Container90 className="gap-10">
         <div className="flex justify-between gap-4 w-full">
-          <div className="flex gap-2 w-1/4">
+          <div className="flex gap-2 items-start">
             <Image
               src="/assets/imgs/Motoboyimg1.png"
               alt="Motoboyimg1"
               width={60}
               height={60}
-              className="flex-none"
+              className="flex-none object-contain"
             />
             <div className="flex flex-col">
               <h2 className="text-base font-medium text-secudary">MotoBoy</h2>
@@ -24,13 +24,13 @@ export default async function Page() {
             </div>
           </div>
 
-          <div className="flex gap-2 w-1/4">
+          <div className="flex gap-2 items-start">
             <Image
               src="/assets/imgs/Correiosimg1.png"
               alt="Correiosimg1"
               width={60}
               height={60}
-              className="flex-none"
+              className="flex-none object-contain"
             />
             <div className="flex flex-col">
               <h2 className="text-base font-medium text-secudary">Correios</h2>
@@ -40,13 +40,13 @@ export default async function Page() {
             </div>
           </div>
 
-          <div className="flex gap-2 w-1/4">
+          <div className="flex gap-2 items-start">
             <Image
               src="/assets/imgs/piximg1.png"
               alt="piximg1"
               width={60}
               height={60}
-              className="flex-none"
+              className="flex-none object-contain"
             />
             <div className="flex flex-col">
               <h2 className="text-base font-medium text-secudary">Pix</h2>
@@ -56,13 +56,13 @@ export default async function Page() {
             </div>
           </div>
 
-          <div className="flex gap-2 w-1/4">
+          <div className="flex gap-2 items-start">
             <Image
               src="/assets/imgs/cartaoimg1.png"
               alt="cartaoimg1"
               width={60}
               height={60}
-              className="flex-none"
+              className="flex-none object-contain"
             />
             <div className="flex flex-col">
               <h2 className="text-base font-medium text-secudary">Cartão</h2>
