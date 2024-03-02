@@ -6,6 +6,7 @@ import CustomSeparator from '@/components/breadcrumb';
 import Filters from '@/components/filters';
 import UnavailablePage from '@/components/unavailablePage';
 import { FiltersDbType } from '../api/filters/route';
+import { VapeType } from '../api/models/vape';
 
 interface Props {
   searchParams: { query: string };
@@ -14,14 +15,28 @@ interface Props {
 export default async function Page({ searchParams }: Props) {
   const { query } = searchParams;
   let filters: FiltersDbType;
+  let dataSearch: VapeType[] = [];
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
+    const res1 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
       method: 'GET',
+      cache: 'no-cache',
     });
-    if (!res.ok) throw new Error('error');
-    const { data } = await res.json();
-    filters = data;
+    const res2 = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?name=${query}`,
+      {
+        method: 'GET',
+        cache: 'no-cache',
+      }
+    );
+    const allRes = await Promise.all([res1, res2]);
+    for (let res of allRes) {
+      if (!res.ok) throw new Error('error');
+    }
+    const dataRes1 = await allRes[0].json();
+    filters = dataRes1.data;
+    const dataRes2 = await allRes[1].json();
+    dataSearch = dataRes2.data;
   } catch (err) {
     console.log(err);
     return <UnavailablePage />;

@@ -30,7 +30,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (classify == 'launch') sort = { createdIn: -1 };
     if (classify == 'relevance') sort = { relevance: -1 };
 
-    if (!searchParams.size) {
+    if (!searchParams.size || (classify && searchParams.size === 1)) {
       return NextResponse.json({
         success: true,
         data: await vapeModel.find().sort(sort),

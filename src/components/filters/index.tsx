@@ -161,7 +161,7 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
                 className={`flex-none mt-2 ${val.active ? 'fill-555555 rotate-180' : 'group-hover:fill-555555 fill-secudary'} transition-all duration-200`}
               />
             </div>
-            {val.active && (
+            {val.active && val.data.length ? (
               <div className="flex flex-col gap-2">
                 {val.data.map((_v, _i) => (
                   <div
@@ -186,7 +186,7 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
         ))}
         <button

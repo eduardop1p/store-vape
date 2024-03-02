@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import { GrNext, GrPrevious } from 'react-icons/gr';
@@ -18,9 +24,16 @@ export interface ImagesTypes {
   url: string;
 }
 
-export default function ImageSlides({ imgs }: { imgs: ImagesTypes[] }) {
+export default function ImageSlides({
+  imgs,
+  setPreviewImages,
+}: {
+  imgs: ImagesTypes[];
+  setPreviewImages: Dispatch<SetStateAction<ImagesTypes[]>>;
+}) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const sliderRef = useRef<SwiperRef>(null);
+  let index = useRef(0);
 
   const handlePrev = useCallback(() => {
     if (!sliderRef.current) return;
@@ -31,6 +44,16 @@ export default function ImageSlides({ imgs }: { imgs: ImagesTypes[] }) {
     if (!sliderRef.current) return;
     sliderRef.current.swiper.slideNext();
   }, []);
+
+  const handleOrderImgs = (i: number) => {
+    let newArr = [...imgs];
+    newArr.splice(i, 1);
+    let currentValue = imgs[i];
+    newArr.splice(index.current, 0, currentValue);
+
+    index.current++;
+    setPreviewImages(newArr);
+  };
 
   return (
     <>
@@ -89,7 +112,7 @@ export default function ImageSlides({ imgs }: { imgs: ImagesTypes[] }) {
         modules={[FreeMode, Navigation, Thumbs]}
         className="mt-4"
       >
-        {imgs.map(val => (
+        {imgs.map((val, i) => (
           <SwiperSlide
             key={val.url}
             style={{
@@ -98,6 +121,14 @@ export default function ImageSlides({ imgs }: { imgs: ImagesTypes[] }) {
             }}
             className="relative"
           >
+            <div
+              className="absolute z-[2] w-full h-full border-[3px] border-solid border-blue-400 flex items-center justify-center cursor-pointer"
+              onClick={() => handleOrderImgs(i)}
+            >
+              <div className="bg-blue-400 text-primary font-medium text-sm w-8 h-8 rounded-full flex items-center justify-center">
+                {i + 1}
+              </div>
+            </div>
             <Image
               src={val.url}
               fill
@@ -106,7 +137,7 @@ export default function ImageSlides({ imgs }: { imgs: ImagesTypes[] }) {
               style={{
                 objectFit: 'contain',
               }}
-              className="flex-none cursor-pointer"
+              className={`flex-none cursor-pointer`}
             />
           </SwiperSlide>
         ))}

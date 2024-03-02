@@ -92,7 +92,7 @@ export default function AddProductsForm() {
     if (isLoading) return;
 
     const formData = new FormData();
-    Array.from(body.files).forEach(val => formData.append('productFiles', val));
+    previewImages.forEach(val => formData.append('productFiles', val.blob));
     const newDescount = replaceCurrency(body.descount!) / 100;
     const newPrice = replaceCurrency(body.price) / 100;
     formData.append('name', body.name);
@@ -213,7 +213,10 @@ export default function AddProductsForm() {
                 <RiDeleteBin7Fill size={25} fill="#fff" className="flex-none" />
               </button>
 
-              <ImageSlides imgs={previewImages} />
+              <ImageSlides
+                setPreviewImages={setPreviewImages}
+                imgs={previewImages}
+              />
             </div>
           ) : (
             <div className={`flex flex-col items-center`}>
