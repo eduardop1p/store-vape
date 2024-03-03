@@ -30,6 +30,7 @@ const config: Config = {
         '7a7a7a': '#7a7a7a',
         ccba00: '#ccba00',
         '00000066': '#00000066',
+        e5e5e5: '#e5e5e5',
       },
     },
   },

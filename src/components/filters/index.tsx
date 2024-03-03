@@ -216,7 +216,7 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
             }}
           >
             <div
-              className="bg-gray-600 hover:bg-gray-500 cursor-pointer duration-200 transition-colors text-primary flex items-center justify-center gap-2 px-4 h-11 rounded-2xl text-sm font-medium"
+              className="bg-gray-600 hover:bg-gray-500 cursor-pointer duration-200 transition-colors text-primary flex items-center justify-center gap-2 px-4 h-11 rounded-3xl text-sm font-medium"
               onClick={() =>
                 setClassify(state => ({
                   ...state,
@@ -234,14 +234,20 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
               />
             </div>
             <div
-              className={`${classify.active ? 'flex' : 'hidden'} absolute top-12 bg-gray-600 rounded-lg flex-col left-0 overflow-hidden`}
+              className={`transition-all duration-200 flex absolute top-12 bg-gray-600 rounded-lg flex-col left-0 overflow-hidden`}
+              style={{
+                height: classify.active
+                  ? `${28.3 * classify.values.length}px`
+                  : '0px',
+                opacity: classify.active ? 1 : 0,
+              }}
               onClick={event => event.stopPropagation()}
             >
               {classify.values.map((val, i) => (
                 <button
                   key={val}
                   type="button"
-                  className={`whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${classify.values.length - 1 !== i && 'border-b border-solid border-b-primary'} hover:bg-gray-500 transition-colors duration-200 cursor-pointer`}
+                  className={`whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${classify.values.length - 1 !== i && 'border-b border-solid border-b-gray-500'} hover:bg-gray-500 transition-colors duration-200 cursor-pointer`}
                   onClick={() =>
                     setClassify(state => ({
                       ...state,
