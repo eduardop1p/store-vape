@@ -2,8 +2,28 @@ import Image from 'next/image';
 
 import Main from '@/components/main';
 import Container90 from '@/components/container90';
+import ProductsGrid from '@/components/products/grid';
+import { VapeType } from './api/models/vape';
+import UnavailablePage from '@/components/unavailablePage';
 
 export default async function Page() {
+  let vapeData: VapeType[] = [];
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod Descartável`,
+      {
+        method: 'GET',
+      }
+    );
+    if (!res.ok) throw new Error('Error');
+    const { data } = await res.json();
+    vapeData = data;
+  } catch (err) {
+    console.log(err);
+    return <UnavailablePage />;
+  }
+
   return (
     <Main>
       <Container90 className="gap-10">
@@ -79,7 +99,7 @@ export default async function Page() {
           <p className="text-sm font-medium text-secudary">
             Os melhores Pods Descartáveis você encontra aqui, Confira!
           </p>
-          <div className="mt-4">{/*  Pod Descartável aqui */}</div>
+          <ProductsGrid vapeData={vapeData} />
         </div>
         <div className="flex flex-col gap-2">
           <h1 className="text-secudary font-medium text-3xl">
