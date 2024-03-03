@@ -228,8 +228,8 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
               <IoIosArrowDown
                 size={14}
                 fill="#fff"
-                string="#fff"
-                strokeWidth={20}
+                stroke="#fff"
+                strokeWidth={5}
                 className={`${classify.active ? 'rotate-180' : 'rotate-0'} duration-200 transition-transform`}
               />
             </div>
@@ -237,7 +237,7 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
               className={`transition-all duration-200 flex absolute top-12 bg-gray-600 rounded-lg flex-col left-0 overflow-hidden`}
               style={{
                 height: classify.active
-                  ? `${28.3 * classify.values.length}px`
+                  ? `${classify.values.length * 28.3}px`
                   : '0px',
                 opacity: classify.active ? 1 : 0,
               }}

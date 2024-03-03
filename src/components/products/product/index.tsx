@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { VapeType } from '@/app/api/models/vape';
@@ -15,8 +15,18 @@ export default function Product({
   product: VapeType & { _id?: string };
 }) {
   const [hover, setHover] = useState(false);
+  const [showAddCart, setShowAddCart] = useState(false);
+  const [overflowVisible, setOverflowVisible] = useState(false);
 
-  const addCartRef = useRef<any>(null);
+  useEffect(() => {
+    if (showAddCart) {
+      setTimeout(() => {
+        setOverflowVisible(true);
+      }, 250);
+    } else {
+      setOverflowVisible(false);
+    }
+  }, [showAddCart]);
 
   const productPrice = product.descount
     ? product.price * (1 - product.descount)
@@ -29,17 +39,16 @@ export default function Product({
   return (
     <div className="relative border-solid border-gray-300 border rounded-2xl">
       {product.descount && product.stock ? (
-        <div className="rounded-xl absolute z-[4] -top-5 left-1/2 -translate-x-1/2 h-8 w-fit px-3 bg-ccba00 text-[13px] text-primary font-medium flex items-center justify-center">
+        <div className="rounded-xl absolute z-[4] -top-[18px] left-1/2 -translate-x-1/2 h-8 w-fit px-3 bg-ccba00 text-[13px] text-primary font-medium flex items-center justify-center">
           -{(product.descount * 100).toFixed(2)}%
         </div>
       ) : null}
       <div
-        className="relative h-full flex flex-col gap-2 justify-between overflow-hidden px-4 pt-2 pb-4 rounded-2xl"
+        className={`relative h-full flex flex-col gap-2 justify-between ${overflowVisible ? 'overflow-visible' : 'overflow-hidden'} px-4 pt-2 pb-4 rounded-2xl`}
         tabIndex={0}
         onBlur={event => {
-          if (!event.currentTarget.contains(event.relatedTarget)) {
-            addCartRef.current.setShowAddCart(false);
-          }
+          if (!event.currentTarget.contains(event.relatedTarget))
+            setShowAddCart(false);
         }}
       >
         <div className="flex gap-2 flex-col ">
@@ -124,7 +133,11 @@ export default function Product({
             >
               Ver produto
             </Link>
-            <AddCart product={product} ref={addCartRef} />
+            <AddCart
+              product={product}
+              showAddCart={showAddCart}
+              setShowAddCart={setShowAddCart}
+            />
           </div>
         ) : (
           <Link
