@@ -2,15 +2,35 @@
 'use client';
 
 import { VapeType } from '@/app/api/models/vape';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import { IoIosArrowDown, IoIosClose } from 'react-icons/io';
+import z from 'zod';
+import {
+  useForm,
+  SubmitHandler,
+  type FieldErrors,
+  type UseFormRegister,
+  type UseFormTrigger,
+} from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface SelectType {
   active: boolean;
   activeValue: string;
   values?: string[];
 }
+
+const zodSchema = z.object({
+  fileName: z.string(),
+  name: z.string(),
+  flavor: z.string().min(1, 'Selecione um sabor'),
+  color: z.string().min(1, 'Selecione uma cor'),
+  units: z.string().min(1, 'Escolha quantas unidades vai pedir'),
+  price: z.number(),
+});
+
+type BodyType = z.infer<typeof zodSchema>;
 
 export default function AddCart({
   product,
@@ -21,26 +41,59 @@ export default function AddCart({
   showAddCart: boolean;
   setShowAddCart: Dispatch<SetStateAction<boolean>>;
 }) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    trigger,
+    formState: { errors },
+  } = useForm<BodyType>({ resolver: zodResolver(zodSchema) });
+
   const [flavors, setFlavors] = useState<SelectType>({
     active: false,
-    activeValue: 'Selecionar',
+    activeValue: '',
     values: product.flavors,
   });
   const [colors, setColors] = useState<SelectType>({
     active: false,
-    activeValue: 'Selecionar',
+    activeValue: '',
     values: product.colors,
   });
 
+  useEffect(() => {
+    register('name', {
+      value: product.name,
+    });
+    register('fileName', {
+      value: product.fileNames[0],
+    });
+    register('price', {
+      value: product.price,
+    });
+    setValue('flavor', flavors.activeValue);
+    setValue('color', colors.activeValue);
+  }, [register, product, flavors, colors, setValue]);
+
+  const handleFormSubmit: SubmitHandler<BodyType> = body => {
+    console.log(body);
+  };
+
   return (
     <>
-      <div
+      <form
+        onSubmit={handleSubmit(handleFormSubmit)}
         className={`${showAddCart ? 'translate-y-0' : 'translate-y-[100%]'} rounded-2xl px-4 pt-8 pb-4 h-fit duration-200 transition-transform absolute w-full bg-primary flex flex-col justify-center gap-3 bottom-0 left-0`}
       >
         <button
           className="absolute top-0 right-2"
           type="button"
-          onClick={() => setShowAddCart(false)}
+          onClick={() => {
+            setShowAddCart(false);
+            setFlavors(state => ({ ...state, activeValue: '' }));
+            setColors(state => ({ ...state, activeValue: '' }));
+            reset();
+          }}
         >
           <IoIosClose
             size={30}
@@ -51,36 +104,67 @@ export default function AddCart({
         <div className="flex justify-between gap-3 w-full">
           {flavors.values?.length && colors.values?.length ? (
             <>
-              <SelectFlavors flavors={flavors} setFlavors={setFlavors} />
-              <SelectColors colors={colors} setColors={setColors} />
+              <SelectFlavors
+                flavors={flavors}
+                setFlavors={setFlavors}
+                errors={errors}
+                register={register}
+                trigger={trigger}
+              />
+              <SelectColors
+                colors={colors}
+                setColors={setColors}
+                errors={errors}
+                register={register}
+                trigger={trigger}
+              />
             </>
           ) : null}
           {flavors.values?.length && !colors.values?.length ? (
-            <SelectFlavors flavors={flavors} setFlavors={setFlavors} wFull />
+            <SelectFlavors
+              flavors={flavors}
+              setFlavors={setFlavors}
+              errors={errors}
+              register={register}
+              trigger={trigger}
+              wFull
+            />
           ) : null}
           {!flavors.values?.length && colors.values?.length ? (
-            <SelectColors colors={colors} setColors={setColors} wFull />
+            <SelectColors
+              colors={colors}
+              setColors={setColors}
+              errors={errors}
+              register={register}
+              trigger={trigger}
+              wFull
+            />
           ) : null}
         </div>
-        <div className="flex justify-between gap-3 w-full">
-          <input
-            defaultValue={1}
-            placeholder="Quantidade"
-            className="text-secudary font-medium text-[13px] text-center bg-e5e5e5 px-4 h-11 rounded-3xl w-[40%]"
-            onInput={event => {
-              const currentTarget = event.currentTarget;
-              let value = currentTarget.value.replace(/[^\d]/g, '');
-              currentTarget.value = value;
-            }}
-          />
-          <button
-            type="button"
-            className="hover:scale-105 text-center transition-transform duration-200 px-4 h-11 rounded-3xl w-[60%] text-[13px] text-primary bg-ccba00 font-medium"
-          >
-            Comprar
-          </button>
+        <div className="flex flex-col">
+          <div className="flex justify-between gap-3 w-full">
+            <input
+              defaultValue={1}
+              placeholder="Unidades"
+              className="text-secudary font-medium text-[13px] text-center bg-e5e5e5 px-4 h-11 rounded-3xl w-[40%]"
+              {...register('units')}
+              onInput={event => {
+                const currentTarget = event.currentTarget;
+                let value = currentTarget.value.replace(/[^\d]/g, '');
+                if (+value == 0) return (currentTarget.value = '');
+                currentTarget.value = value;
+              }}
+            />
+            <button
+              type="submit"
+              className="hover:scale-105 text-center transition-transform duration-200 px-4 h-11 rounded-3xl w-[60%] text-[13px] text-primary bg-ccba00 font-medium"
+            >
+              Comprar
+            </button>
+          </div>
+          {errors.units && <ErrorMsg msg={errors.units.message} />}
         </div>
-      </div>
+      </form>
       <button
         type="button"
         className={`${!showAddCart && 'hover:scale-105 duration-200 transition-transform'} flex items-center justify-center bg-secudary h-[50px] rounded-3xl w-1/2`}
@@ -96,10 +180,16 @@ const SelectFlavors = ({
   flavors,
   setFlavors,
   wFull,
+  errors,
+  register,
+  trigger,
 }: {
   flavors: SelectType;
   setFlavors: Dispatch<SetStateAction<SelectType>>;
   wFull?: boolean;
+  errors: FieldErrors<BodyType>;
+  register: UseFormRegister<BodyType>;
+  trigger: UseFormTrigger<BodyType>;
 }) => {
   if (typeof flavors.values == 'undefined' || !flavors.values.length) return;
 
@@ -123,9 +213,14 @@ const SelectFlavors = ({
             setFlavors(state => ({ ...state, active: !state.active }))
           }
         >
-          <div className="truncate text-primary text-[13px] font-normal">
-            {flavors.activeValue}
-          </div>
+          <input
+            value={flavors.activeValue}
+            {...register('flavor')}
+            placeholder="Selecionar"
+            className="truncate text-primary bg-transparent text-[13px] font-normal cursor-pointer placeholder:text-primary"
+            readOnly
+          />
+
           <IoIosArrowDown
             size={14}
             fill="#fff"
@@ -134,6 +229,7 @@ const SelectFlavors = ({
             className={`${flavors.active ? 'rotate-180' : 'rotate-0'} flex-none duration-200 transition-transform`}
           />
         </div>
+        {errors.flavor && <ErrorMsg msg={errors.flavor.message} />}
 
         <div
           // bug do blur na porra do display resolvido aqui com altura e nunca com display hidden e visibilite
@@ -163,6 +259,9 @@ const SelectFlavors = ({
                     active: false,
                     activeValue: val,
                   }));
+                  setTimeout(() => {
+                    trigger('flavor');
+                  }, 100);
                 }}
               >
                 {val}
@@ -179,10 +278,16 @@ const SelectColors = ({
   colors,
   setColors,
   wFull,
+  errors,
+  register,
+  trigger,
 }: {
   colors: SelectType;
   setColors: Dispatch<SetStateAction<SelectType>>;
   wFull?: boolean;
+  errors: FieldErrors<BodyType>;
+  register: UseFormRegister<BodyType>;
+  trigger: UseFormTrigger<BodyType>;
 }) => {
   if (typeof colors.values == 'undefined' || !colors.values.length) return;
 
@@ -206,17 +311,22 @@ const SelectColors = ({
             setColors(state => ({ ...state, active: !state.active }))
           }
         >
-          <div className="truncate text-primary text-[13px] font-normal">
-            {colors.activeValue}
-          </div>
+          <input
+            value={colors.activeValue}
+            placeholder="Selecionar"
+            {...register('color')}
+            className="truncate text-primary text-[13px] font-normal bg-transparent cursor-pointer placeholder:text-primary"
+            readOnly
+          />
           <IoIosArrowDown
             size={14}
             fill="#fff"
             stroke="#fff"
             strokeWidth={5}
-            className={`${colors.active ? 'rotate-180' : 'rotate-0'} duration-200 transition-transform`}
+            className={`${colors.active ? 'rotate-180' : 'rotate-0'} duration-200 transition-transform flex-none`}
           />
         </div>
+        {errors.color && <ErrorMsg msg={errors.color.message} />}
 
         <div
           // bug do blur na porra do display resolvido aqui com altura e nunca com display hidden e visibilite
@@ -246,6 +356,9 @@ const SelectColors = ({
                     active: false,
                     activeValue: val,
                   }));
+                  setTimeout(() => {
+                    trigger('color');
+                  }, 100);
                 }}
               >
                 {val}
@@ -254,6 +367,14 @@ const SelectColors = ({
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const ErrorMsg = ({ msg }: { msg?: string }) => {
+  return (
+    <div className="ml-[10px] mt-1 text-[11px] font-normal text-red-600">
+      {msg}
     </div>
   );
 };

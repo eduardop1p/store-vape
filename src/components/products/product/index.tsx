@@ -46,10 +46,10 @@ export default function Product({
       <div
         className={`relative h-full flex flex-col gap-2 justify-between ${overflowVisible ? 'overflow-visible' : 'overflow-hidden'} px-4 pt-2 pb-4 rounded-2xl`}
         tabIndex={0}
-        onBlur={event => {
-          if (!event.currentTarget.contains(event.relatedTarget))
-            setShowAddCart(false);
-        }}
+      // onBlur={event => {
+      //   if (!event.currentTarget.contains(event.relatedTarget))
+      //     setShowAddCart(false);
+      // }}
       >
         <div className="flex gap-2 flex-col ">
           <div

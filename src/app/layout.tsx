@@ -6,6 +6,7 @@ import './globals.css';
 
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import AddCartContext from '@/utils/cartContext/context';
 
 const inter = Poppins({
   weight: ['200', '300', '400', '500', '600', '700', '800'],
@@ -33,9 +34,11 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <NextTopLoader showSpinner={false} color="#549cffff" shadow={false} />
-        <Header />
-        {children}
-        <Footer />
+        <AddCartContext>
+          <Header />
+          {children}
+          <Footer />
+        </AddCartContext>
       </body>
     </html>
   );
