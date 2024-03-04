@@ -23,7 +23,7 @@ export default function MyAccount() {
       </span>
 
       <div
-        className={`absolute bg-primary top-16 w-[300px] cursor-default z-[2] rounded-t-2xl transition-all duration-200 ${showMyAccount ? 'translate-y-0 opacity-100 visible' : 'translate-y-14 opacity-0 invisible'}`} // eslint-disable-line
+        className={`rounded-2xl absolute bg-primary top-16 w-[300px] cursor-default z-[2] transition-all duration-200 ${showMyAccount ? 'translate-y-0 opacity-100 visible' : 'translate-y-14 opacity-0 invisible'}`} // eslint-disable-line
         onClick={event => event.stopPropagation()}
       >
         <div
@@ -33,14 +33,14 @@ export default function MyAccount() {
           }}
         ></div>
 
-        <div className="flex flex-col items-center py-4 gap-1 rounded-2xl bg-inherit overflow-hidden">
+        <div className="flex flex-col items-center pt-4 gap-1 bg-inherit rounded-2xl overflow-hidden">
           <h2 className="text-base font-normal text-secudary">
             Seja bem-vindo!
           </h2>
           <span className="text-[13px] font-normal text-3d3d3d">
             Faça Login ou Cadastre-se
           </span>
-          <div className="bg-0000001F w-full py-4 px-5 flex justify-center gap-3 rounded-b-2xl mt-2">
+          <div className="bg-0000001F w-full py-4 px-5 flex justify-center gap-3 mt-2">
             <Link
               href="/create-account"
               className="h-[50px] px-4 bg-primary text-3d3d3d rounded-3xl flex items-center justify-center font-medium text-sm hover:scale-105 transition-transform duration-200"

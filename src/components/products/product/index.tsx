@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { VapeType } from '@/app/api/models/vape';
@@ -8,11 +8,14 @@ import replaceStringToLink from '@/services/replaceStringToLink';
 import formatPrice from '@/services/formatPrice';
 import pixDescount from '@/services/pixDescount';
 import AddCart from './addCart';
+import { OpenAlertType } from '@/components/alertMsg';
 
 export default function Product({
   product,
+  setOpenAlert,
 }: {
   product: VapeType & { _id?: string };
+  setOpenAlert: Dispatch<SetStateAction<OpenAlertType>>;
 }) {
   const [hover, setHover] = useState(false);
   const [showAddCart, setShowAddCart] = useState(false);
@@ -46,10 +49,10 @@ export default function Product({
       <div
         className={`relative h-full flex flex-col gap-2 justify-between ${overflowVisible ? 'overflow-visible' : 'overflow-hidden'} px-4 pt-2 pb-4 rounded-2xl`}
         tabIndex={0}
-      // onBlur={event => {
-      //   if (!event.currentTarget.contains(event.relatedTarget))
-      //     setShowAddCart(false);
-      // }}
+        onBlur={event => {
+          if (!event.currentTarget.contains(event.relatedTarget))
+            setShowAddCart(false);
+        }}
       >
         <div className="flex gap-2 flex-col ">
           <div
@@ -134,9 +137,10 @@ export default function Product({
               Ver produto
             </Link>
             <AddCart
-              product={product}
+              product={{ ...product, productPrice }}
               showAddCart={showAddCart}
               setShowAddCart={setShowAddCart}
+              setOpenAlert={setOpenAlert}
             />
           </div>
         ) : (

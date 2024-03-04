@@ -14,6 +14,10 @@ import {
   type UseFormTrigger,
 } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isEqual } from 'lodash';
+
+import { useOpenCartContext } from '@/utils/openCartContext/useContext';
+import { OpenAlertType } from '@/components/alertMsg';
 
 interface SelectType {
   active: boolean;
@@ -21,12 +25,24 @@ interface SelectType {
   values?: string[];
 }
 
+interface AddCartType {
+  fileName: string;
+  name: string;
+  flavor: string;
+  color: string;
+  price: number;
+  units: number;
+}
+
 const zodSchema = z.object({
   fileName: z.string(),
   name: z.string(),
   flavor: z.string().min(1, 'Selecione um sabor'),
   color: z.string().min(1, 'Selecione uma cor'),
-  units: z.string().min(1, 'Escolha quantas unidades vai pedir'),
+  units: z
+    .string()
+    .min(1, 'Escolha quantas unidades vai pedir')
+    .transform(val => +val),
   price: z.number(),
 });
 
@@ -36,11 +52,15 @@ export default function AddCart({
   product,
   showAddCart,
   setShowAddCart,
+  setOpenAlert,
 }: {
-  product: VapeType;
+  product: VapeType & { productPrice: number };
   showAddCart: boolean;
   setShowAddCart: Dispatch<SetStateAction<boolean>>;
+  setOpenAlert: Dispatch<SetStateAction<OpenAlertType>>;
 }) {
+  const { setShowCart } = useOpenCartContext();
+
   const {
     register,
     handleSubmit,
@@ -69,14 +89,50 @@ export default function AddCart({
       value: product.fileNames[0],
     });
     register('price', {
-      value: product.price,
+      value: product.productPrice,
     });
     setValue('flavor', flavors.activeValue);
     setValue('color', colors.activeValue);
   }, [register, product, flavors, colors, setValue]);
 
   const handleFormSubmit: SubmitHandler<BodyType> = body => {
-    console.log(body);
+    const cart = document.querySelector('#cart') as HTMLDivElement;
+    const cartLocalStorage = localStorage.getItem('cart');
+    if (!cartLocalStorage) {
+      localStorage.setItem('cart', JSON.stringify([body]));
+    } else {
+      const parseCartLocalStorage: AddCartType[] = JSON.parse(cartLocalStorage);
+      if (parseCartLocalStorage.some(val => isEqual(val, body))) {
+        setOpenAlert({
+          msg: 'Produto já foi adcionado ao carrinho',
+          open: true,
+          severity: 'success',
+        });
+        setShowCart(true);
+        cart.focus();
+        return;
+      }
+      if (parseCartLocalStorage.length > 20) {
+        setOpenAlert({
+          msg: 'Carrinho lotado exclua itens para adionar novos',
+          open: true,
+          severity: 'error',
+        });
+        setShowCart(true);
+        cart.focus();
+        return;
+      }
+
+      parseCartLocalStorage.push(body);
+      localStorage.setItem('cart', JSON.stringify(parseCartLocalStorage));
+    }
+    setOpenAlert({
+      msg: 'Produto adicionado ao carrinho',
+      open: true,
+      severity: 'success',
+    });
+    setShowCart(true);
+    cart.focus();
   };
 
   return (
@@ -101,19 +157,25 @@ export default function AddCart({
           />
         </button>
 
-        <div className="flex justify-between gap-3 w-full">
+        <div
+          className={`grid ${flavors.values?.length && colors.values?.length ? 'grid-cols-2' : 'grid-cols-1'} gap-3 w-full`}
+        >
           {flavors.values?.length && colors.values?.length ? (
             <>
-              <SelectFlavors
-                flavors={flavors}
-                setFlavors={setFlavors}
+              <SelectPreferencesProduct
+                preference={flavors}
+                setPreference={setFlavors}
+                title="Sabores"
+                registerName="flavor"
                 errors={errors}
                 register={register}
                 trigger={trigger}
               />
-              <SelectColors
-                colors={colors}
-                setColors={setColors}
+              <SelectPreferencesProduct
+                preference={colors}
+                setPreference={setColors}
+                title="Cores"
+                registerName="color"
                 errors={errors}
                 register={register}
                 trigger={trigger}
@@ -121,23 +183,25 @@ export default function AddCart({
             </>
           ) : null}
           {flavors.values?.length && !colors.values?.length ? (
-            <SelectFlavors
-              flavors={flavors}
-              setFlavors={setFlavors}
+            <SelectPreferencesProduct
+              preference={flavors}
+              setPreference={setFlavors}
+              title="Sabores"
+              registerName="flavor"
               errors={errors}
               register={register}
               trigger={trigger}
-              wFull
             />
           ) : null}
           {!flavors.values?.length && colors.values?.length ? (
-            <SelectColors
-              colors={colors}
-              setColors={setColors}
+            <SelectPreferencesProduct
+              preference={colors}
+              setPreference={setColors}
+              title="Cores"
+              registerName="color"
               errors={errors}
               register={register}
               trigger={trigger}
-              wFull
             />
           ) : null}
         </div>
@@ -176,46 +240,47 @@ export default function AddCart({
   );
 }
 
-const SelectFlavors = ({
-  flavors,
-  setFlavors,
-  wFull,
+const SelectPreferencesProduct = ({
+  preference,
+  setPreference,
+  title,
+  registerName,
   errors,
   register,
   trigger,
 }: {
-  flavors: SelectType;
-  setFlavors: Dispatch<SetStateAction<SelectType>>;
-  wFull?: boolean;
+  preference: SelectType;
+  title: 'Sabores' | 'Cores';
+  registerName: 'flavor' | 'color';
+  setPreference: Dispatch<SetStateAction<SelectType>>;
   errors: FieldErrors<BodyType>;
   register: UseFormRegister<BodyType>;
   trigger: UseFormTrigger<BodyType>;
 }) => {
-  if (typeof flavors.values == 'undefined' || !flavors.values.length) return;
+  if (typeof preference.values == 'undefined' || !preference.values.length)
+    return;
 
   return (
-    <div
-      className={`flex gap-1 flex-col items-center ${wFull ? 'w-full' : 'w-1/2'}`}
-    >
-      <h3 className="text-sm font-medium text-secudary text-center">Sabores</h3>
+    <div className={`flex gap-1 flex-col items-center`}>
+      <h3 className="text-sm font-medium text-secudary text-center">{title}</h3>
       <div
         className="relative w-full"
         tabIndex={0}
         onBlur={event => {
           // nunca colocar evento de foco no mesmo elemento que foi setado evento de click
           if (!event.currentTarget.contains(event.relatedTarget))
-            setFlavors(state => ({ ...state, active: false }));
+            setPreference(state => ({ ...state, active: false }));
         }}
       >
         <div
           className=" bg-gray-600 hover:bg-gray-500 cursor-pointer duration-200 transition-colors flex items-center justify-between gap-2 px-4 h-11 rounded-3xl"
           onClick={() =>
-            setFlavors(state => ({ ...state, active: !state.active }))
+            setPreference(state => ({ ...state, active: !state.active }))
           }
         >
           <input
-            value={flavors.activeValue}
-            {...register('flavor')}
+            value={preference.activeValue}
+            {...register(registerName)}
             placeholder="Selecionar"
             className="truncate text-primary bg-transparent text-[13px] font-normal cursor-pointer placeholder:text-primary"
             readOnly
@@ -226,138 +291,43 @@ const SelectFlavors = ({
             fill="#fff"
             stroke="#fff"
             strokeWidth={5}
-            className={`${flavors.active ? 'rotate-180' : 'rotate-0'} flex-none duration-200 transition-transform`}
+            className={`${preference.active ? 'rotate-180' : 'rotate-0'} flex-none duration-200 transition-transform`}
           />
         </div>
-        {errors.flavor && <ErrorMsg msg={errors.flavor.message} />}
+        {errors[registerName] && (
+          <ErrorMsg msg={errors[registerName]?.message} />
+        )}
 
         <div
           // bug do blur na porra do display resolvido aqui com altura e nunca com display hidden e visibilite
           className={`duration-200 transition-all flex absolute top-12 bg-gray-600 rounded-lg left-0 overflow-hidden w-full`}
           style={{
-            height: flavors.active
-              ? flavors.values.length > 4
+            height: preference.active
+              ? preference.values.length > 4
                 ? '110px'
-                : `${flavors.values.length * 28.3}px`
+                : `${preference.values.length * 28.3}px`
               : '0px',
-            opacity: flavors.active ? 1 : 0,
+            opacity: preference.active ? 1 : 0,
           }}
         >
           <div
             className={`w-full h-full  bg-inherit flex-col overflow-x-hidden overflow-y-auto`}
             onClick={event => event.stopPropagation()}
           >
-            {flavors.values.map((val, i) => (
+            {preference.values.map((val, i) => (
               <button
                 key={val}
                 title={val}
                 type="button"
-                className={`truncate w-full whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${flavors.values && flavors.values.length - 1 !== i && 'border-b border-solid border-b-gray-500'} hover:bg-gray-500 transition-colors duration-200 cursor-pointer`}
+                className={`truncate w-full whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${preference.values && preference.values.length - 1 !== i && 'border-b border-solid border-b-gray-500'} hover:bg-gray-500 transition-colors duration-200 cursor-pointer`}
                 onClick={() => {
-                  setFlavors(state => ({
+                  setPreference(state => ({
                     ...state,
                     active: false,
                     activeValue: val,
                   }));
                   setTimeout(() => {
-                    trigger('flavor');
-                  }, 100);
-                }}
-              >
-                {val}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SelectColors = ({
-  colors,
-  setColors,
-  wFull,
-  errors,
-  register,
-  trigger,
-}: {
-  colors: SelectType;
-  setColors: Dispatch<SetStateAction<SelectType>>;
-  wFull?: boolean;
-  errors: FieldErrors<BodyType>;
-  register: UseFormRegister<BodyType>;
-  trigger: UseFormTrigger<BodyType>;
-}) => {
-  if (typeof colors.values == 'undefined' || !colors.values.length) return;
-
-  return (
-    <div
-      className={`flex gap-1 flex-col items-center ${wFull ? 'w-full' : 'w-1/2'}`}
-    >
-      <h3 className="text-sm font-medium text-secudary text-center">Cores</h3>
-      <div
-        className="relative w-full"
-        tabIndex={0}
-        onBlur={event => {
-          // nunca colocar evento de foco no mesmo elemento que foi setado evento de click
-          if (!event.currentTarget.contains(event.relatedTarget))
-            setColors(state => ({ ...state, active: false }));
-        }}
-      >
-        <div
-          className="bg-gray-600 hover:bg-gray-500 cursor-pointer duration-200 transition-colors flex items-center justify-between gap-2 px-4 h-11 rounded-3xl"
-          onClick={() =>
-            setColors(state => ({ ...state, active: !state.active }))
-          }
-        >
-          <input
-            value={colors.activeValue}
-            placeholder="Selecionar"
-            {...register('color')}
-            className="truncate text-primary text-[13px] font-normal bg-transparent cursor-pointer placeholder:text-primary"
-            readOnly
-          />
-          <IoIosArrowDown
-            size={14}
-            fill="#fff"
-            stroke="#fff"
-            strokeWidth={5}
-            className={`${colors.active ? 'rotate-180' : 'rotate-0'} duration-200 transition-transform flex-none`}
-          />
-        </div>
-        {errors.color && <ErrorMsg msg={errors.color.message} />}
-
-        <div
-          // bug do blur na porra do display resolvido aqui com altura e nunca com display hidden e visibilite
-          className={`duration-200 transition-all flex absolute top-12 bg-gray-600 rounded-lg left-0 overflow-hidden w-full`}
-          style={{
-            height: colors.active
-              ? colors.values.length > 4
-                ? '110px'
-                : `${colors.values.length * 28.3}px`
-              : '0px',
-            opacity: colors.active ? 1 : 0,
-          }}
-        >
-          <div
-            className={`w-full h-full  bg-inherit flex-col overflow-x-hidden overflow-y-auto`}
-            onClick={event => event.stopPropagation()}
-          >
-            {colors.values.map((val, i) => (
-              <button
-                key={val}
-                type="button"
-                title={val}
-                className={`truncate w-full whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${colors.values && colors.values.length - 1 !== i && 'border-b border-solid border-b-gray-500'} hover:bg-gray-500 transition-colors duration-200 cursor-pointer`}
-                onClick={() => {
-                  setColors(state => ({
-                    ...state,
-                    active: false,
-                    activeValue: val,
-                  }));
-                  setTimeout(() => {
-                    trigger('color');
+                    trigger(registerName);
                   }, 100);
                 }}
               >

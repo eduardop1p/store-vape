@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 
+import { useOpenCartContext } from '@/utils/openCartContext/useContext';
+
 export default function Cart() {
-  const [showCart, setShowCart] = useState(false);
+  const { showCart, setShowCart } = useOpenCartContext();
 
   return (
     <div
@@ -14,6 +15,7 @@ export default function Cart() {
         if (!event.currentTarget.contains(event.relatedTarget))
           setShowCart(false);
       }}
+      id="cart"
       tabIndex={0}
     >
       <FaShoppingCart fill="#3d3d3d" size={16} className="flex-none" />
@@ -22,7 +24,7 @@ export default function Cart() {
       </span>
 
       <div
-        className={`absolute bg-primary top-16 w-[300px] cursor-default z-[2] rounded-t-2xl transition-all duration-200 ${showCart ? 'translate-y-0 opacity-100 visible' : 'translate-y-14 opacity-0 invisible'}`} // eslint-disable-line
+        className={`rounded-2xl absolute bg-primary top-16 w-[300px] cursor-default z-[2] transition-all duration-200 ${showCart ? 'translate-y-0 opacity-100 visible' : 'translate-y-14 opacity-0 invisible'}`} // eslint-disable-line
         onClick={event => event.stopPropagation()}
       >
         <div
@@ -32,11 +34,11 @@ export default function Cart() {
           }}
         ></div>
 
-        <div className="flex flex-col items-center py-4 gap-1 rounded-2xl bg-inherit overflow-hidden">
+        <div className="flex flex-col items-center pt-4 gap-1 bg-inherit rounded-2xl overflow-hidden">
           <h2 className="text-base font-normal text-secudary">
             Seu carrinho está vazio.
           </h2>
-          <div className="bg-0000001F w-full py-4 px-5 flex justify-center gap-3 rounded-b-2xl mt-2">
+          <div className="bg-0000001F w-full py-4 px-5 flex justify-center gap-3 mt-2">
             <span className="text-center text-3d3d3d text-sm font-normal">
               Adicione produtos ao carrinho e eles aparecerão aqui.
             </span>

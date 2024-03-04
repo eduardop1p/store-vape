@@ -20,7 +20,7 @@ export default function Tracking() {
       <span className="text-base font-medium text-primary">Rastrio</span>
 
       <div
-        className={`absolute bg-primary top-16 w-[300px] cursor-default z-[2] rounded-t-2xl transition-all duration-200 ${showTracking ? 'translate-y-0 opacity-100 visible' : 'translate-y-14 opacity-0 invisible'}`} // eslint-disable-line
+        className={`rounded-2xl absolute bg-primary top-16 w-[300px] cursor-default z-[2] transition-all duration-200 ${showTracking ? 'translate-y-0 opacity-100 visible' : 'translate-y-14 opacity-0 invisible'}`} // eslint-disable-line
         onClick={event => event.stopPropagation()}
       >
         <div
@@ -30,11 +30,11 @@ export default function Tracking() {
           }}
         ></div>
 
-        <div className="flex flex-col gap-2 rounded-2xl bg-inherit overflow-hidden">
+        <div className="flex flex-col items-center pt-4 gap-1 bg-inherit rounded-2xl overflow-hidden">
           <span className="text-secudary font-normal text-balance text-center pt-4">
             Rastreie seu perdido
           </span>
-          <div className="bg-0000001F w-full py-4 px-5 flex justify-center">
+          <div className="bg-0000001F w-full py-4 px-5 flex justify-center gap-3 mt-2">
             <input
               type="text"
               name="tracking"
