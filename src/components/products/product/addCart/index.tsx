@@ -18,20 +18,13 @@ import { isEqual } from 'lodash';
 
 import { useOpenCartContext } from '@/utils/openCartContext/useContext';
 import { OpenAlertType } from '@/components/alertMsg';
+import { CartType } from '@/utils/cartContext/context';
+import { useCartContext } from '@/utils/cartContext/useContext';
 
 interface SelectType {
   active: boolean;
   activeValue: string;
   values?: string[];
-}
-
-interface AddCartType {
-  fileName: string;
-  name: string;
-  flavor: string;
-  color: string;
-  price: number;
-  units: number;
 }
 
 const zodSchema = z.object({
@@ -60,6 +53,7 @@ export default function AddCart({
   setOpenAlert: Dispatch<SetStateAction<OpenAlertType>>;
 }) {
   const { setShowCart } = useOpenCartContext();
+  const { setCart } = useCartContext();
 
   const {
     register,
@@ -82,6 +76,19 @@ export default function AddCart({
   });
 
   useEffect(() => {
+    const cartDataLocalStorage = localStorage.getItem('cart');
+    if (cartDataLocalStorage) setCart(JSON.parse(cartDataLocalStorage));
+  }, [setCart]);
+
+  useEffect(() => {
+    if (!showAddCart) {
+      setFlavors(state => ({ ...state, activeValue: '' }));
+      setColors(state => ({ ...state, activeValue: '' }));
+      reset();
+    }
+  }, [showAddCart, reset]);
+
+  useEffect(() => {
     register('name', {
       value: product.name,
     });
@@ -97,14 +104,14 @@ export default function AddCart({
 
   const handleFormSubmit: SubmitHandler<BodyType> = body => {
     const cart = document.querySelector('#cart') as HTMLDivElement;
-    const cartLocalStorage = localStorage.getItem('cart');
-    if (!cartLocalStorage) {
+    const cartDataLocalStorage = localStorage.getItem('cart');
+    if (!cartDataLocalStorage) {
       localStorage.setItem('cart', JSON.stringify([body]));
     } else {
-      const parseCartLocalStorage: AddCartType[] = JSON.parse(cartLocalStorage);
-      if (parseCartLocalStorage.some(val => isEqual(val, body))) {
+      const cartData: CartType[] = JSON.parse(cartDataLocalStorage);
+      if (cartData.some(val => isEqual(val, body))) {
         setOpenAlert({
-          msg: 'Produto já foi adcionado ao carrinho',
+          msg: 'Produto já foi adicionado ao carrinho',
           open: true,
           severity: 'success',
         });
@@ -112,9 +119,9 @@ export default function AddCart({
         cart.focus();
         return;
       }
-      if (parseCartLocalStorage.length > 20) {
+      if (cartData.length > 20) {
         setOpenAlert({
-          msg: 'Carrinho lotado exclua itens para adionar novos',
+          msg: 'Carrinho lotado, exclua itens para adicionar novos',
           open: true,
           severity: 'error',
         });
@@ -123,8 +130,9 @@ export default function AddCart({
         return;
       }
 
-      parseCartLocalStorage.push(body);
-      localStorage.setItem('cart', JSON.stringify(parseCartLocalStorage));
+      cartData.push(body);
+      localStorage.setItem('cart', JSON.stringify(cartData));
+      setCart(cartData);
     }
     setOpenAlert({
       msg: 'Produto adicionado ao carrinho',
@@ -144,12 +152,7 @@ export default function AddCart({
         <button
           className="absolute top-0 right-2"
           type="button"
-          onClick={() => {
-            setShowAddCart(false);
-            setFlavors(state => ({ ...state, activeValue: '' }));
-            setColors(state => ({ ...state, activeValue: '' }));
-            reset();
-          }}
+          onClick={() => setShowAddCart(false)}
         >
           <IoIosClose
             size={30}

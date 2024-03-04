@@ -1,11 +1,22 @@
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
 import Logo from '../logo';
 import Search from './search';
 import Tracking from './tracking';
 import MyAccount from './myAccount';
-import Cart from './cart';
 import Links from './links';
+import { FaShoppingCart } from 'react-icons/fa';
+const Cart = dynamic(() => import('./cart'), {
+  ssr: false,
+  loading: () => (
+    <div
+      className={`bg-primary rounded-3xl px-8 h-[50px] flex items-center justify-center flex-none`} // eslint-disable-line
+    >
+      <FaShoppingCart fill="#3d3d3d" size={16} className="flex-none" />
+    </div>
+  ),
+});
 
 export default function Header() {
   return (

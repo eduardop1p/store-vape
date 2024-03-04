@@ -7,6 +7,7 @@ import './globals.css';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import OpenCartContextProvider from '@/utils/openCartContext/context';
+import CartContextProvider from '@/utils/cartContext/context';
 
 const inter = Poppins({
   weight: ['200', '300', '400', '500', '600', '700', '800'],
@@ -35,9 +36,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <NextTopLoader showSpinner={false} color="#549cffff" shadow={false} />
         <OpenCartContextProvider>
-          <Header />
-          {children}
-          <Footer />
+          <CartContextProvider>
+            <Header />
+            {children}
+            <Footer />
+          </CartContextProvider>
         </OpenCartContextProvider>
       </body>
     </html>
