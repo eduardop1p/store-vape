@@ -14,6 +14,7 @@ export interface CartType {
   color?: string;
   price: number;
   units: number;
+  createdIn: number;
 }
 
 interface CartContextType {

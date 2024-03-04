@@ -37,6 +37,7 @@ const zodSchema = z.object({
     .min(1, 'Escolha quantas unidades vai pedir')
     .transform(val => +val),
   price: z.number(),
+  createdIn: z.number(),
 });
 
 type BodyType = z.infer<typeof zodSchema>;
@@ -98,11 +99,15 @@ export default function AddCart({
     register('price', {
       value: product.productPrice,
     });
+    register('createdIn', {
+      value: Date.now(),
+    });
     setValue('flavor', flavors.activeValue);
     setValue('color', colors.activeValue);
   }, [register, product, flavors, colors, setValue]);
 
   const handleFormSubmit: SubmitHandler<BodyType> = body => {
+    body = { ...body, createdIn: Date.now() };
     const cart = document.querySelector('#cart') as HTMLDivElement;
     const cartDataLocalStorage = localStorage.getItem('cart');
     if (!cartDataLocalStorage) {

@@ -2,6 +2,7 @@
 
 import { FaShoppingCart } from 'react-icons/fa';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { useOpenCartContext } from '@/utils/openCartContext/useContext';
 import { useCartContext } from '@/utils/cartContext/useContext';
@@ -54,59 +55,63 @@ export default function Cart() {
             </>
           ) : (
             <div className="flex relative flex-col h-[400px]">
-              <div className="flex flex-col pt-2 h-[300px] overflow-x-hidden overflow-y-auto">
-                {cart.map((val, i) => (
-                  <div
-                    key={i}
-                    className="flex gap-2 justify-between border-b border-solid border-gray-200 px-4 py-2"
-                  >
-                    <Image
-                      src={`/uploads/imgs/${val.fileName}`}
-                      width={90}
-                      height={90}
-                      alt={val.name}
-                      className="!object-contain flex-none"
-                    />
-                    <div className="flex flex-col">
-                      <h3 className="text-[13px] font-normal text-left text-secudary">
-                        {val.name}
-                      </h3>
-                      {val.flavor && (
-                        <p className="text-[11px] font-medium text-left text-00000099">
-                          Sabor: {val.flavor}
-                        </p>
-                      )}
-                      {val.color && (
-                        <p className="text-[11px] font-medium text-left text-00000099">
-                          Cor: {val.color}
-                        </p>
-                      )}
-                      <div className="flex justify-between items-center gap-2">
-                        <p className="text-[11px] font-medium text-left text-00000099">
-                          Unidades: {val.units}
-                        </p>
-                        <button
-                          type="button"
-                          className="text-xs font-medium text-red-600 cursor-pointer hover:scale-105 duration-200 transition-transform"
-                          onClick={() => {
-                            const newArr = [...cart];
-                            newArr.splice(i, 1);
-                            localStorage.setItem(
-                              'cart',
-                              JSON.stringify(newArr)
-                            );
-                            setCart(newArr);
-                          }}
-                        >
-                          Remover
-                        </button>
+              <div
+                className={`flex flex-col pt-2 h-[290px] overflow-x-hidden overflow-y-auto`}
+              >
+                {cart
+                  .sort((a, b) => b.createdIn - a.createdIn)
+                  .map((val, i) => (
+                    <div
+                      key={i}
+                      className="flex gap-2 justify-between border-b border-solid border-gray-200 px-4 py-2"
+                    >
+                      <Image
+                        src={`/uploads/imgs/${val.fileName}`}
+                        width={90}
+                        height={90}
+                        alt={val.name}
+                        className="!object-contain flex-none"
+                      />
+                      <div className="flex flex-col">
+                        <h3 className="text-[13px] font-normal text-left text-secudary">
+                          {val.name}
+                        </h3>
+                        {val.flavor && (
+                          <p className="text-[11px] font-medium text-left text-00000099">
+                            Sabor: {val.flavor}
+                          </p>
+                        )}
+                        {val.color && (
+                          <p className="text-[11px] font-medium text-left text-00000099">
+                            Cor: {val.color}
+                          </p>
+                        )}
+                        <div className="flex justify-between items-center gap-2">
+                          <p className="text-[11px] font-medium text-left text-00000099">
+                            Unidades: {val.units}
+                          </p>
+                          <button
+                            type="button"
+                            className="text-xs font-medium text-red-600 cursor-pointer hover:scale-105 duration-200 transition-transform"
+                            onClick={() => {
+                              const newArr = [...cart];
+                              newArr.splice(i, 1);
+                              localStorage.setItem(
+                                'cart',
+                                JSON.stringify(newArr)
+                              );
+                              setCart(newArr);
+                            }}
+                          >
+                            Remover
+                          </button>
+                        </div>
+                        <h3 className="text-secudary font-medium text-lg">
+                          {formatPrice(val.price)}
+                        </h3>
                       </div>
-                      <h3 className="text-secudary font-medium text-lg">
-                        {formatPrice(val.price)}
-                      </h3>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
 
               <div className="flex flex-col absolute bottom-0 items-center w-full bg-primary rounded-b-2xl overflow-hidden">
@@ -131,6 +136,12 @@ export default function Cart() {
                       )}
                     </div>
                   </div>
+                  <Link
+                    href={`/payment`}
+                    className="bg-ccba00 flex items-center justify-center hover:scale-105 transition-transform duration-200 text-primary font-medium text-sm h-[50px] px-6 rounded-3xl"
+                  >
+                    Avançar
+                  </Link>
                 </div>
               </div>
             </div>
