@@ -16,10 +16,10 @@ export default function Cart() {
     <div
       className={`bg-primary duration-200 transition-colors rounded-3xl h-[50px] px-6 flex items-center gap-2 cursor-pointer relative justify-center`} // eslint-disable-line
       onClick={() => setShowCart(!showCart)}
-      // onBlur={event => {
-      //   if (!event.currentTarget.contains(event.relatedTarget))
-      //     setShowCart(false);
-      // }}
+      onBlur={event => {
+        if (!event.currentTarget.contains(event.relatedTarget))
+          setShowCart(false);
+      }}
       id="cart"
       tabIndex={0}
     >
@@ -54,9 +54,9 @@ export default function Cart() {
               </div>
             </>
           ) : (
-            <div className="flex relative flex-col h-[400px]">
+            <div className="flex relative flex-col h-fit">
               <div
-                className={`flex flex-col pt-2 h-[290px] overflow-x-hidden overflow-y-auto`}
+                className={`flex flex-col pt-2 max-h-[290px] overflow-x-hidden overflow-y-auto`}
               >
                 {cart
                   .sort((a, b) => b.createdIn - a.createdIn)
@@ -114,7 +114,7 @@ export default function Cart() {
                   ))}
               </div>
 
-              <div className="flex flex-col absolute bottom-0 items-center w-full bg-primary rounded-b-2xl overflow-hidden">
+              <div className="flex flex-col items-center w-full bg-primary rounded-b-2xl overflow-hidden border-t border-solid border-gray-200">
                 <button
                   type="button"
                   className="text-center cursor-pointer text-red-600 text-xs font-medium py-3 hover:scale-105 transition-transform duration-200"
