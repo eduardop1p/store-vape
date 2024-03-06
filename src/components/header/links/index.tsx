@@ -229,7 +229,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
     >
       <Link
         href={`/${replaceStringToLink(name)}`}
-        className={`z-[2] relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
+        className={` relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
       >
         {name}
         {menu && <IoIosArrowDown size={16} fill="#fff" />}
@@ -247,7 +247,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
       {menu && (
         <div
           tabIndex={0}
-          className={` border border-solid border-3d3d3d absolute bg-primary left-0 top-16 w-full min-h-48 p-6 cursor-default rounded-2xl transition-all duration-200 ${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'}`} // eslint-disable-line
+          className={`-z-[1] border border-solid border-3d3d3d absolute bg-primary left-0 top-16 w-full min-h-48 p-6 cursor-default rounded-2xl transition-all duration-200 ${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'}`} // eslint-disable-line
         >
           {type === 'menu-1' && (
             <div className="flex justify-start gap-12">

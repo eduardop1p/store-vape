@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FaTruck } from 'react-icons/fa6';
+import Link from 'next/link';
 
 export default function Tracking() {
   const [showTracking, setShowTracking] = useState(false);
@@ -30,18 +31,26 @@ export default function Tracking() {
           }}
         ></div>
 
-        <div className="flex flex-col items-center pt-4 gap-1 bg-inherit rounded-2xl overflow-hidden">
+        <div className="flex flex-col items-center gap-1 bg-inherit rounded-2xl overflow-hidden">
           <span className="text-secudary font-normal text-balance text-center pt-4">
             Rastreie seu perdido
           </span>
-          <div className="bg-0000001F w-full py-4 px-5 flex justify-center gap-3 mt-2">
-            <input
+          <div className="bg-0000001F w-full py-4 px-8 flex justify-center gap-3 mt-2">
+            <Link
+              href="https://rastreamento.correios.com.br/app/index.php"
+              target="_blank"
+              className="flex justify-center items-center h-[50px] px-4 rounded-3xl transition-transform duration-200 hover:scale-105 text-primary font-normal text-sm w-full bg-ccba00 "
+            >
+              Ir pra rastreio
+            </Link>
+
+            {/* <input
               type="text"
               name="tracking"
               id="tracking"
               className="h-[50px] px-4 rounded-3xl focus:bg-primary focus:shadow-sm transition-all duration-150 text-secudary font-normal text-sm w-full bg-0000001F placeholder:text-gray-600"
               placeholder="Código de rastreio"
-            />
+            /> */}
           </div>
         </div>
       </div>

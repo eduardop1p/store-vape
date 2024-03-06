@@ -44,12 +44,14 @@ export default function MyAccount() {
             <Link
               href="/create-account"
               className="h-[50px] px-4 bg-primary text-3d3d3d rounded-3xl flex items-center justify-center font-medium text-sm hover:scale-105 transition-transform duration-200"
+              onClick={() => setShowMyAccount(false)}
             >
               Cadastre-se
             </Link>
             <Link
               href="/login"
               className="h-[50px] px-4 bg-yellow-400 text-3d3d3d rounded-3xl flex items-center justify-center font-medium text-sm hover:scale-105 transition-transform duration-200"
+              onClick={() => setShowMyAccount(false)}
             >
               Login
             </Link>
