@@ -36,7 +36,7 @@ export default async function Page({ searchParams }: Props) {
     const data1 = await allRes[0].json();
     filters = data1.data;
     const data2 = await allRes[1].json();
-    dataSearch = data2.data;
+    dataSearch = data2.data; // eslint-disable-line
   } catch (err) {
     console.log(err);
     return <UnavailablePage />;
