@@ -7,7 +7,6 @@ import { IoIosArrowDown } from 'react-icons/io';
 
 interface DataMenuType {
   name: string;
-  leftPoint: string;
   type?: 'menu-1' | 'menu-2' | 'menu-3';
   menu?: {
     title?: string;
@@ -22,7 +21,6 @@ export default function Links() {
   const dataMenu: DataMenuType[] = [
     {
       name: 'Pod Descartável',
-      leftPoint: '6.3%',
       type: 'menu-1',
       menu: [
         { name: 'Pod Descartável Atacado' },
@@ -36,7 +34,6 @@ export default function Links() {
     },
     {
       name: 'Aparelhos',
-      leftPoint: '21.5%',
       type: 'menu-2',
       menu: [
         {
@@ -56,7 +53,6 @@ export default function Links() {
     },
     {
       name: 'E-Liquids',
-      leftPoint: '35%',
       type: 'menu-2',
       menu: [
         {
@@ -90,7 +86,6 @@ export default function Links() {
     },
     {
       name: 'Acessórios',
-      leftPoint: '48.3%',
       type: 'menu-3',
       menu: [
         {
@@ -121,11 +116,9 @@ export default function Links() {
     },
     {
       name: 'Vapes de ervas',
-      leftPoint: '63.5%',
     },
     {
       name: 'Marcas',
-      leftPoint: '77.7%',
       type: 'menu-3',
       menu: [
         {
@@ -192,7 +185,6 @@ export default function Links() {
     },
     {
       name: 'Ofertas especiais',
-      leftPoint: '92.5%',
       type: 'menu-2',
       menu: [
         {
@@ -227,7 +219,7 @@ export default function Links() {
   );
 }
 
-const LinkCustom = ({ name, leftPoint, menu, type }: DataMenuType) => {
+const LinkCustom = ({ name, menu, type }: DataMenuType) => {
   const [showMenu, setShowMenu] = useState(false);
   return (
     <div
@@ -237,25 +229,26 @@ const LinkCustom = ({ name, leftPoint, menu, type }: DataMenuType) => {
     >
       <Link
         href={`/${replaceStringToLink(name)}`}
-        className={`relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
+        className={`z-[2] relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
       >
         {name}
         {menu && <IoIosArrowDown size={16} fill="#fff" />}
+
+        <div
+          className={`${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'} transition-all duration-150 absolute top-[65px] bg-primary w-3 h-3`}
+          style={{
+            transform: 'scaleY(2) rotate(45deg)',
+            left: '50%',
+            transition: 'translateX(-50%)',
+          }}
+        ></div>
       </Link>
 
       {menu && (
         <div
           tabIndex={0}
-          className={`border border-solid border-3d3d3d absolute bg-primary left-0 top-16 w-full min-h-48 p-6 cursor-default z-[2] rounded-2xl transition-all duration-200 ${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'}`} // eslint-disable-line
+          className={` border border-solid border-3d3d3d absolute bg-primary left-0 top-16 w-full min-h-48 p-6 cursor-default rounded-2xl transition-all duration-200 ${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'}`} // eslint-disable-line
         >
-          <div
-            className={`absolute bg-primary w-3 h-3 top-[3px] z-[-2]`}
-            style={{
-              transform: 'scaleY(2) rotate(45deg)',
-              left: leftPoint,
-            }}
-          ></div>
-
           {type === 'menu-1' && (
             <div className="flex justify-start gap-12">
               {menu.map(val => (

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (!searchParams.size || (classify && searchParams.size === 1)) {
       return NextResponse.json({
         success: true,
-        data: await vapeModel.find().sort(sort),
+        data: await vapeModel.find().sort(sort).limit(20),
       });
     }
 
@@ -94,7 +94,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
           },
         ],
       })
-      .sort(sort);
+      .sort(sort)
+      .limit(20);
 
     return NextResponse.json({
       success: true,

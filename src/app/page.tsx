@@ -51,11 +51,12 @@ export default async function Page() {
         <div className="flex justify-between gap-4 w-full">
           <div className="flex gap-2 items-start">
             <Image
-              src="/assets/imgs/Motoboyimg1.png"
+              src="/assets/imgs/entregador.png"
               alt="Motoboyimg1"
               width={60}
               height={60}
               className="flex-none object-contain"
+              style={{ transform: 'rotateY(-180deg)' }}
             />
             <div className="flex flex-col">
               <h2 className="text-base font-medium text-secudary">MotoBoy</h2>
@@ -67,11 +68,12 @@ export default async function Page() {
 
           <div className="flex gap-2 items-start">
             <Image
-              src="/assets/imgs/Correiosimg1.png"
+              src="/assets/imgs/caminhao-do-correio.png"
               alt="Correiosimg1"
               width={60}
               height={60}
               className="flex-none object-contain"
+              style={{ transform: 'rotateY(-180deg)' }}
             />
             <div className="flex flex-col">
               <h2 className="text-base font-medium text-secudary">Correios</h2>
@@ -83,7 +85,7 @@ export default async function Page() {
 
           <div className="flex gap-2 items-start">
             <Image
-              src="/assets/imgs/piximg1.png"
+              src="/assets/imgs/logo-pix-icone-1024.png"
               alt="piximg1"
               width={60}
               height={60}
@@ -99,7 +101,7 @@ export default async function Page() {
 
           <div className="flex gap-2 items-start">
             <Image
-              src="/assets/imgs/cartaoimg1.png"
+              src="/assets/imgs/cartao-de-credito.png"
               alt="cartaoimg1"
               width={60}
               height={60}

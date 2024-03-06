@@ -79,20 +79,21 @@ export default function FooterNoAuth() {
             </p>
           </div>
           <div className="flex flex-col gap-3">
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-start">
               <div className="flex flex-col gap-1 items-start">
                 <Image
-                  alt="pag_peqpagseguro"
-                  src="/assets/imgs/pag_peqpagseguro.png"
+                  alt="logo-pix-1024"
+                  src="/assets/imgs/logo-pix-1024.png"
                   width={37}
                   height={40}
+                  className="scale-[1.3]"
                 />
                 <p className="text-[10px] font-normal text-primary">A vista</p>
               </div>
               <div className="flex flex-col gap-1 items-start">
                 <Image
-                  alt="pag_peqbase"
-                  src="/assets/imgs/pag_peqbase.png"
+                  alt="cartao-de-credito"
+                  src="/assets/imgs/cartao-de-credito.png"
                   width={37}
                   height={40}
                 />
@@ -102,10 +103,10 @@ export default function FooterNoAuth() {
               </div>
             </div>
             <Image
-              alt="selo_lojaprotegida"
-              src="/assets/imgs/selo_lojaprotegida.gif"
-              width={130}
-              height={40}
+              alt="Banner-Site-Seguro-1"
+              src="/assets/imgs/Banner-Site-Seguro-1.png"
+              width={200}
+              height={100}
             />
           </div>
         </div>
