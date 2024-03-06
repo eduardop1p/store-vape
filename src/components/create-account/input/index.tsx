@@ -11,6 +11,7 @@ interface Props {
   errors: FieldErrors<BodyTypePf>;
   registerName: keyof BodyTypePf;
   optional?: boolean;
+  placeholder: string;
 }
 
 export default function Input({
@@ -20,6 +21,7 @@ export default function Input({
   register,
   errors,
   optional,
+  placeholder,
 }: Props) {
   const handleInputYourDate = (event: FormEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
@@ -34,8 +36,35 @@ export default function Input({
         .replace(/\D/g, '')
         .replace(/^(\d{2})(\d{2})(\d)/, '$1/$2/$3');
     }
-    if (value.length > 9) {
+    if (value.length > 10) {
       input.value = value.slice(0, 10);
+      return;
+    }
+
+    input.value = value;
+  };
+
+  const handleInputCpf = (event: FormEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    let value = input.value;
+    value = value.replace(/[^\d]/g, '');
+
+    if (value.length > 3) {
+      value = value.replace(/^(\d{3})(\d)/, '$1.$2');
+    }
+    if (value.length > 7) {
+      value = value
+        .replace(/\D/g, '')
+        .replace(/^(\d{3})(\d{3})(\d)/, '$1.$2.$3');
+    }
+    if (value.length > 11) {
+      value = value
+        .replace(/\D/g, '')
+        .replace(/^(\d{3})(\d{3})(\d{3})(\d)/, '$1.$2.$3-$4');
+    }
+
+    if (value.length > 14) {
+      input.value = value.slice(0, 14);
       return;
     }
 
@@ -51,19 +80,21 @@ export default function Input({
             <small className="text-sm font-medium text-red-600">*</small>
           )}
         </label>
-        {registerName !== 'yourDate' && (
+        {registerName !== 'yourDate' && registerName !== 'cpf' && (
           <input
-            className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-medium text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
             id={id}
             type="text"
+            placeholder={placeholder}
             {...register(registerName)}
           />
         )}
         {registerName === 'yourDate' && (
           <input
-            className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-medium text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
             id={id}
             type="text"
+            placeholder={placeholder}
             {...register(registerName, {
               setValueAs(value) {
                 if (!value) return undefined;
@@ -71,6 +102,16 @@ export default function Input({
               },
             })}
             onInput={handleInputYourDate}
+          />
+        )}
+        {registerName === 'cpf' && (
+          <input
+            className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            id={id}
+            type="text"
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputCpf}
           />
         )}
       </div>

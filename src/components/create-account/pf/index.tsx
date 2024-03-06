@@ -12,7 +12,7 @@ const zodSchema = z.object({
     .trim()
     .refine(
       val => /^(\d{2})\/(\d{2})\/(\d{4})$/.test(val),
-      'Data de nascimento inválida'
+      'Data de nascimento inválida' // /^(\d{3})\/(\d{3})\/(\d{3})\/(\d{2})$/
     )
     .optional(),
   cpf: z.string().trim().min(1, 'Campo obrigatório'),
@@ -52,14 +52,24 @@ export default function FormPf() {
             title="Nome completo"
             register={register}
             registerName="fullName"
+            placeholder="Seu nome completo"
             errors={errors}
           />
           <Input
             id="yourDate"
             title="Data nascimento"
+            placeholder="Sua data de nascimento"
             register={register}
             optional
             registerName="yourDate"
+            errors={errors}
+          />
+          <Input
+            id="cpf"
+            title="CPF"
+            placeholder="Seu CPF"
+            register={register}
+            registerName="cpf"
             errors={errors}
           />
         </div>
