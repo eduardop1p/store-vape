@@ -22,6 +22,7 @@ export default function useSubmitAddCart(
     const cartDataLocalStorage = localStorage.getItem('cart');
     if (!cartDataLocalStorage) {
       localStorage.setItem('cart', JSON.stringify([body]));
+      setCart([body]);
     } else {
       const cartData: CartType[] = JSON.parse(cartDataLocalStorage);
       const { createdIn, ..._b } = body; // eslint-disable-line
