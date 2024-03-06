@@ -20,9 +20,7 @@ const zodSchema = z.object({
     .refine(file => file.length, 'Uma imagem para o produto é obrigatória'),
   name: z.string().trim().min(1, 'Nome é obrigatótio'),
   mark: z.string().trim().min(1, 'Marca é obrigatótia'),
-  price: z
-    .string()
-    .refine(val => val && replaceCurrency(val), 'Um preço é obrigatótio'),
+  price: z.string().refine(val => val, 'Um preço é obrigatótio'),
   descount: z.string().optional(),
   stock: z.string().trim().min(1, 'Quantidate em estoque é obrigatótio'),
   category: z

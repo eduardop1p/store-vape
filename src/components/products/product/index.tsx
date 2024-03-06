@@ -37,7 +37,7 @@ export default function Product({
 
   const productPixDescount = product.descount
     ? productPrice * (1 - pixDescount)
-    : product.price;
+    : product.price * (1 - pixDescount);
 
   return (
     <div className="relative border-solid border-gray-300 border rounded-2xl">
@@ -67,20 +67,20 @@ export default function Product({
               sizes="100%"
               className="absolute"
             />
-            {product.fileNames.length > 0 ? (
-              <div
-                className={`${hover ? 'opacity-100' : 'opacity-0'} duration-500 transition-opacity absolute w-full h-full`}
+            <div
+              className={`${hover ? 'opacity-100' : 'opacity-0'} duration-500 transition-opacity absolute w-full h-full`}
+            >
+              <Link
+                href={`/${replaceStringToLink(product.category)}/${product._id}`}
+                className="absolute z-[2] bg-ffffff99 w-full h-full flex items-center justify-center"
               >
-                <Link
-                  href={`/${replaceStringToLink(product.category)}/${product._id}`}
-                  className="absolute z-[2] bg-ffffff99 w-full h-full flex items-center justify-center"
+                <span
+                  className={`${hover ? 'scale-100' : 'scale-0'} duration-[600ms] transition-transform bg-secudary text-sm text-primary font-medium flex items-center justify-center rounded-3xl px-8 h-[50px]`}
                 >
-                  <span
-                    className={`${hover ? 'scale-100' : 'scale-0'} duration-[600ms] transition-transform bg-secudary text-sm text-primary font-medium flex items-center justify-center rounded-3xl px-8 h-[50px]`}
-                  >
-                    Ver produto
-                  </span>
-                </Link>
+                  Ver produto
+                </span>
+              </Link>
+              {product.fileNames.length > 1 && (
                 <Image
                   src={`/uploads/imgs/${product.fileNames[1]}`}
                   alt={product.name}
@@ -88,8 +88,8 @@ export default function Product({
                   sizes="100%"
                   className={'absolute'}
                 />
-              </div>
-            ) : null}
+              )}
+            </div>
           </div>
           {product.status ? (
             <div className="h-8 w-fit px-3 my-1 text-primary mx-auto bg-secudary text-[13px] font-medium rounded-xl flex items-center justify-center">
@@ -101,20 +101,28 @@ export default function Product({
               <h2 className="text-center text-secudary text-sm font-medium">
                 {product.name}
               </h2>
-              <span className="text-xs font-medium text-center text-00000099">
-                A partir de:
-              </span>
-              <div
-                className={`text-xl font-semibold ${product.descount ? 'text-red-600' : 'text-secudary'}`}
-              >
+              {product.descount ? (
+                <div className="text-xs font-medium text-center text-00000099 flex- items-center">
+                  De{' '}
+                  <small className="text-[13px] font-medium text-secudary line-through">
+                    {formatPrice(product.price)}
+                  </small>{' '}
+                  por:
+                </div>
+              ) : (
+                <span className="text-xs font-medium text-center text-00000099">
+                  A partir de:
+                </span>
+              )}
+              <div className={`text-xl font-semibold text-red-600`}>
                 {formatPrice(productPrice)}
               </div>
               <div className="text-xs font-medium text-center text-00000099">
-                {formatPrice(productPixDescount)} vista com desconto Pix
+                {formatPrice(productPixDescount)} a vista no Pix
               </div>
               <div className="text-xs font-medium text-center text-00000099">
-                ou 4x de {formatPrice(productPrice / 4)} Sem juros Cartão de
-                Credito
+                ou 4x de {formatPrice(productPrice / 4)} sem juros no cartão de
+                credito
               </div>
             </div>
           ) : (
@@ -137,7 +145,7 @@ export default function Product({
               Ver produto
             </Link>
             <AddCart
-              product={{ ...product, productPrice }}
+              product={{ ...product, price: productPrice }}
               showAddCart={showAddCart}
               setShowAddCart={setShowAddCart}
               setOpenAlert={setOpenAlert}

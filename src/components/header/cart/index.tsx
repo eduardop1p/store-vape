@@ -7,10 +7,16 @@ import Link from 'next/link';
 import { useOpenCartContext } from '@/utils/openCartContext/useContext';
 import { useCartContext } from '@/utils/cartContext/useContext';
 import formatPrice from '@/services/formatPrice';
+import { useEffect } from 'react';
 
 export default function Cart() {
   const { showCart, setShowCart } = useOpenCartContext();
   const { cart, setCart } = useCartContext();
+
+  useEffect(() => {
+    const cartDataLocalStorage = localStorage.getItem('cart');
+    if (cartDataLocalStorage) setCart(JSON.parse(cartDataLocalStorage));
+  }, [setCart]);
 
   return (
     <div
@@ -77,18 +83,21 @@ export default function Cart() {
                           {val.name}
                         </h3>
                         {val.flavor && (
-                          <p className="text-[11px] font-medium text-left text-00000099">
-                            Sabor: {val.flavor}
+                          <p className="text-[11px] font-normal text-left text-00000099">
+                            <span className="text-secudary">Sabor:</span>{' '}
+                            {val.flavor}
                           </p>
                         )}
                         {val.color && (
-                          <p className="text-[11px] font-medium text-left text-00000099">
-                            Cor: {val.color}
+                          <p className="text-[11px] font-normal text-left text-00000099">
+                            <span className="text-secudary">Cor:</span>{' '}
+                            {val.color}
                           </p>
                         )}
                         <div className="flex justify-between items-center gap-2">
-                          <p className="text-[11px] font-medium text-left text-00000099">
-                            Unidades: {val.units}
+                          <p className="text-[11px] font-normal text-left text-00000099">
+                            <span className="text-secudary">Unidades:</span>{' '}
+                            {val.units}
                           </p>
                           <button
                             type="button"
@@ -107,7 +116,7 @@ export default function Cart() {
                           </button>
                         </div>
                         <h3 className="text-secudary font-medium text-lg">
-                          {formatPrice(val.price)}
+                          {formatPrice(val.price * val.units)}
                         </h3>
                       </div>
                     </div>
@@ -121,6 +130,7 @@ export default function Cart() {
                   onClick={() => {
                     localStorage.setItem('cart', JSON.stringify([]));
                     setCart([]);
+                    setShowCart(false);
                   }}
                 >
                   Esvaziar carrinho
@@ -132,7 +142,11 @@ export default function Cart() {
                     </span>
                     <div className="text-red-600 font-medium text-xl leading-none">
                       {formatPrice(
-                        cart.reduce((prev, current) => prev + current.price, 0)
+                        cart.reduce(
+                          (prev, current) =>
+                            prev + current.price * current.units,
+                          0
+                        )
                       )}
                     </div>
                   </div>
