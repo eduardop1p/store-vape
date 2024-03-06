@@ -169,7 +169,7 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
                     _v.value && (
                       <div
                         key={_i}
-                        className="flex items-center gap-1 cursor-pointer group w-fit"
+                        className="flex items-start gap-1 cursor-pointer group w-fit"
                         onClick={() => {
                           let newArr = [...filtersData]; // eslint-disable-line
                           newArr[i].data[_i].checked =

@@ -10,7 +10,10 @@ export default function Search() {
   const pathName = usePathname();
 
   useEffect(() => {
-    if (pathName !== '/search') setSearchValue('');
+    if (pathName !== '/search') {
+      setSearchValue('');
+      nProgress.done(true);
+    }
   }, [pathName]);
 
   const [inputFocus, setInputFocus] = useState(false);

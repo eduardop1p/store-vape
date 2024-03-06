@@ -7,19 +7,39 @@ import { VapeType } from './api/models/vape';
 import UnavailablePage from '@/components/unavailablePage';
 
 export default async function Page() {
-  let vapeData: VapeType[] = [];
+  let podDisposableVapeData: VapeType[] = [];
+  let launchVapeData: VapeType[] = [];
+  let buyVapeData: VapeType[] = [];
 
   try {
-    const res = await fetch(
+    const p1 = fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod Descartável`,
       {
         method: 'GET',
-        cache: 'no-cache',
       }
     );
-    if (!res.ok) throw new Error('Error');
-    const { data } = await res.json();
-    vapeData = data;
+    const p2 = fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=launch`,
+      {
+        method: 'GET',
+      }
+    );
+    const p3 = fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=buy`,
+      {
+        method: 'GET',
+      }
+    );
+    const allRes = await Promise.all([p1, p2, p3]);
+    for (let res of allRes) {
+      if (!res.ok) throw new Error('error');
+    }
+    const data1 = await allRes[0].json();
+    podDisposableVapeData = data1.data;
+    const data2 = await allRes[1].json();
+    launchVapeData = data2.data;
+    const data3 = await allRes[2].json();
+    buyVapeData = data3.data;
   } catch (err) {
     console.log(err);
     return <UnavailablePage />;
@@ -100,7 +120,14 @@ export default async function Page() {
           <p className="text-sm font-medium text-secudary">
             Os melhores Pods Descartáveis você encontra aqui, Confira!
           </p>
-          <ProductsGrid vapeData={vapeData} />
+          <ProductsGrid vapeData={podDisposableVapeData} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-secudary font-medium text-3xl">Lançamentos</h1>
+          <p className="text-sm font-medium text-secudary">
+            Novidades e lançamento é aqui na King Vapes.
+          </p>
+          <ProductsGrid vapeData={launchVapeData} />
         </div>
         <div className="flex flex-col gap-2">
           <h1 className="text-secudary font-medium text-3xl">
@@ -109,7 +136,7 @@ export default async function Page() {
           <p className="text-sm font-medium text-secudary">
             Os mais procurados estão aqui, confira.
           </p>
-          <div className="mt-4">{/*  Produtos Mais Vendido */}</div>
+          <ProductsGrid vapeData={buyVapeData} />
         </div>
       </Container90>
       <div className="w-full h-[1px] bg-555555"></div>
