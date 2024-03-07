@@ -144,24 +144,21 @@ export default function Filters({ filters }: { filters: FiltersDbType }) {
       <div className="flex flex-col gap-5 max-w-[300px]">
         {filtersData.map((val, i) => (
           <div key={i} className="flex flex-col gap-2 w-fit">
-            <div
-              className="flex gap-2 items-start cursor-pointer group w-fit"
+            <button
+              type="button"
+              className={`text-start cursor-pointer group text-xl font-medium ${val.active ? 'text-555555' : 'text-secudary hover:text-555555'} transition-all duration-200`}
               onClick={() => {
                 let newArr = [...filtersData];
                 newArr[i] = { ...newArr[i], active: !newArr[i].active };
                 setFiltersData(newArr);
               }}
             >
-              <h2
-                className={`text-xl font-medium ${val.active ? 'text-555555' : 'text-secudary group-hover:text-555555'} transition-all duration-200`}
-              >
-                {val.name}
-              </h2>
+              {val.name}
               <IoIosArrowDown
                 size={16}
-                className={`flex-none mt-2 ${val.active ? 'fill-555555 rotate-180' : 'group-hover:fill-555555 fill-secudary'} transition-all duration-200`}
+                className={`inline-block ml-2 ${val.active ? 'fill-555555 rotate-180' : 'group-hover:fill-555555 fill-secudary'} transition-all duration-200`}
               />
-            </div>
+            </button>
             {val.active && val.data.length ? (
               <div className="flex flex-col gap-2">
                 {val.data.map(

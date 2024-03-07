@@ -4,6 +4,7 @@ import z from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '../input';
+import validadeCpf from '@/services/validateCpf';
 
 const zodSchema = z.object({
   fullName: z.string().trim().min(1, 'Campo obrigatório'),
@@ -12,14 +13,32 @@ const zodSchema = z.object({
     .trim()
     .refine(
       val => /^(\d{2})\/(\d{2})\/(\d{4})$/.test(val),
-      'Data de nascimento inválida' // /^(\d{3})\/(\d{3})\/(\d{3})\/(\d{2})$/
+      'Data de nascimento inválida'
     )
     .optional(),
-  cpf: z.string().trim().min(1, 'Campo obrigatório'),
-  number1: z.string().trim(),
-  number2: z.string().trim().min(1, 'Campo obrigatório'),
+  cpf: z
+    .string()
+    .trim()
+    .min(1, 'Campo obrigatório')
+    .refine(val => validadeCpf(val), 'CPF inválido'),
+  number: z
+    .string()
+    .trim()
+    .min(1, 'Campo obrigatório')
+    .refine(
+      val => /^\(?([0-9]{2})\)?[-. ]?([0-9]{4,5})[-. ]?([0-9]{4})$/.test(val),
+      'Número de celular inválido'
+    ),
   email: z.string().trim().min(1, 'Campo obrigatório').email('Email inválido'),
-  password: z.string().trim().min(1, 'Campo obrigatório'),
+  password: z
+    .string()
+    .trim()
+    .min(1, 'Campo obrigatório')
+    .refine(
+      val =>
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{5,})/.test(val),
+      'Senha fraca, confira os requisitos abaixo'
+    ),
 });
 
 export type BodyTypePf = z.infer<typeof zodSchema>;
@@ -29,6 +48,7 @@ export default function FormPf() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<BodyTypePf>({
     resolver: zodResolver(zodSchema),
   });
@@ -71,6 +91,32 @@ export default function FormPf() {
             register={register}
             registerName="cpf"
             errors={errors}
+          />
+          <Input
+            id="number"
+            title="Número celular"
+            placeholder="Seu número de celular"
+            register={register}
+            registerName="number"
+            errors={errors}
+          />
+          <Input
+            id="email"
+            title="Email"
+            placeholder="Seu email"
+            register={register}
+            registerName="email"
+            errors={errors}
+          />
+          <Input
+            id="password"
+            title="Senha"
+            placeholder="Crie sua senha de acesso"
+            register={register}
+            registerName="password"
+            errors={errors}
+            type="password"
+            watch={watch}
           />
         </div>
       </div>

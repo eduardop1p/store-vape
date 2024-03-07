@@ -1,8 +1,14 @@
 'use client';
 
-import { type UseFormRegister, type FieldErrors } from 'react-hook-form';
+import {
+  type UseFormRegister,
+  type FieldErrors,
+  type UseFormWatch,
+} from 'react-hook-form';
 import { BodyTypePf } from '../pf';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect, useRef } from 'react';
+import { FaCheck } from 'react-icons/fa6';
+import { IoClose } from 'react-icons/io5';
 
 interface Props {
   title: string;
@@ -12,6 +18,8 @@ interface Props {
   registerName: keyof BodyTypePf;
   optional?: boolean;
   placeholder: string;
+  type?: string;
+  watch?: UseFormWatch<BodyTypePf>;
 }
 
 export default function Input({
@@ -22,7 +30,24 @@ export default function Input({
   errors,
   optional,
   placeholder,
+  type = 'text',
+  watch,
 }: Props) {
+  let isRemoveKey = useRef(false);
+
+  useEffect(() => {
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Backspace' || event.key === 'Delete') {
+        isRemoveKey.current = true;
+      } else {
+        isRemoveKey.current = false;
+      }
+    };
+    window.addEventListener('keydown', event => onKeydown(event));
+
+    return () => window.removeEventListener('keydown', onKeydown);
+  }, []);
+
   const handleInputYourDate = (event: FormEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
     let value = input.value;
@@ -71,6 +96,36 @@ export default function Input({
     input.value = value;
   };
 
+  const handleInputNumber = (event: FormEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    let value = input.value;
+
+    if (isRemoveKey.current) {
+      input.value = value;
+      return;
+    }
+
+    value = value.replace(/[^\d]/g, '');
+
+    if (value.length) value = value.replace(/^(\d{1})/, '($1');
+    if (value.length > 2)
+      value = value.replace(/\D/g, '').replace(/^(\d{1})(\d{1})/, '($1$2) ');
+    if (value.length > 10)
+      value = value
+        .replace(/\D/g, '')
+        .replace(/^(\d{1})(\d{1})(\d{5})/, '($1$2) $3-');
+
+    // value = value.replace(/^(\d{2})(\d)/, '($1) $2');
+    // value = value.replace(/(\(\d{2}\) \d{5})(\d)/, '$1-$2');
+
+    if (value.length > 15) {
+      input.value = value.slice(0, 15);
+      return;
+    }
+
+    input.value = value;
+  };
+
   return (
     <div className="flex- gap-[2px] flex-col items-start w-full">
       <div className="flex flex-col gap-1 items-start w-full">
@@ -80,20 +135,23 @@ export default function Input({
             <small className="text-sm font-medium text-red-600">*</small>
           )}
         </label>
-        {registerName !== 'yourDate' && registerName !== 'cpf' && (
-          <input
-            className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
-            id={id}
-            type="text"
-            placeholder={placeholder}
-            {...register(registerName)}
-          />
-        )}
+        {registerName !== 'yourDate' &&
+          registerName !== 'cpf' &&
+          registerName !== 'number' &&
+          registerName !== 'password' && (
+            <input
+              className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+              id={id}
+              type={type}
+              placeholder={placeholder}
+              {...register(registerName)}
+            />
+          )}
         {registerName === 'yourDate' && (
           <input
             className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
             id={id}
-            type="text"
+            type={type}
             placeholder={placeholder}
             {...register(registerName, {
               setValueAs(value) {
@@ -108,10 +166,29 @@ export default function Input({
           <input
             className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
             id={id}
-            type="text"
+            type={type}
             placeholder={placeholder}
             {...register(registerName)}
             onInput={handleInputCpf}
+          />
+        )}
+        {registerName === 'number' && (
+          <input
+            className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputNumber}
+          />
+        )}
+        {registerName === 'password' && (
+          <input
+            className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
           />
         )}
       </div>
@@ -120,6 +197,72 @@ export default function Input({
           {errors[registerName]?.message}
         </span>
       )}
+      {registerName === 'password' && watch && (
+        <div className="mt-1 flex flex-col gap-[1px] w-1/2 ml-1">
+          <PasswordValidationRequired
+            text="A senha contém no mínimo 5 caracteres"
+            validate={regexTestMinLenth(watch('password'))}
+          />
+          <PasswordValidationRequired
+            text="A senha contém no mínimo uma letra minúscula"
+            validate={regexTestContainLowerCase(watch('password'))}
+          />
+          <PasswordValidationRequired
+            text="A senha contém no mínimo uma letra maiúscula"
+            validate={regexTestContainUpperCase(watch('password'))}
+          />
+          <PasswordValidationRequired
+            text="A senha contém no mínimo um dígito numérico"
+            validate={regexTestContainNumber(watch('password'))}
+          />
+          <PasswordValidationRequired
+            text="A senha contém no mínimo um caractere especial da lista: !@#$%^&*"
+            validate={regexTestContainCaractere(watch('password'))}
+          />
+        </div>
+      )}
     </div>
   );
 }
+
+const PasswordValidationRequired = ({
+  text,
+  validate,
+}: {
+  text: string;
+  validate: boolean;
+}) => {
+  return (
+    <div
+      className={` text-[10px] ${validate ? 'text-green-600' : 'text-red-600'} font-normal mb-[2px]`}
+    >
+      {text}
+      {validate ? (
+        <FaCheck
+          className="inline-block fill-green-600 flex-none ml-1"
+          size={14}
+        />
+      ) : (
+        <IoClose
+          className="inline-block fill-red-600 flex-none ml-1"
+          size={14}
+        />
+      )}
+    </div>
+  );
+};
+
+const regexTestMinLenth = (val: string) =>
+  val ? /^(?=.{5,})/.test(val) : false;
+
+const regexTestContainLowerCase = (val: string) =>
+  val ? /^(?=.*[a-z])/.test(val) : false;
+
+const regexTestContainUpperCase = (val: string) =>
+  val ? /^(?=.*[A-Z])/.test(val) : false;
+
+const regexTestContainNumber = (val: string) =>
+  val ? /^(?=.*[0-9])/.test(val) : false;
+
+const regexTestContainCaractere = (val: string) =>
+  val ? /^(?=.*[!@#$%^&*])/.test(val) : false;
