@@ -6,7 +6,7 @@ import {
   type UseFormWatch,
 } from 'react-hook-form';
 import { BodyTypePf } from '../pf';
-import { FormEvent, useEffect, useRef } from 'react';
+import { FormEvent, ReactNode, useEffect, useRef } from 'react';
 import { FaCheck } from 'react-icons/fa6';
 import { IoClose } from 'react-icons/io5';
 
@@ -20,6 +20,7 @@ interface Props {
   placeholder: string;
   type?: string;
   watch?: UseFormWatch<BodyTypePf>;
+  children?: ReactNode;
 }
 
 export default function Input({
@@ -32,6 +33,7 @@ export default function Input({
   placeholder,
   type = 'text',
   watch,
+  children,
 }: Props) {
   let isRemoveKey = useRef(false);
 
@@ -135,21 +137,18 @@ export default function Input({
             <small className="text-sm font-medium text-red-600">*</small>
           )}
         </label>
-        {registerName !== 'yourDate' &&
-          registerName !== 'cpf' &&
-          registerName !== 'number' &&
-          registerName !== 'password' && (
-            <input
-              className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
-              id={id}
-              type={type}
-              placeholder={placeholder}
-              {...register(registerName)}
-            />
-          )}
+        {(registerName === 'fullName' || registerName === 'email') && (
+          <input
+            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+          />
+        )}
         {registerName === 'yourDate' && (
           <input
-            className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -164,7 +163,7 @@ export default function Input({
         )}
         {registerName === 'cpf' && (
           <input
-            className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -174,7 +173,7 @@ export default function Input({
         )}
         {registerName === 'number' && (
           <input
-            className="w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
+            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -183,13 +182,28 @@ export default function Input({
           />
         )}
         {registerName === 'password' && (
-          <input
-            className="w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-gray-300 focus:shadow-sm focus:bg-primary transition-colors duration-200"
-            id={id}
-            type={type}
-            placeholder={placeholder}
-            {...register(registerName)}
-          />
+          <div className="relative w-[60%]">
+            <input
+              className={`w-full h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+              id={id}
+              type={type}
+              placeholder={placeholder}
+              {...register(registerName)}
+            />
+            {children}
+          </div>
+        )}
+        {registerName === 'repeatPassword' && (
+          <div className="relative w-[60%]">
+            <input
+              className={`w-full h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+              id={id}
+              type={type}
+              placeholder={placeholder}
+              {...register(registerName)}
+            />
+            {children}
+          </div>
         )}
       </div>
       {errors[registerName] && (

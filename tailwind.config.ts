@@ -32,6 +32,10 @@ const config: Config = {
         '00000066': '#00000066',
         e5e5e5: '#e5e5e5',
       },
+      boxShadow: {
+        'effect-1': '0 0 0 0.2rem #bfdbfe',
+        'effect-2': '0 0 0 0.2rem #dc2626',
+      },
     },
   },
   plugins: [],

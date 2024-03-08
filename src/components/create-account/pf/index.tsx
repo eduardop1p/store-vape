@@ -5,41 +5,55 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '../input';
 import validadeCpf from '@/services/validateCpf';
+import { useState } from 'react';
+import ShowPassword, { ShowPasswordType } from '../showPassword';
 
-const zodSchema = z.object({
-  fullName: z.string().trim().min(1, 'Campo obrigatório'),
-  yourDate: z
-    .string()
-    .trim()
-    .refine(
-      val => /^(\d{2})\/(\d{2})\/(\d{4})$/.test(val),
-      'Data de nascimento inválida'
-    )
-    .optional(),
-  cpf: z
-    .string()
-    .trim()
-    .min(1, 'Campo obrigatório')
-    .refine(val => validadeCpf(val), 'CPF inválido'),
-  number: z
-    .string()
-    .trim()
-    .min(1, 'Campo obrigatório')
-    .refine(
-      val => /^\(?([0-9]{2})\)?[-. ]?([0-9]{4,5})[-. ]?([0-9]{4})$/.test(val),
-      'Número de celular inválido'
-    ),
-  email: z.string().trim().min(1, 'Campo obrigatório').email('Email inválido'),
-  password: z
-    .string()
-    .trim()
-    .min(1, 'Campo obrigatório')
-    .refine(
-      val =>
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{5,})/.test(val),
-      'Senha fraca, confira os requisitos abaixo'
-    ),
-});
+const zodSchema = z
+  .object({
+    fullName: z.string().trim().min(1, 'Campo obrigatório'),
+    yourDate: z
+      .string()
+      .trim()
+      .refine(
+        val => /^(\d{2})\/(\d{2})\/(\d{4})$/.test(val),
+        'Data de nascimento inválida'
+      )
+      .optional(),
+    cpf: z
+      .string()
+      .trim()
+      .min(1, 'Campo obrigatório')
+      .refine(val => validadeCpf(val), 'CPF inválido'),
+    number: z
+      .string()
+      .trim()
+      .min(1, 'Campo obrigatório')
+      .refine(
+        val => /^\(?([0-9]{2})\)?[-. ]?([0-9]{4,5})[-. ]?([0-9]{4})$/.test(val),
+        'Número de celular inválido'
+      ),
+    email: z
+      .string()
+      .trim()
+      .min(1, 'Campo obrigatório')
+      .email('Email inválido'),
+    password: z
+      .string()
+      .trim()
+      .min(1, 'Campo obrigatório')
+      .refine(
+        val =>
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{5,})/.test(
+            val
+          ),
+        'Senha fraca, confira os requisitos abaixo'
+      ),
+    repeatPassword: z.string().trim(),
+  })
+  .refine(val => val.password === val.repeatPassword, {
+    message: 'Senhas não se coincidem',
+    path: ['repeatPassword'],
+  });
 
 export type BodyTypePf = z.infer<typeof zodSchema>;
 
@@ -52,6 +66,8 @@ export default function FormPf() {
   } = useForm<BodyTypePf>({
     resolver: zodResolver(zodSchema),
   });
+  const [passwordType, setPasswordType] =
+    useState<ShowPasswordType>('password');
 
   const handleFormSubmit: SubmitHandler<BodyTypePf> = async body => {
     console.log(body);
@@ -115,9 +131,33 @@ export default function FormPf() {
             register={register}
             registerName="password"
             errors={errors}
-            type="password"
+            type={passwordType}
             watch={watch}
-          />
+          >
+            <ShowPassword
+              passwordType={passwordType}
+              setPasswordType={setPasswordType}
+              fill="fill-gray-500"
+              right="right-4"
+            />
+          </Input>
+          <Input
+            id="repeatPassword"
+            title="Repetir senha"
+            placeholder="Repita a senha para poder confimar"
+            register={register}
+            registerName="repeatPassword"
+            errors={errors}
+            type={passwordType}
+            watch={watch}
+          >
+            <ShowPassword
+              passwordType={passwordType}
+              setPasswordType={setPasswordType}
+              fill="fill-gray-500"
+              right="right-4"
+            />
+          </Input>
         </div>
       </div>
 

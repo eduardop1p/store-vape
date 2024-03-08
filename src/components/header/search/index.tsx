@@ -12,7 +12,7 @@ export default function Search() {
   useEffect(() => {
     if (pathName !== '/search') {
       setSearchValue('');
-      nProgress.done(true);
+      nProgress.done();
     }
   }, [pathName]);
 
