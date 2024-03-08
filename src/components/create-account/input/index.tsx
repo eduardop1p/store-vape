@@ -4,9 +4,20 @@ import {
   type UseFormRegister,
   type FieldErrors,
   type UseFormWatch,
+  type UseFormSetValue,
+  type UseFormTrigger,
+  type UseFormSetError,
 } from 'react-hook-form';
 import { BodyTypePf } from '../pf';
-import { FormEvent, ReactNode, useEffect, useRef } from 'react';
+import {
+  Dispatch,
+  FormEvent,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FaCheck } from 'react-icons/fa6';
 import { IoClose } from 'react-icons/io5';
 
@@ -21,6 +32,12 @@ interface Props {
   type?: string;
   watch?: UseFormWatch<BodyTypePf>;
   children?: ReactNode;
+  w?: string;
+  setValue?: UseFormSetValue<BodyTypePf>;
+  trigger?: UseFormTrigger<BodyTypePf>;
+  setError?: UseFormSetError<BodyTypePf>;
+  isLoading?: boolean;
+  setIsLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Input({
@@ -34,8 +51,15 @@ export default function Input({
   type = 'text',
   watch,
   children,
+  w = 'w-full',
+  setValue,
+  trigger,
+  setError,
+  isLoading,
+  setIsLoading,
 }: Props) {
   let isRemoveKey = useRef(false);
+  const [checkedSN, setCheckedSN] = useState(false);
 
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
@@ -128,16 +152,108 @@ export default function Input({
     input.value = value;
   };
 
+  const handleInputCep = (event: FormEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    let value = input.value;
+
+    value = value.replace(/[^\d]/g, '');
+
+    if (value.length > 5) value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+
+    if (value.length > 9) {
+      input.value = value.slice(0, 9);
+      return;
+    }
+
+    input.value = value;
+  };
+
+  const handleInputN = (event: FormEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    let value = input.value;
+
+    value = value.replace(/[^\d]/g, '');
+    setCheckedSN(false);
+
+    input.value = value;
+  };
+
+  const handleGetCepApi = async (cep: string) => {
+    if (!setValue || !setError || isLoading || !setIsLoading) return;
+
+    try {
+      setIsLoading(true);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/get-cep?cep=${cep}`,
+        {
+          method: 'GET',
+          cache: 'no-cache',
+        }
+      );
+      const data = await res.json();
+      alert(JSON.stringify(data));
+
+      setValue('city', data.city);
+      setValue('state', data.uf);
+    } catch (err) {
+      console.log(err);
+      setError('cep', {
+        message: 'CEP inválido',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="flex- gap-[2px] flex-col items-start w-full">
+    <div className={`flex gap-[5px] flex-col items-start ${w}`}>
       <div className="flex flex-col gap-1 items-start w-full">
-        <label className="ml-1 text-sm font-medium text-secudary" htmlFor={id}>
-          {title}{' '}
-          {!optional && (
-            <small className="text-sm font-medium text-red-600">*</small>
-          )}
-        </label>
-        {(registerName === 'fullName' || registerName === 'email') && (
+        {registerName === 'nAddress' ? (
+          <div className="flex items-center gap-3">
+            <label
+              className="ml-1 text-sm font-medium text-secudary"
+              htmlFor={id}
+            >
+              {title}{' '}
+              {!optional && (
+                <small className="text-sm font-medium text-red-600">*</small>
+              )}
+            </label>
+            <div className="flex items-center gap-[6px]">
+              <input
+                type="radio"
+                checked={checkedSN}
+                className="cursor-pointer"
+                onChange={() => {
+                  return '';
+                }}
+                onClick={() => {
+                  if (!setValue || !trigger) return;
+                  if (!checkedSN) {
+                    setValue('nAddress', 'S/N');
+                    setCheckedSN(true);
+                  } else {
+                    setValue('nAddress', '');
+                    setCheckedSN(false);
+                  }
+                  trigger('nAddress');
+                }}
+              />
+              <span className="text-secudary text-sm">S/N</span>
+            </div>
+          </div>
+        ) : (
+          <label
+            className="ml-1 text-sm font-medium text-secudary"
+            htmlFor={id}
+          >
+            {title}{' '}
+            {!optional && (
+              <small className="text-sm font-medium text-red-600">*</small>
+            )}
+          </label>
+        )}
+        {(registerName === 'fullName' || registerName === 'email' || registerName === 'complement') && ( // eslint-disable-line
           <input
             className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
             id={id}
@@ -205,11 +321,72 @@ export default function Input({
             {children}
           </div>
         )}
+        {registerName === 'cep' && (
+          <input
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputCep}
+            onBlur={event => handleGetCepApi(event.currentTarget.value)}
+          />
+        )}
+        {registerName == 'address' && (
+          <input
+            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+          />
+        )}
+        {registerName == 'nAddress' && (
+          <input
+            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputN}
+          />
+        )}
+        {registerName === 'neighborhood' && (
+          <input
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputCep}
+          />
+        )}
+        {registerName === 'city' && (
+          <input
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputCep}
+          />
+        )}
+        {registerName === 'state' && (
+          <input
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            onInput={handleInputCep}
+          />
+        )}
       </div>
+
       {errors[registerName] && (
-        <span className="ml-1 text-xs font-medium text-red-600">
+        <div className="ml-1 text-xs font-medium text-red-600 leading-4">
           {errors[registerName]?.message}
-        </span>
+        </div>
       )}
       {registerName === 'password' && watch && (
         <div className="mt-1 flex flex-col gap-[1px] w-1/2 ml-1">
