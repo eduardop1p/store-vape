@@ -66,6 +66,7 @@ const zodSchema = z
     neighborhood: z.string().trim().min(1, 'Bairro obrigatório'),
     city: z.string().trim().min(1, 'Cidade obrigatória'),
     state: z.string().trim().min(1, 'Estado obrigatório'),
+    country: z.string().trim(),
   })
   .refine(val => val.password === val.repeatPassword, {
     message: 'Senhas não se coincidem',
@@ -198,6 +199,7 @@ export default function FormPf() {
                 placeholder="Seu Cep"
                 errors={errors}
                 setError={setError}
+                trigger={trigger}
                 setValue={setValue}
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
@@ -255,6 +257,14 @@ export default function FormPf() {
                 register={register}
                 registerName="state"
                 placeholder="Seu estado"
+                errors={errors}
+              />
+              <Input
+                id="country"
+                title="País"
+                register={register}
+                registerName="country"
+                placeholder="País"
                 errors={errors}
               />
             </div>

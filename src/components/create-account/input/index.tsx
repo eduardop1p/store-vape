@@ -160,6 +160,7 @@ export default function Input({
 
     if (value.length > 5) value = value.replace(/^(\d{5})(\d)/, '$1-$2');
 
+    if (value.length > 8) handleGetCepApi(value);
     if (value.length > 9) {
       input.value = value.slice(0, 9);
       return;
@@ -179,7 +180,8 @@ export default function Input({
   };
 
   const handleGetCepApi = async (cep: string) => {
-    if (!setValue || !setError || isLoading || !setIsLoading) return;
+    if (!setValue || !trigger || !setError || isLoading || !setIsLoading)
+      return;
 
     try {
       setIsLoading(true);
@@ -190,16 +192,21 @@ export default function Input({
           cache: 'no-cache',
         }
       );
+      if (!res.ok) throw new Error('error');
       const data = await res.json();
-      alert(JSON.stringify(data));
-
       setValue('city', data.city);
       setValue('state', data.uf);
+
+      trigger('cep');
+      trigger('city');
+      trigger('state');
     } catch (err) {
       console.log(err);
       setError('cep', {
         message: 'CEP inválido',
       });
+      setValue('city', '');
+      setValue('state', '');
     } finally {
       setIsLoading(false);
     }
@@ -255,7 +262,7 @@ export default function Input({
         )}
         {(registerName === 'fullName' || registerName === 'email' || registerName === 'complement') && ( // eslint-disable-line
           <input
-            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -264,7 +271,7 @@ export default function Input({
         )}
         {registerName === 'yourDate' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -279,7 +286,7 @@ export default function Input({
         )}
         {registerName === 'cpf' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -289,7 +296,7 @@ export default function Input({
         )}
         {registerName === 'number' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -300,7 +307,7 @@ export default function Input({
         {registerName === 'password' && (
           <div className="relative w-[60%]">
             <input
-              className={`w-full h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+              className={`w-full h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
               id={id}
               type={type}
               placeholder={placeholder}
@@ -312,7 +319,7 @@ export default function Input({
         {registerName === 'repeatPassword' && (
           <div className="relative w-[60%]">
             <input
-              className={`w-full h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+              className={`w-full h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
               id={id}
               type={type}
               placeholder={placeholder}
@@ -323,18 +330,17 @@ export default function Input({
         )}
         {registerName === 'cep' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
             {...register(registerName)}
             onInput={handleInputCep}
-            onBlur={event => handleGetCepApi(event.currentTarget.value)}
           />
         )}
         {registerName == 'address' && (
           <input
-            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -343,7 +349,7 @@ export default function Input({
         )}
         {registerName == 'nAddress' && (
           <input
-            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-full h-[50px] rounded-3xl px-4 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
@@ -353,32 +359,40 @@ export default function Input({
         )}
         {registerName === 'neighborhood' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
             {...register(registerName)}
-            onInput={handleInputCep}
           />
         )}
         {registerName === 'city' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
             {...register(registerName)}
-            onInput={handleInputCep}
           />
         )}
         {registerName === 'state' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 focus:bg-primary transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
             {...register(registerName)}
-            onInput={handleInputCep}
+          />
+        )}
+        {registerName === 'country' && (
+          <input
+            className={`w-1/2 h-[50px] cursor-default rounded-3xl pl-4 pr-9 text-[15px] font-normal text-gray-500 bg-primary transition-all duration-200`}
+            id={id}
+            defaultValue="Brasil"
+            type={type}
+            placeholder={placeholder}
+            {...register(registerName)}
+            readOnly
           />
         )}
       </div>
