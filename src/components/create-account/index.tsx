@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import FormPf from './pf';
+import FormPj from './pj';
 
 export default function FormCreateAcount() {
   const [toggle, setToggle] = useState({
@@ -38,7 +39,10 @@ export default function FormCreateAcount() {
           Pessoa jurídica
         </button>
       </div>
-      {toggle.activePf && <FormPf />}
+      <div className="mt-2">
+        {toggle.activePf && <FormPf />}
+        {toggle.activePj && <FormPj />}
+      </div>
     </>
   );
 }

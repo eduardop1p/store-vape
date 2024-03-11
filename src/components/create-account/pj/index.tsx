@@ -3,20 +3,26 @@
 import z from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Loading from '@/components/loading';
 import { useState } from 'react';
-
 import Input from './input';
+import validadeCnpj from '@/services/validateCnpj';
 import validadeCpf from '@/services/validateCpf';
 import ShowPassword, { ShowPasswordType } from '../showPassword';
-import Loading from '@/components/loading';
 
 const zodSchema = z
   .object({
-    fullName: z
+    corporateName: z.string().trim().min(1, 'Razão social obrigatória'),
+    stateRegistration: z
       .string()
       .trim()
-      .min(1, 'Nome completo obrigatório')
-      .min(8, 'Nome muito curto'),
+      .min(1, 'Inscrição estadual obrigatória'),
+    cnpj: z
+      .string()
+      .trim()
+      .min(1, 'CNPJ é obrigatório')
+      .refine(val => validadeCnpj(val), 'CNPJ inválido'),
+    fullName: z.string().trim().min(1, 'Nome completo é obrigatório'),
     yourDate: z
       .string()
       .trim()
@@ -59,7 +65,7 @@ const zodSchema = z
       .string()
       .trim()
       .min(1, 'CEP obrigatório')
-      .refine(val => /^\d{5}-\d{3}$/.test(val), 'CEP inválido'),
+      .refine(val => /^\d{5}-\d{3}$/.test(val), 'Cep inválido'),
     address: z.string().trim().min(1, 'Endereço obrigatório'),
     nAddress: z.string().trim().min(1, 'Número residencial obrigatório'),
     complement: z.string().trim().optional(),
@@ -73,9 +79,9 @@ const zodSchema = z
     path: ['repeatPassword'],
   });
 
-export type BodyTypePf = z.infer<typeof zodSchema>;
+export type BodyTypePj = z.infer<typeof zodSchema>;
 
-export default function FormPf() {
+export default function FormPj() {
   const {
     register,
     handleSubmit,
@@ -84,16 +90,16 @@ export default function FormPf() {
     setValue,
     trigger,
     setError,
-  } = useForm<BodyTypePf>({
+  } = useForm<BodyTypePj>({
     resolver: zodResolver(zodSchema),
   });
+
   const [passwordType, setPasswordType] =
     useState<ShowPasswordType>('password');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit: SubmitHandler<BodyTypePf> = async body => {
+  const handleFormSubmit: SubmitHandler<BodyTypePj> = async body => {
     console.log(body);
-    alert('form enviado kkk');
   };
 
   return (
@@ -106,16 +112,40 @@ export default function FormPf() {
         <div className="flex items-start gap-8 w-full">
           <div className="flex gap-4 flex-col w-1/2">
             <h1 className="text-secudary font-medium text-2xl mb-2">
-              Dados pessoais
+              Dados da empresa
             </h1>
             <div className="flex flex-col gap-3 w-full ">
               <Input
-                id="name"
+                errors={errors}
+                id="corporateName"
+                placeholder="Razão social"
+                register={register}
+                registerName="corporateName"
+                title="Razão social"
+              />
+              <Input
+                errors={errors}
+                id="stateRegistration"
+                placeholder="Inscrição estadual"
+                register={register}
+                registerName="stateRegistration"
+                title="Inscrição estadual"
+              />
+              <Input
+                errors={errors}
+                id="cnpj"
+                title="CNPJ"
+                placeholder="CNPJ da empresa"
+                register={register}
+                registerName="cnpj"
+              />
+              <Input
+                errors={errors}
+                id="fullName"
                 title="Nome completo"
+                placeholder="Seu nome completo"
                 register={register}
                 registerName="fullName"
-                placeholder="Seu nome completo"
-                errors={errors}
               />
               <Input
                 id="yourDate"

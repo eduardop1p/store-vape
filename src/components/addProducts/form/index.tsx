@@ -3,7 +3,7 @@
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { FaImages } from 'react-icons/fa';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -13,6 +13,7 @@ import ImageSlides, { ImagesTypes } from './imageSlides';
 import replaceCurrency from '@/services/replaceCurrency';
 import AlertMsg, { OpenAlertType } from '@/components/alertMsg';
 import Loading from '@/components/loading';
+import useIsRemoveKey from '@/utils/useIsRemoveKey';
 
 const zodSchema = z.object({
   files: z
@@ -66,20 +67,8 @@ export default function AddProductsForm() {
     check2: false,
     check3: true,
   });
-  let isRemoveKey = useRef(false);
 
-  useEffect(() => {
-    const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Backspace' || event.key === 'Delete') {
-        isRemoveKey.current = true;
-      } else {
-        isRemoveKey.current = false;
-      }
-    };
-    window.addEventListener('keydown', event => onKeydown(event));
-
-    return () => window.removeEventListener('keydown', onKeydown);
-  }, []);
+  const { isRemoveKey } = useIsRemoveKey();
 
   useEffect(() => {
     register('status', {
@@ -182,7 +171,7 @@ export default function AddProductsForm() {
   const handleMaskPercentage = (event: FormEvent<HTMLInputElement>) => {
     const currentTarget = event.currentTarget;
 
-    if (!isRemoveKey.current) {
+    if (!isRemoveKey) {
       let value = currentTarget.value.replace(/[^\d]/g, '');
       if (!value) return;
       const newValue = +value / 100;
@@ -197,7 +186,7 @@ export default function AddProductsForm() {
   const handleMaskItems = (event: FormEvent<HTMLInputElement>) => {
     const currentTarget = event.currentTarget;
 
-    if (!isRemoveKey.current) {
+    if (!isRemoveKey) {
       let value = currentTarget.value.replace(/[^\d]/g, '');
       if (!value) return;
       if (+value > 1) {

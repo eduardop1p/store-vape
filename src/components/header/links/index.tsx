@@ -211,7 +211,7 @@ export default function Links() {
 
   return (
     // eslint-disable-next-line
-    <div className={`w-[85%] relative flex items-center gap-1 justify-between transition-all duration-200 ${hideLinks ? 'h-[0px] overflow-hidden' : 'h-[50px] mt-2'}`}>
+    <div className={`w-[85%] relative flex items-center gap-1 justify-between transition-all duration-200 ${hideLinks ? 'h-[0px] overflow-hidden' : 'h-[50px] mt-1'}`}>
       {dataMenu.map((entries, index) => (
         <LinkCustom key={index} {...entries} />
       ))}
@@ -234,14 +234,16 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
         {name}
         {menu && <IoIosArrowDown size={16} fill="#fff" />}
 
-        <div
-          className={`${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'} transition-all duration-150 absolute top-[65px] bg-primary w-3 h-3`}
-          style={{
-            transform: 'scaleY(2) rotate(45deg)',
-            left: '50%',
-            transition: 'translateX(-50%)',
-          }}
-        ></div>
+        {menu && (
+          <div
+            className={`${showMenu ? 'translate-y-0 opacity-100 visible pointer-events-auto' : 'translate-y-14 opacity-0 invisible pointer-events-none'} transition-all duration-150 absolute top-[65px] bg-primary w-3 h-3`}
+            style={{
+              transform: 'scaleY(2) rotate(45deg)',
+              left: '50%',
+              transition: 'translateX(-50%)',
+            }}
+          ></div>
+        )}
       </Link>
 
       {menu && (
