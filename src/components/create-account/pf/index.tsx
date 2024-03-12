@@ -274,7 +274,7 @@ export default function FormPf() {
 
         <button
           type="submit"
-          className="h-[50px] mt-2 rounded-3xl px-8 bg-ccba00 text-primary text-sm font-medium hover:scale-105 transition-transform duration-200"
+          className="h-[50px] mt-2 rounded-3xl px-12 bg-ccba00 text-primary text-sm font-medium hover:scale-105 transition-transform duration-200"
         >
           Criar conta
         </button>
