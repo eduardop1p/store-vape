@@ -99,15 +99,16 @@ export default function Input({
 
   const handleInputCep = async (event: FormEvent<HTMLInputElement>) => {
     const currentTarget = event.currentTarget;
-    const value = currentTarget.value;
-    if (!setValue || !trigger || !setError || isLoading || !setIsLoading)
-      return;
+    let value = currentTarget.value.slice(0, 9);
+    if (!setValue || !trigger || !setError || !setIsLoading) return;
 
-    currentTarget.value = inputCep(value);
+    value = inputCep(value);
+    currentTarget.value = value;
 
-    if (value.length > 8) {
+    if (value.length > 8 && !isLoading) {
       setIsLoading(true);
-      const data = await getCep(value.slice(0, 9));
+      event.stopPropagation();
+      const data = await getCep(value);
       if (data.err) {
         setError('cep', {
           message: data.err,
@@ -264,20 +265,22 @@ export default function Input({
         )}
         {registerName === 'city' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-gray-500 bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
             {...register(registerName)}
+            readOnly
           />
         )}
         {registerName === 'state' && (
           <input
-            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-secudary bg-primary focus:shadow-effect-1 transition-all duration-200`}
+            className={`w-1/2 h-[50px] rounded-3xl pl-4 pr-9 text-[15px] font-normal text-gray-500 bg-primary focus:shadow-effect-1 transition-all duration-200`}
             id={id}
             type={type}
             placeholder={placeholder}
             {...register(registerName)}
+            readOnly
           />
         )}
         {registerName === 'country' && (

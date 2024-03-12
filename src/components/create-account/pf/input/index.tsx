@@ -80,14 +80,16 @@ export default function Input({
 
   const handleInputCep = async (event: FormEvent<HTMLInputElement>) => {
     const currentTarget = event.currentTarget;
-    const value = currentTarget.value;
-    if (!setValue || !trigger || !setError || isLoading || !setIsLoading)
-      return;
+    let value = currentTarget.value.slice(0, 9);
+    if (!setValue || !trigger || !setError || !setIsLoading) return;
 
-    currentTarget.value = inputCep(value);
-    if (value.length > 8) {
+    value = inputCep(value);
+    currentTarget.value = value;
+
+    if (value.length > 8 && !isLoading) {
       setIsLoading(true);
-      const data = await getCep(value.slice(0, 9));
+      event.stopPropagation();
+      const data = await getCep(value);
       if (data.err) {
         setError('cep', {
           message: data.err,
