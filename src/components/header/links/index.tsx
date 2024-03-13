@@ -56,7 +56,7 @@ export default function Links() {
       type: 'menu-2',
       menu: [
         {
-          title: 'Free[15px]',
+          title: 'Freebase',
           names: [
             'Atabacados - Cigarro',
             'Café',

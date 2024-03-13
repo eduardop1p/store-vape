@@ -1,18 +1,13 @@
+import Link from 'next/link';
+
+import CustomSeparator from '@/components/breadcrumb';
 import Container90 from '@/components/container90';
 import Main from '@/components/main';
-import CustomSeparator from '@/components/breadcrumb';
 import Filters from '@/components/filters';
 import UnavailablePage from '@/components/unavailablePage';
-import Link from 'next/link';
-import { FiltersDbType } from '@/app/api/filters/route';
+import { FiltersDbType } from '../api/filters/route';
 
-interface Props {
-  params: { id: string };
-}
-
-export default async function Page({ params }: Props) {
-  const { id } = params;
-
+export default async function Page() {
   let filters: FiltersDbType;
 
   try {
@@ -20,14 +15,7 @@ export default async function Page({ params }: Props) {
       method: 'GET',
       cache: 'no-cache',
     });
-    const res2 = fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/add-relevance-item/${id}`,
-      {
-        method: 'GET',
-        cache: 'no-cache',
-      }
-    );
-    const allRes = await Promise.all([res1, res2]);
+    const allRes = await Promise.all([res1]);
     for (let res of allRes) {
       if (!res.ok) throw new Error('error');
     }
@@ -40,22 +28,21 @@ export default async function Page({ params }: Props) {
 
   return (
     <Main>
-      <Container90 className="gap-8">
+      <Container90 className="gap-5">
         <CustomSeparator>
           <Link href="/" className="text-ccba00 text-sm font-normal">
             Home
           </Link>
-          <Link
-            href="/pod-descartavel"
-            className="text-ccba00 text-sm font-normal"
-          >
-            Pod Descartável
-          </Link>
-          <span className="text-555555 text-sm font-normal">Pesquisar</span>
+          <span className="text-555555 text-sm font-normal">
+            Pod descartável
+          </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
-          <Filters filters={filters} />
-          <h1>Product {id}</h1>
+          <Filters filters={filters}>
+            <h1 className="text-4xl text-secudary font-semibold">
+              Pod descartável
+            </h1>
+          </Filters>
         </div>
       </Container90>
     </Main>

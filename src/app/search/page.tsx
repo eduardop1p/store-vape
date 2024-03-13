@@ -44,7 +44,7 @@ export default async function Page({ searchParams }: Props) {
 
   return (
     <Main>
-      <Container90 className="gap-8">
+      <Container90 className="gap-5">
         <CustomSeparator>
           <Link href="/" className="text-ccba00 text-sm font-normal">
             Home

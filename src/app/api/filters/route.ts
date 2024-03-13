@@ -6,6 +6,10 @@ import vapeModel from '../models/vape';
 
 interface FiltersValueType {
   value?: string;
+  querys: {
+    value: string;
+    query?: string;
+  }[];
   checked: boolean;
 }
 
@@ -37,34 +41,82 @@ export async function GET(req: NextRequest, res: NextResponse) {
       category: category.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'category',
+            query: val,
+          },
+        ],
       })),
       mark: mark.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'mark',
+            query: val,
+          },
+        ],
       })),
       flavors: flavors.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'flavors',
+            query: val,
+          },
+        ],
       })),
       colors: colors.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'colors',
+            query: val,
+          },
+        ],
       })),
       ohm: ohm.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'ohm',
+            query: val,
+          },
+        ],
       })),
       nicotina: nicotina.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'nicotina',
+            query: val,
+          },
+        ],
       })),
       ml: ml.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'ml',
+            query: val,
+          },
+        ],
       })),
       qtdItems: qtdItems.map(val => ({
         value: val,
         checked: false,
+        querys: [
+          {
+            value: 'qtdItems',
+            query: val,
+          },
+        ],
       })),
     };
 

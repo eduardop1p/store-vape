@@ -6,7 +6,17 @@ import { GrNext } from 'react-icons/gr';
 export default function CustomSeparator({ children }: { children: ReactNode }) {
   return (
     <Stack spacing={1}>
-      <Breadcrumbs separator={<GrNext fill="#ccba00" size={12} />}>
+      <Breadcrumbs
+        separator={
+          <GrNext
+            style={{
+              color: '#ccba00',
+              fill: '#ccba00',
+            }}
+            size={12}
+          />
+        }
+      >
         {children}
       </Breadcrumbs>
     </Stack>
