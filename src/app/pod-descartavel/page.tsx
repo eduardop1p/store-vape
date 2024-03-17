@@ -18,7 +18,7 @@ export default async function Page() {
       cache: 'no-cache',
     });
     const res2 = fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?category=Pod Descartável`,
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?category=Pod descartável`,
       {
         method: 'GET',
         cache: 'no-cache',

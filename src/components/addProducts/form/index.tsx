@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 'use client';
 
 import z from 'zod';
@@ -99,16 +100,22 @@ export default function AddProductsForm() {
     previewImages.forEach(val => formData.append('productFiles', val.blob));
     const newDescount = replaceCurrency(body.descount!) / 100;
     const newPrice = replaceCurrency(body.price) / 100;
-    formData.append('name', upperCase(body.name));
+    formData.append('name', upperCase(body.name.toLowerCase()));
     formData.append('mark', body.mark.toUpperCase());
     formData.append('price', newPrice.toString());
     formData.append('descount', (newDescount / 100).toString());
     formData.append('stock', body.stock);
     formData.append('status', JSON.stringify(body.status));
 
-    formData.append('category', upperFirst(body.category));
-    formData.append('subcategory2', upperFirst(body.subcategory2));
-    formData.append('subcategory3', upperFirst(body.subcategory3));
+    formData.append('category', upperFirst(body.category.toLowerCase()));
+    formData.append(
+      'subcategory2',
+      upperFirst(body.subcategory2?.toLowerCase())
+    );
+    formData.append(
+      'subcategory3',
+      upperFirst(body.subcategory3?.toLowerCase())
+    );
 
     formData.append('flavors', JSON.stringify(flavors));
     formData.append('colors', JSON.stringify(colors));
@@ -344,25 +351,25 @@ export default function AddProductsForm() {
             </div>
             <Input
               errors={errors}
-              label="Preço R$"
-              placeholder="R$ 0,00"
-              register={register}
-              registerName="price"
-              handleOnInput={handleMaskMoney}
-            />
-          </div>
-          <div className="flex gap-4 w-full">
-            <Input
-              errors={errors}
               label="Quantidade em estoque"
               placeholder="0 em estoque"
               register={register}
               registerName="stock"
               handleOnInput={(event) => event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')} // eslint-disable-line
             />
+          </div>
+          <div className="flex gap-4 w-full">
             <Input
               errors={errors}
-              label="Desconto %"
+              label="Preço base R$"
+              placeholder="R$ 0,00"
+              register={register}
+              registerName="price"
+              handleOnInput={handleMaskMoney}
+            />
+            <Input
+              errors={errors}
+              label="Desconto no produto %"
               placeholder="00,0%"
               register={register}
               registerName="descount"
@@ -629,7 +636,7 @@ const InputColorsAndFlavors = ({
             if (watch(registerName)) {
               setValuesState(state => [
                 ...state,
-                upperFirst(watch(registerName) as string),
+                upperFirst(watch(registerName)?.toString().toLowerCase()!),
               ]);
               setTimeout(() => {
                 setValue(registerName, '');
