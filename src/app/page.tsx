@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import Main from '@/components/main';
 import Container90 from '@/components/container90';
-import ProductsGrid from '@/components/products/grid';
+import ProductsGrid from '@/components/products';
 import { VapeType } from './api/models/vape';
 import UnavailablePage from '@/components/unavailablePage';
 

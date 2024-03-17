@@ -9,12 +9,14 @@ interface FiltersValueType {
   querys: {
     value: string;
     query?: string;
-  }[];
+  };
   checked: boolean;
 }
 
 export interface FiltersDbType {
   category: FiltersValueType[];
+  subcategory2: FiltersValueType[];
+  subcategory3: FiltersValueType[];
   mark: FiltersValueType[];
   flavors: FiltersValueType[];
   colors: FiltersValueType[];
@@ -29,6 +31,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
     await dbConnect();
 
     const category = await vapeModel.distinct('category');
+    const subcategory2 = await vapeModel.distinct('subcategory2');
+    const subcategory3 = await vapeModel.distinct('subcategory3');
+
     const mark = await vapeModel.distinct('mark');
     const flavors = await vapeModel.distinct('flavors');
     const colors = await vapeModel.distinct('colors');
@@ -41,82 +46,82 @@ export async function GET(req: NextRequest, res: NextResponse) {
       category: category.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'category',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'category',
+          query: val,
+        },
+      })),
+      subcategory2: subcategory2.map(val => ({
+        value: val,
+        checked: false,
+        querys: {
+          value: 'subcategory2',
+          query: val,
+        },
+      })),
+      subcategory3: subcategory3.map(val => ({
+        value: val,
+        checked: false,
+        querys: {
+          value: 'subcategory3',
+          query: val,
+        },
       })),
       mark: mark.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'mark',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'mark',
+          query: val,
+        },
       })),
       flavors: flavors.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'flavors',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'flavors',
+          query: val,
+        },
       })),
       colors: colors.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'colors',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'colors',
+          query: val,
+        },
       })),
       ohm: ohm.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'ohm',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'ohm',
+          query: val,
+        },
       })),
       nicotina: nicotina.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'nicotina',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'nicotina',
+          query: val,
+        },
       })),
       ml: ml.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'ml',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'ml',
+          query: val,
+        },
       })),
       qtdItems: qtdItems.map(val => ({
         value: val,
         checked: false,
-        querys: [
-          {
-            value: 'qtdItems',
-            query: val,
-          },
-        ],
+        querys: {
+          value: 'qtdItems',
+          query: val,
+        },
       })),
     };
 

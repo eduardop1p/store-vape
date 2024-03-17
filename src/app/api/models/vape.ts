@@ -7,7 +7,11 @@ export interface VapeType {
   descount?: number;
   stock: number;
   status?: string;
+
   category: string;
+  subcategory2?: string;
+  subcategory3?: string;
+
   flavors?: string[];
   colors?: string[];
   withBattery: boolean;
@@ -31,6 +35,8 @@ const vapeSchema = new Schema<VapeDocumentType>({
   stock: { type: Number, required: true },
   status: { type: String, required: false },
   category: { type: String, required: true },
+  subcategory2: { type: String, required: false },
+  subcategory3: { type: String, required: false },
   flavors: [String],
   colors: [String],
   withBattery: { type: Boolean, required: false },

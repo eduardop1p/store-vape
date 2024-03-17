@@ -8,9 +8,13 @@ export async function GET(req: NextRequest, res: NextResponse) {
     await dbConnect();
     const searchParams = req.nextUrl.searchParams;
     const name = searchParams.get('name');
+
     const category = searchParams.get('category');
-    const price = searchParams.get('price');
-    const priceType = searchParams.get('priceType');
+    const subcategory2 = searchParams.get('subcategory2');
+    const subcategory3 = searchParams.get('subcategory3');
+
+    let price: string | null | any[] = searchParams.get('price');
+
     const mark = searchParams.get('mark');
     const status = searchParams.get('status');
     const flavors = searchParams.get('flavors');
@@ -37,14 +41,17 @@ export async function GET(req: NextRequest, res: NextResponse) {
       });
     }
 
-    let priceQuery = () => {
-      if (priceType == 'lte' && price) return { $lte: +price };
-      if (priceType == 'gte' && price) return { $gte: +price };
-      if (priceType == 'gte-lte' && price) {
-        const arrPrice = price.split(',').map(val => +val);
-        return { $gte: arrPrice[0], $lte: arrPrice[1] };
-      }
-      return { $exists: true };
+    const priceQuery = () => {
+      if (typeof price === 'string') price = price ? price.split(',') : [];
+      if (!price || !price.length) return [{ price: { $exists: true } }];
+      price = price.map(val => {
+        val = val.split('-').map((_v: string) => +_v);
+        if (val[0] === 0) return { price: { $gte: val[1] } };
+        if (val[1] === 0) return { price: { $lte: val[0] } };
+
+        return { price: { $lte: val[0], $gte: val[1] } };
+      });
+      return price;
     };
 
     let findFilters = await vapeModel
@@ -56,9 +63,19 @@ export async function GET(req: NextRequest, res: NextResponse) {
               ? { $in: category.split(',') }
               : { $exists: true },
           },
-          { price: priceQuery() },
+          {
+            subcategory2: subcategory2
+              ? { $in: subcategory2.split(',') }
+              : { $exists: true },
+          },
+          {
+            subcategory3: subcategory3
+              ? { $in: subcategory3.split(',') }
+              : { $exists: true },
+          },
+          { $or: [...priceQuery()] },
           { mark: mark ? { $in: mark.split(',') } : { $exists: true } },
-          { status: status ? status : { $exists: true } },
+          { status: status ? { $in: status.split(',') } : { $exists: true } },
           {
             flavors: flavors
               ? {

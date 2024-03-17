@@ -6,21 +6,33 @@ import Main from '@/components/main';
 import Filters from '@/components/filters';
 import UnavailablePage from '@/components/unavailablePage';
 import { FiltersDbType } from '../api/filters/route';
+import { VapeType } from '../api/models/vape';
 
 export default async function Page() {
   let filters: FiltersDbType;
+  let vapeData: VapeType[] = [];
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
       method: 'GET',
       cache: 'no-cache',
     });
-    const allRes = await Promise.all([res1]);
+    const res2 = fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?category=Pod Descartável`,
+      {
+        method: 'GET',
+        cache: 'no-cache',
+      }
+    );
+
+    const allRes = await Promise.all([res1, res2]);
     for (let res of allRes) {
       if (!res.ok) throw new Error('error');
     }
     const data1 = await allRes[0].json();
     filters = data1.data;
+    const data2 = await allRes[1].json();
+    vapeData = data2.data;
   } catch (err) {
     console.log(err);
     return <UnavailablePage />;
@@ -38,11 +50,11 @@ export default async function Page() {
           </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
-          <Filters filters={filters}>
-            <h1 className="text-4xl text-secudary font-semibold">
-              Pod descartável
-            </h1>
-          </Filters>
+          <Filters
+            filters={filters}
+            title="Pod descartável"
+            vapeData={vapeData}
+          />
         </div>
       </Container90>
     </Main>

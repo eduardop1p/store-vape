@@ -51,7 +51,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const stock = +body.get('stock')!;
     let status = JSON.parse(body.get('status') as string);
     // status = status ? status : undefined;
+
     const category = body.get('category') as string;
+    const subcategory2 = body.get('subcategory2') as string;
+    const subcategory3 = body.get('subcategory3') as string;
+
     const flavors = JSON.parse(body.get('flavors') as string);
     const colors = JSON.parse(body.get('colors') as string);
     const withBattery = JSON.parse(body.get('withBattery') as string);
@@ -72,6 +76,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       stock,
       status,
       category,
+      subcategory2,
+      subcategory3,
       flavors,
       colors,
       withBattery,

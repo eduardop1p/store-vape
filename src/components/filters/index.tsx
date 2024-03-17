@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 'use client';
 
 import { Checkbox } from '@mui/material';
-import { ReactNode, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 import { FiltersDbType } from '@/app/api/filters/route';
 import { upperFirst } from 'lodash';
+import { VapeType } from '@/app/api/models/vape';
+import ProductsGrid from '../products';
+import Loading from '../loading';
+import AlertMsg, { OpenAlertType } from '../alertMsg';
 
 interface FiltersDataType {
   checked?: boolean;
@@ -12,7 +17,7 @@ interface FiltersDataType {
   querys: {
     value: string;
     query?: string;
-  }[];
+  };
 }
 
 interface FiltersType {
@@ -23,16 +28,22 @@ interface FiltersType {
 
 export default function Filters({
   filters,
-  children,
+  title,
+  vapeData,
 }: {
   filters: FiltersDbType;
-  children?: ReactNode;
+  title: string;
+  vapeData: VapeType[];
 }) {
-  const filtersInitialState: FiltersType[] = [
+  const filtersInitialState = useRef<FiltersType[]>([
     {
       title: 'Categoria',
       active: true,
-      data: [...filters.category],
+      data: [
+        ...filters.category,
+        ...filters.subcategory2,
+        ...filters.subcategory3,
+      ],
     },
     {
       title: 'Preço',
@@ -41,84 +52,48 @@ export default function Filters({
         {
           checked: false,
           value: 'Até R$ 332,99',
-          querys: [
-            {
-              value: 'price',
-              query: '332.99',
-            },
-            {
-              value: 'priceType',
-              query: 'lte',
-            },
-          ],
+          querys: {
+            value: 'price',
+            query: '332.99-0',
+          },
         },
         {
-          querys: [
-            {
-              value: 'price',
-              query: '333,655.99',
-            },
-            {
-              value: 'priceType',
-              query: 'gte-lte',
-            },
-          ],
+          querys: {
+            value: 'price',
+            query: '333-655.99',
+          },
           checked: false,
           value: 'De R$ 333,00 a R$ 665,99',
         },
         {
-          querys: [
-            {
-              value: 'price',
-              query: '666,998.99',
-            },
-            {
-              value: 'priceType',
-              query: 'gte-lte',
-            },
-          ],
+          querys: {
+            value: 'price',
+            query: '666-998.99',
+          },
           checked: false,
           value: 'De R$ 666,00 a R$ 998,99',
         },
         {
-          querys: [
-            {
-              value: 'price',
-              query: '999,1131.99',
-            },
-            {
-              value: 'priceType',
-              query: 'gte-lte',
-            },
-          ],
+          querys: {
+            value: 'price',
+            query: '999-1131.99',
+          },
           checked: false,
           value: 'De R$ 999,00 a R$ 1.331,99',
         },
         {
-          querys: [
-            {
-              value: 'price',
-              query: '1332,1664.99',
-            },
-            {
-              value: 'priceType',
-              query: 'gte-lte',
-            },
-          ],
+          querys: {
+            value: 'price',
+            query: '1332-1664.99',
+          },
           checked: false,
           value: 'De R$ 1.332,00 a R$ 1.664,99',
         },
         {
-          querys: [
-            {
-              value: 'price',
-              query: '1999.9',
-            },
-            {
-              value: 'priceType',
-              query: 'gte',
-            },
-          ],
+          querys: {
+            value: 'price',
+            query: '0-1999.9',
+          },
           checked: false,
           value: ' Acima de R$ 1.999,90',
         },
@@ -136,22 +111,18 @@ export default function Filters({
         {
           checked: false,
           value: 'Destaque',
-          querys: [
-            {
-              value: 'status',
-              query: 'Destaque',
-            },
-          ],
+          querys: {
+            value: 'status',
+            query: 'Destaque',
+          },
         },
         {
           checked: false,
           value: 'Novidade',
-          querys: [
-            {
-              value: 'status',
-              query: 'Novidade',
-            },
-          ],
+          querys: {
+            value: 'status',
+            query: 'Novidade',
+          },
         },
       ],
     },
@@ -172,22 +143,18 @@ export default function Filters({
         {
           checked: false,
           value: 'Com bateria',
-          querys: [
-            {
-              value: 'withBattery',
-              query: 'true',
-            },
-          ],
+          querys: {
+            value: 'withBattery',
+            query: 'true',
+          },
         },
         {
           checked: false,
           value: 'Sem bateria',
-          querys: [
-            {
-              value: 'withBattery',
-              query: 'false',
-            },
-          ],
+          querys: {
+            value: 'withBattery',
+            query: 'false',
+          },
         },
       ],
     },
@@ -211,17 +178,22 @@ export default function Filters({
       active: false,
       data: [...filters.qtdItems],
     },
-  ];
-  const [searchQuery, setSearchQuery] = useState(
+  ]);
+
+  const [stateVapeData, setStateVapeData] = useState(vapeData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [openAlert, setOpenAlert] = useState<OpenAlertType>({
+    open: false,
+    msg: '',
+    severity: 'success',
+  });
+  let urlSearchQuery = useRef(
     new URL(`${process.env.NEXT_PUBLIC_API_URL}/selected-filters`)
   );
 
-  useEffect(() => {
-    console.log(searchQuery);
-  }, [searchQuery]);
-
-  const [filtersData, setFiltersData] =
-    useState<FiltersType[]>(filtersInitialState);
+  const [filtersData, setFiltersData] = useState<FiltersType[]>(
+    filtersInitialState.current
+  );
   const [classify, setClassify] = useState({
     active: false,
     activeValue: 'Relevância',
@@ -253,30 +225,79 @@ export default function Filters({
     ],
   });
 
+  const handleGetFilters = async (url: string) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(url, {
+        method: 'GET',
+        cache: 'no-cache',
+      });
+      if (!res.ok) throw new Error('Error');
+      const { data } = await res.json();
+      setStateVapeData(data);
+    } catch (err) {
+      console.log(err);
+      setOpenAlert({
+        msg: 'Erro ao buscar filtros, tente novalmente',
+        open: true,
+        severity: 'error',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handelSearchQuery = async (data: FiltersDataType) => {
-    const newSearchQuery = new URL(searchQuery);
+    urlSearchQuery.current = new URL(urlSearchQuery.current);
+    const searchParams = urlSearchQuery.current.searchParams;
     const { checked, querys } = data;
     if (checked) {
-      querys.forEach(_v =>
-        newSearchQuery.searchParams.append(_v.value, _v.query || '')
-      );
+      if (searchParams.has(querys.value)) {
+        const query = searchParams.get(querys.value)!;
+        searchParams.set(querys.value, query.concat(`,${querys.query!}`));
+      } else {
+        searchParams.set(querys.value, querys.query!);
+      }
     } else {
-      querys.forEach(_v =>
-        newSearchQuery.searchParams.delete(_v.value, _v.query || '')
-      );
+      let query: string[] | string = searchParams.get(querys.value)?.split(',')!; // eslint-disable-line
+
+      if (searchParams.has(querys.value) && query.length > 1) { // eslint-disable-line
+        query = query.filter(val => val != querys.query).join(',');
+        searchParams.set(querys.value, query);
+      } else {
+        searchParams.delete(querys.value, querys.query);
+      }
     }
-    setSearchQuery(newSearchQuery);
+    handleGetFilters(urlSearchQuery.current.href);
   };
 
   const handelSearchClassify = async (query: string) => {
-    const newSearchQuery = new URL(searchQuery);
-    newSearchQuery.searchParams.set('classify', query);
-    setSearchQuery(newSearchQuery);
+    urlSearchQuery.current = new URL(urlSearchQuery.current);
+    urlSearchQuery.current.searchParams.set('classify', query);
+    handleGetFilters(urlSearchQuery.current.href);
+  };
+
+  const handleResetFilters = async () => {
+    urlSearchQuery.current = new URL(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters`
+    );
+    await handleGetFilters(urlSearchQuery.current.href);
+    setFiltersData(
+      filtersInitialState.current.map(val => ({
+        ...val,
+        data: val.data.map(_v => ({ ..._v, checked: false })),
+      }))
+    );
+    document.documentElement.scrollTop = 0;
   };
 
   return (
     <>
-      <div className="flex flex-col gap-5 max-w-[300px]">
+      {isLoading && <Loading />}
+      <div className="fixed">
+        <AlertMsg openAlert={openAlert} setOpenAlert={setOpenAlert} />
+      </div>
+      <div className="flex flex-col gap-5 max-w-[300px] flex-none">
         {filtersData.map((val, i) => (
           <div key={i} className="flex flex-col gap-2 w-fit">
             <button
@@ -330,14 +351,14 @@ export default function Filters({
         <button
           type="button"
           className="px-4 h-[50px] rounded-xl w-fit bg-secudary text-primary text-sm hover:bg-555555 transition-all duration-200 hover:scale-105"
-          onClick={() => setFiltersData(filtersInitialState)}
+          onClick={handleResetFilters}
         >
           Limpar filtros
         </button>
       </div>
-      <div className="flex gap-6 flex-col items-start">
-        {children}
-        <div className="flex items-center gap-2">
+      <div className="flex gap-6 flex-col items-start w-full">
+        <h1 className="text-4xl text-secudary font-semibold">{title}</h1>
+        <div className="relative z-[5] flex items-center gap-2">
           <span className="text-secudary text-sm font-medium">
             Classificar por:
           </span>
@@ -350,7 +371,7 @@ export default function Filters({
             }}
           >
             <div
-              className="bg-gray-600 hover:bg-gray-500 cursor-pointer duration-200 transition-colors text-primary flex items-center justify-center gap-2 px-4 h-11 rounded-3xl text-sm font-medium"
+              className={`bg-gray-600 hover:bg-gray-500 cursor-pointer duration-200 transition-colors text-primary flex items-center justify-center gap-2 px-4 h-11 rounded-3xl text-sm font-medium`}
               onClick={() =>
                 setClassify(state => ({
                   ...state,
@@ -381,7 +402,7 @@ export default function Filters({
                 <button
                   key={val.title}
                   type="button"
-                  className={`whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${classify.data.length - 1 !== i && 'border-b border-solid border-b-gray-500'} hover:bg-gray-500 transition-colors duration-200 cursor-pointer`}
+                  className={`whitespace-nowrap text-[13px] text-left font-normal px-3 py-1 text-primary ${classify.data.length - 1 !== i && 'border-b border-solid border-b-gray-500'} ${classify.activeValue == val.title ? 'bg-gray-500' : 'hover:bg-gray-500'} transition-colors duration-200 cursor-pointer`}
                   onClick={() => {
                     setClassify(state => ({
                       ...state,
@@ -397,6 +418,7 @@ export default function Filters({
             </div>
           </div>
         </div>
+        <ProductsGrid vapeData={stateVapeData} gridCols="grid-cols-3" />
       </div>
     </>
   );

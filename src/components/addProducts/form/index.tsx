@@ -2,8 +2,22 @@
 
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { FormEvent, useEffect, useState } from 'react';
+import {
+  useForm,
+  SubmitHandler,
+  UseFormRegister,
+  FieldErrors,
+  UseFormWatch,
+  UseFormSetValue,
+} from 'react-hook-form';
+import {
+  Dispatch,
+  FormEvent,
+  FormEventHandler,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import { FaImages } from 'react-icons/fa';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -24,10 +38,9 @@ const zodSchema = z.object({
   price: z.string().refine(val => val, 'Um preço é obrigatótio'),
   descount: z.string().optional(),
   stock: z.string().trim().min(1, 'Quantidate em estoque é obrigatótio'),
-  category: z
-    .string()
-    .trim()
-    .min(1, 'Uma categoria especificada é obrigatótio'),
+  category: z.string().trim().min(1, 'Uma categoria especifica é obrigatótia'),
+  subcategory2: z.string().trim().optional(),
+  subcategory3: z.string().trim().optional(),
   status: z.string().trim().optional(),
   flavors: z.string().trim().optional(),
   colors: z.string().trim().optional(),
@@ -92,9 +105,12 @@ export default function AddProductsForm() {
     formData.append('descount', (newDescount / 100).toString());
     formData.append('stock', body.stock);
     formData.append('status', JSON.stringify(body.status));
-    formData.append('category', upperFirst(body.category));
-    formData.append('flavors', JSON.stringify(flavors));
 
+    formData.append('category', upperFirst(body.category));
+    formData.append('subcategory2', upperFirst(body.subcategory2));
+    formData.append('subcategory3', upperFirst(body.subcategory3));
+
+    formData.append('flavors', JSON.stringify(flavors));
     formData.append('colors', JSON.stringify(colors));
     formData.append('withBattery', JSON.stringify(body.withBattery));
     formData.append('ohm', JSON.stringify(upperFirst(body.ohm)));
@@ -198,6 +214,28 @@ export default function AddProductsForm() {
     }
   };
 
+  const handleMaskMl = (event: FormEvent<HTMLInputElement>) => {
+    const currentTarget = event.currentTarget;
+
+    if (!isRemoveKey) {
+      let value = currentTarget.value.replace(/[^\d]/g, '');
+      if (!value) return;
+      value = `${value}ml`;
+      setValue('ml', value);
+    }
+  };
+
+  const handleMaskNicotina = (event: FormEvent<HTMLInputElement>) => {
+    const currentTarget = event.currentTarget;
+
+    if (!isRemoveKey) {
+      let value = currentTarget.value.replace(/[^\d]/g, '');
+      if (!value) return;
+      value = `${value}mg`;
+      setValue('nicotina', value);
+    }
+  };
+
   return (
     <>
       <AlertMsg openAlert={openAlert} setOpenAlert={setOpenAlert} />
@@ -257,268 +295,136 @@ export default function AddProductsForm() {
             Informações do produto
           </h1>
           <div className="flex gap-4 w-full">
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="name"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Nome
-              </label>
-              <input
-                type="text"
-                id="name"
-                placeholder="Nome do produto"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors.name ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
-                {...register('name')}
-              />
-              {errors.name && <ErrorMsg msg={errors.name.message!} />}
-            </div>
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="mark"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Marca
-              </label>
-              <input
-                type="text"
-                id="mark"
-                placeholder="Marca do produto"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors.mark ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
-                {...register('mark')}
-              />
-              {errors.mark && <ErrorMsg msg={errors.mark.message!} />}
-            </div>
+            <Input
+              errors={errors}
+              label="Nome"
+              placeholder="Nome do produto"
+              register={register}
+              registerName="name"
+            />
+            <Input
+              errors={errors}
+              label="Marca"
+              placeholder="Marca do produto"
+              register={register}
+              registerName="mark"
+            />
           </div>
           <div className="flex gap-4 w-full">
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="category"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Categoria
-              </label>
-              <input
-                type="text"
-                id="category"
+            <div className="w-full flex flex-col gap-2">
+              <Input
+                errors={errors}
+                label="Categoria"
                 placeholder="Categoria do produto"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors.category ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
-                {...register('category')}
+                register={register}
+                registerName="category"
               />
-              {errors.category && <ErrorMsg msg={errors.category.message!} />}
+              {watch('category') && (
+                <div className="w-[90%] ml-[10%] relative before:content-[''] before:absolute before:bg-gray-500 before:w-1 before:h-8 before:-top-2 before:right-2">
+                  <Input
+                    errors={errors}
+                    label="Sub categoria 2 (opcional)"
+                    placeholder="Sub categoria 2 do produto"
+                    register={register}
+                    registerName="subcategory2"
+                  />
+                </div>
+              )}
+              {watch('subcategory2') && (
+                <div className="w-[80%] ml-[20%] relative before:content-[''] before:absolute before:bg-gray-500 before:w-1 before:h-8 before:-top-2 before:right-2">
+                  <Input
+                    errors={errors}
+                    label="Sub categoria 3 (opcional)"
+                    placeholder="Sub categoria 3 do produto"
+                    register={register}
+                    registerName="subcategory3"
+                  />
+                </div>
+              )}
             </div>
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="price"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Preço R$
-              </label>
-              <input
-                type="text"
-                id="price"
-                placeholder="R$ 0,00"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors.price ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
-                {...register('price')}
-                onInput={handleMaskMoney}
-              />
-              {errors.price && <ErrorMsg msg={errors.price.message!} />}
-            </div>
+            <Input
+              errors={errors}
+              label="Preço R$"
+              placeholder="R$ 0,00"
+              register={register}
+              registerName="price"
+              handleOnInput={handleMaskMoney}
+            />
           </div>
           <div className="flex gap-4 w-full">
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="stock"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Quantidade em estoque
-              </label>
-              <input
-                type="text"
-                id="stock"
-                placeholder="0 em estoque"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors.stock ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
-                {...register('stock')}
-                onInput={(event) => event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')} // eslint-disable-line
-              />
-              {errors.stock && <ErrorMsg msg={errors.stock.message!} />}
-            </div>
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="descount"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Desconto %
-              </label>
-              <input
-                type="text"
-                id="descount"
-                placeholder="00,0%"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                {...register('descount')}
-                onInput={handleMaskPercentage}
-              />
-            </div>
+            <Input
+              errors={errors}
+              label="Quantidade em estoque"
+              placeholder="0 em estoque"
+              register={register}
+              registerName="stock"
+              handleOnInput={(event) => event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '')} // eslint-disable-line
+            />
+            <Input
+              errors={errors}
+              label="Desconto %"
+              placeholder="00,0%"
+              register={register}
+              registerName="descount"
+              handleOnInput={handleMaskPercentage}
+            />
           </div>
           <div className="flex gap-4 w-full">
-            <div className="flex flex-col gap-1 w-full">
-              <label htmlFor="ohm" className=" text-3d3d3d text-sm font-medium">
-                Ohm do produto
-              </label>
-              <input
-                type="text"
-                id="ohm"
-                placeholder="0.2?/Ohm"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                {...register('ohm')}
-              />
-            </div>
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="nicotina"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Quantidade de nicotina no produto em (mg)
-              </label>
-              <input
-                type="text"
-                id="nicotina"
-                placeholder="00mg"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                {...register('nicotina')}
-              />
-            </div>
+            <Input
+              errors={errors}
+              label="Ohm do produto"
+              placeholder="0.2?/Ohm"
+              register={register}
+              registerName="ohm"
+            />
+            <Input
+              errors={errors}
+              label="Quantidade de nicotina no produto em (mg)"
+              placeholder="00mg"
+              register={register}
+              registerName="nicotina"
+              handleOnInput={handleMaskNicotina}
+            />
           </div>
           <div className="flex gap-4 w-full">
-            <div className="flex flex-col gap-1 w-full">
-              <label htmlFor="ml" className=" text-3d3d3d text-sm font-medium">
-                Variação de ml
-              </label>
-              <input
-                type="text"
-                id="ml"
-                placeholder="0ml"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                {...register('ml')}
-              />
-            </div>
-            <div className="flex flex-col gap-1 w-full">
-              <label
-                htmlFor="qtdItems"
-                className=" text-3d3d3d text-sm font-medium"
-              >
-                Quantidade de itens por produto
-              </label>
-              <input
-                type="text"
-                id="qtdItems"
-                placeholder="0 itens"
-                className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                {...register('qtdItems')}
-                onInput={handleMaskItems}
-                onBlur={handleMaskItems}
-              />
-            </div>
+            <Input
+              errors={errors}
+              label="Variação de ml"
+              placeholder="0ml"
+              register={register}
+              registerName="ml"
+              handleOnInput={handleMaskMl}
+            />
+            <Input
+              errors={errors}
+              label="Quantidade de itens por produto"
+              placeholder="0 itens"
+              register={register}
+              registerName="qtdItems"
+              handleOnInput={handleMaskItems}
+            />
           </div>
 
-          <div className="w-full flex flex-col gap-1">
-            <div className="flex items-end gap-3">
-              <div className="flex flex-col gap-1 w-1/2">
-                <label
-                  htmlFor="colors"
-                  className=" text-3d3d3d text-sm font-medium"
-                >
-                  Adcionar cores
-                </label>
-                <input
-                  type="text"
-                  id="colors"
-                  placeholder="Sabores opcionais"
-                  className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                  {...register('colors')}
-                />
-              </div>
-              <button
-                type="button"
-                className="hover:scale-105 duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
-                onClick={() => {
-                  if (watch('colors')) {
-                    setColors(state => [...state, upperFirst(watch('colors'))]);
-                    setTimeout(() => {
-                      setValue('colors', '');
-                    }, 50);
-                  }
-                }}
-              >
-                Adcionar
-              </button>
-              {colors.length ? (
-                <button
-                  type="button"
-                  className="hover:scale-105 duration-200 transition-transform bg-red-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
-                  onClick={() => setColors(state => state.slice(0, -1))}
-                >
-                  Remover
-                </button>
-              ) : null}
-            </div>
-            {colors.length ? (
-              <p className="text-3d3d3d text-xs mt-1  font-normal">
-                {'['} {colors.join(', ')} {']'}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="w-full flex flex-col gap-1">
-            <div className="flex items-end gap-3">
-              <div className="flex flex-col gap-1 w-1/2">
-                <label
-                  htmlFor="flavors"
-                  className=" text-3d3d3d text-sm font-medium"
-                >
-                  Adcionar sabores
-                </label>
-                <input
-                  type="text"
-                  id="flavors"
-                  placeholder="Sabores opcionais"
-                  className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-                  {...register('flavors')}
-                />
-              </div>
-              <button
-                type="button"
-                className="hover:scale-105 duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
-                onClick={() => {
-                  if (watch('flavors')) {
-                    setFlavors(state => [
-                      ...state,
-                      upperFirst(watch('flavors')),
-                    ]);
-                    setTimeout(() => {
-                      setValue('flavors', '');
-                    }, 50);
-                  }
-                }}
-              >
-                Adcionar
-              </button>
-              {flavors.length ? (
-                <button
-                  type="button"
-                  className="hover:scale-105 duration-200 transition-transform bg-red-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
-                  onClick={() => setFlavors(state => state.slice(0, -1))}
-                >
-                  Remover
-                </button>
-              ) : null}
-            </div>
-            {flavors.length ? (
-              <p className="text-3d3d3d text-xs mt-1 font-normal">
-                {'['} {flavors.join(', ')} {']'}
-              </p>
-            ) : null}
-          </div>
+          <InputColorsAndFlavors
+            valuesState={colors}
+            register={register}
+            setValuesState={setColors}
+            setValue={setValue}
+            watch={watch}
+            title="Adcionar cores"
+            placeholder="Cores opcionais"
+            registerName="colors"
+          />
+          <InputColorsAndFlavors
+            valuesState={flavors}
+            register={register}
+            setValuesState={setFlavors}
+            setValue={setValue}
+            watch={watch}
+            title="Adcionar sabores"
+            placeholder="Sabores opcionais"
+            registerName="flavors"
+          />
 
           <div className="flex items-center gap-4">
             <div
@@ -643,7 +549,116 @@ export default function AddProductsForm() {
   );
 }
 
-const ErrorMsg = ({ msg }: { msg: string }) => {
+const Input = ({
+  label,
+  register,
+  placeholder,
+  registerName,
+  errors,
+  handleOnInput,
+}: {
+  label: string;
+  placeholder: string;
+  registerName: keyof BodyType;
+  register: UseFormRegister<BodyType>;
+  errors: FieldErrors<BodyType>;
+  handleOnInput?: FormEventHandler<HTMLInputElement> | undefined;
+}) => {
+  return (
+    <div className="flex flex-col gap-1 w-full">
+      <label
+        htmlFor={registerName}
+        className=" text-3d3d3d text-sm font-medium"
+      >
+        {label}
+      </label>
+      <input
+        type="text"
+        id={registerName}
+        placeholder={placeholder}
+        className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors[registerName] ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
+        {...register(registerName)}
+        onInput={handleOnInput}
+      />
+      {errors[registerName] && <ErrorMsg msg={errors[registerName]?.message} />}
+    </div>
+  );
+};
+
+const InputColorsAndFlavors = ({
+  register,
+  watch,
+  valuesState,
+  setValuesState,
+  setValue,
+  registerName,
+  title,
+  placeholder,
+}: {
+  register: UseFormRegister<BodyType>;
+  watch: UseFormWatch<BodyType>;
+  valuesState: string[];
+  setValuesState: Dispatch<SetStateAction<string[]>>;
+  setValue: UseFormSetValue<BodyType>;
+  registerName: keyof BodyType;
+  title: string;
+  placeholder: string;
+}) => {
+  return (
+    <div className="w-full flex flex-col gap-1">
+      <div className="flex items-end gap-3">
+        <div className="flex flex-col gap-1 w-1/2">
+          <label
+            htmlFor={registerName}
+            className=" text-3d3d3d text-sm font-medium"
+          >
+            {title}
+          </label>
+          <input
+            type="text"
+            id={registerName}
+            placeholder={placeholder}
+            className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
+            {...register(registerName)}
+          />
+        </div>
+        <button
+          type="button"
+          className="hover:scale-105 duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
+          onClick={() => {
+            if (watch(registerName)) {
+              setValuesState(state => [
+                ...state,
+                upperFirst(watch(registerName) as string),
+              ]);
+              setTimeout(() => {
+                setValue(registerName, '');
+              }, 50);
+            }
+          }}
+        >
+          Adcionar
+        </button>
+        {valuesState.length ? (
+          <button
+            type="button"
+            className="hover:scale-105 duration-200 transition-transform bg-red-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
+            onClick={() => setValuesState(state => state.slice(0, -1))}
+          >
+            Remover
+          </button>
+        ) : null}
+      </div>
+      {valuesState.length ? (
+        <p className="text-3d3d3d text-xs mt-1  font-normal">
+          {'['} {valuesState.join(', ')} {']'}
+        </p>
+      ) : null}
+    </div>
+  );
+};
+
+const ErrorMsg = ({ msg }: { msg?: string }) => {
   return (
     <span className="-mt-[2px] text-xs font-normal text-red-600">{msg}</span>
   );
