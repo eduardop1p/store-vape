@@ -54,13 +54,13 @@ export default function Filters({
           value: 'Até R$ 332,99',
           querys: {
             value: 'price',
-            query: '332.99-0',
+            query: '0-332.99',
           },
         },
         {
           querys: {
             value: 'price',
-            query: '333-655.99',
+            query: '655.99-333',
           },
           checked: false,
           value: 'De R$ 333,00 a R$ 665,99',
@@ -68,7 +68,7 @@ export default function Filters({
         {
           querys: {
             value: 'price',
-            query: '666-998.99',
+            query: '998.99-666',
           },
           checked: false,
           value: 'De R$ 666,00 a R$ 998,99',
@@ -76,7 +76,7 @@ export default function Filters({
         {
           querys: {
             value: 'price',
-            query: '999-1131.99',
+            query: '1131.99-999',
           },
           checked: false,
           value: 'De R$ 999,00 a R$ 1.331,99',
@@ -84,7 +84,7 @@ export default function Filters({
         {
           querys: {
             value: 'price',
-            query: '1332-1664.99',
+            query: '1664.99-1332',
           },
           checked: false,
           value: 'De R$ 1.332,00 a R$ 1.664,99',
@@ -92,7 +92,7 @@ export default function Filters({
         {
           querys: {
             value: 'price',
-            query: '0-1999.9',
+            query: '1999.9-0',
           },
           checked: false,
           value: ' Acima de R$ 1.999,90',

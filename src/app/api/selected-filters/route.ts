@@ -28,8 +28,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
     let classify = searchParams.get('classify');
     let sort = {};
     if (classify == 'name') sort = { name: 1 };
-    if (classify == 'price-lte') sort = { price: 1 };
-    if (classify == 'price-gte') sort = { price: -1 };
+    if (classify == 'price-lte') sort = { finalPrice: 1 };
+    if (classify == 'price-gte') sort = { finalPrice: -1 };
     if (classify == 'buy') sort = { qtdIBuyItems: -1 };
     if (classify == 'launch') sort = { createdIn: -1 };
     if (classify == 'relevance') sort = { relevance: -1 };
@@ -43,13 +43,13 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     const priceQuery = () => {
       if (typeof price === 'string') price = price ? price.split(',') : [];
-      if (!price || !price.length) return [{ price: { $exists: true } }];
+      if (!price || !price.length) return [{ finalPrice: { $exists: true } }];
       price = price.map(val => {
         val = val.split('-').map((_v: string) => +_v);
-        if (val[0] === 0) return { price: { $gte: val[1] } };
-        if (val[1] === 0) return { price: { $lte: val[0] } };
+        if (val[0] === 0) return { finalPrice: { $lte: val[1] } };
+        if (val[1] === 0) return { finalPrice: { $gte: val[0] } };
 
-        return { price: { $lte: val[0], $gte: val[1] } };
+        return { finalPrice: { $gte: val[1], $lte: val[0] } };
       });
       return price;
     };

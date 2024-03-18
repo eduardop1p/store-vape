@@ -3,8 +3,11 @@ import { Schema, model, models, type Document, Model } from 'mongoose';
 export interface VapeType {
   name: string;
   mark: string;
-  price: number;
-  descount?: number;
+  basePrice: number;
+  finalPrice: number;
+  pixPrice: number;
+  productDescount?: number;
+  pixDescount?: number;
   stock: number;
   status?: string;
 
@@ -30,8 +33,11 @@ export interface VapeDocumentType extends VapeType, Document {}
 const vapeSchema = new Schema<VapeDocumentType>({
   name: { type: String, required: true },
   mark: { type: String, required: true },
-  price: { type: Number, required: true },
-  descount: { type: Number, required: false },
+  basePrice: { type: Number, required: true },
+  finalPrice: { type: Number, required: true },
+  pixPrice: { type: Number, required: true, default: 0 },
+  productDescount: { type: Number, required: false, default: 0 },
+  pixDescount: { type: Number, required: false, default: 0 },
   stock: { type: Number, required: true },
   status: { type: String, required: false },
   category: { type: String, required: true },

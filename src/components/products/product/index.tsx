@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { VapeType } from '@/app/api/models/vape';
 import replaceStringToLink from '@/services/replaceStringToLink';
 import formatPrice from '@/services/formatPrice';
-import pixDescount from '@/services/pixDescount';
 import AddCart from './addCart';
 import { OpenAlertType } from '@/components/alertMsg';
 
@@ -31,19 +30,11 @@ export default function Product({
     }
   }, [showAddCart]);
 
-  const productPrice = product.descount
-    ? product.price * (1 - product.descount)
-    : product.price;
-
-  const productPixDescount = product.descount
-    ? productPrice * (1 - pixDescount)
-    : product.price * (1 - pixDescount);
-
   return (
     <div className="relative border-solid border-gray-300 border rounded-2xl">
-      {product.descount && product.stock ? (
+      {product.productDescount && product.stock ? (
         <div className="rounded-xl absolute z-[4] -top-[18px] left-1/2 -translate-x-1/2 h-8 w-fit px-3 bg-ccba00 text-[13px] text-primary font-medium flex items-center justify-center">
-          -{(product.descount * 100).toFixed(2)}%
+          -{(product.productDescount * 100).toFixed(2)}%
         </div>
       ) : null}
       <div
@@ -101,11 +92,11 @@ export default function Product({
               <h2 className="text-center text-secudary text-sm font-medium">
                 {product.name}
               </h2>
-              {product.descount ? (
+              {product.productDescount ? (
                 <div className="text-xs font-medium text-center text-00000099 flex- items-center">
                   De{' '}
                   <small className="text-[13px] font-medium text-secudary line-through">
-                    {formatPrice(product.price)}
+                    {formatPrice(product.basePrice)}
                   </small>{' '}
                   por:
                 </div>
@@ -115,14 +106,14 @@ export default function Product({
                 </span>
               )}
               <div className={`text-xl font-semibold text-red-600`}>
-                {formatPrice(productPrice)}
+                {formatPrice(product.finalPrice)}
               </div>
               <div className="text-xs font-medium text-center text-00000099">
-                {formatPrice(productPixDescount)} a vista no Pix
+                {formatPrice(product.pixPrice)} a vista no Pix
               </div>
               <div className="text-xs font-medium text-center text-00000099">
-                ou 4x de {formatPrice(productPrice / 4)} sem juros no cartão de
-                credito
+                ou 4x de {formatPrice(product.finalPrice / 4)} sem juros no
+                cartão de credito
               </div>
             </div>
           ) : (
@@ -145,7 +136,7 @@ export default function Product({
               Ver produto
             </Link>
             <AddCart
-              product={{ ...product, price: productPrice }}
+              product={product}
               showAddCart={showAddCart}
               setShowAddCart={setShowAddCart}
               setOpenAlert={setOpenAlert}

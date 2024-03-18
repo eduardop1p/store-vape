@@ -45,9 +45,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const name = body.get('name') as string;
     const mark = body.get('mark') as string;
-    const price = +body.get('price')!;
-    let descount = JSON.parse(body.get('descount') as string);
-    // descount = descount ? descount : undefined;
+    const basePrice = +body.get('basePrice')!;
+    const finalPrice = +body.get('finalPrice')!;
+    const pixPrice = +body.get('pixPrice')!;
+    let productDescount = JSON.parse(body.get('productDescount') as string);
+    let pixDescount = JSON.parse(body.get('pixDescount') as string);
     const stock = +body.get('stock')!;
     let status = JSON.parse(body.get('status') as string);
     // status = status ? status : undefined;
@@ -71,8 +73,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
       fileNames,
       name,
       mark,
-      price,
-      descount,
+      basePrice,
+      finalPrice,
+      pixPrice,
+      productDescount,
+      pixDescount,
       stock,
       status,
       category,

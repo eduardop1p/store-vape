@@ -72,7 +72,7 @@ export default function Form1({
       value: product.fileNames[0],
     });
     register('price', {
-      value: product.price,
+      value: product.finalPrice,
     });
     register('createdIn', {
       value: Date.now(),

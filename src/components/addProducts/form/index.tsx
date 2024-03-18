@@ -29,6 +29,7 @@ import replaceCurrency from '@/services/replaceCurrency';
 import AlertMsg, { OpenAlertType } from '@/components/alertMsg';
 import Loading from '@/components/loading';
 import useIsRemoveKey from '@/utils/useIsRemoveKey';
+import formatPrice from '@/services/formatPrice';
 
 const zodSchema = z.object({
   files: z
@@ -36,8 +37,13 @@ const zodSchema = z.object({
     .refine(file => file.length, 'Uma imagem para o produto é obrigatória'),
   name: z.string().trim().min(1, 'Nome é obrigatótio'),
   mark: z.string().trim().min(1, 'Marca é obrigatótia'),
-  price: z.string().refine(val => val, 'Um preço é obrigatótio'),
-  descount: z.string().optional(),
+  basePrice: z
+    .string()
+    .refine(val => replaceCurrency(val), 'Um preço base é obrigatótio'),
+  finalPrice: z.string(),
+  pixPrice: z.string(),
+  productDescount: z.string().optional(),
+  pixDescount: z.string().optional(),
   stock: z.string().trim().min(1, 'Quantidate em estoque é obrigatótio'),
   category: z.string().trim().min(1, 'Uma categoria especifica é obrigatótia'),
   subcategory2: z.string().trim().optional(),
@@ -98,12 +104,19 @@ export default function AddProductsForm() {
 
     const formData = new FormData();
     previewImages.forEach(val => formData.append('productFiles', val.blob));
-    const newDescount = replaceCurrency(body.descount!) / 100;
-    const newPrice = replaceCurrency(body.price) / 100;
+    const newProductDescount = replaceCurrency(body.productDescount!) / 10000;
+    const newPixDescount = replaceCurrency(body.pixDescount!) / 10000;
+
+    const newBasePrice = replaceCurrency(body.basePrice) / 100;
+    const newFinalPrice = replaceCurrency(body.finalPrice) / 100;
+    const newPixPrice = replaceCurrency(body.pixPrice) / 100;
     formData.append('name', upperCase(body.name.toLowerCase()));
     formData.append('mark', body.mark.toUpperCase());
-    formData.append('price', newPrice.toString());
-    formData.append('descount', (newDescount / 100).toString());
+    formData.append('basePrice', newBasePrice.toString());
+    formData.append('finalPrice', newFinalPrice.toString());
+    formData.append('pixPrice', newPixPrice.toString());
+    formData.append('productDescount', newProductDescount.toString());
+    formData.append('pixDescount', newPixDescount.toString());
     formData.append('stock', body.stock);
     formData.append('status', JSON.stringify(body.status));
 
@@ -180,29 +193,42 @@ export default function AddProductsForm() {
     setPreviewImages(newFiles);
   };
 
-  const handleMaskMoney = (event: FormEvent<HTMLInputElement>) => {
+  const handleMaskBasePrice = (event: FormEvent<HTMLInputElement>) => {
     const currentTarget = event.currentTarget;
     let value = currentTarget.value.replace(/\D/g, '');
-    if (!value) return;
-    value = (+value / 100).toLocaleString('pt-BR', {
-      currency: 'BRL',
-      style: 'currency',
-    });
-    currentTarget.value = value;
+    value = formatPrice(+value / 100);
+    setValue('basePrice', value);
+    handleMaskFinalPrice();
   };
 
-  const handleMaskPercentage = (event: FormEvent<HTMLInputElement>) => {
+  const handleMaskFinalPrice = () => {
+    let priceBase: string | number = replaceCurrency(watch('basePrice'));
+    const productDescount = replaceCurrency(watch('productDescount')!) / 10000;
+    const pixDescount = replaceCurrency(watch('pixDescount')!) / 10000;
+
+    const finalPrice = priceBase * (1 - productDescount);
+    const pixPrice = finalPrice * (1 - pixDescount);
+
+    setValue('finalPrice', formatPrice(finalPrice / 100));
+    setValue('pixPrice', formatPrice(pixPrice / 100));
+  };
+
+  const handleMaskPercentage = (
+    event: FormEvent<HTMLInputElement>,
+    registerName: keyof BodyType
+  ) => {
     const currentTarget = event.currentTarget;
 
     if (!isRemoveKey) {
       let value = currentTarget.value.replace(/[^\d]/g, '');
       if (!value) return;
-      const newValue = +value / 100;
-      const percentage = (newValue / 100).toLocaleString(undefined, {
+      const newValue = +value / 10000;
+      const percentage = newValue.toLocaleString(undefined, {
         style: 'percent',
         minimumFractionDigits: 2,
       });
-      setValue('descount', percentage);
+      setValue(registerName, percentage);
+      handleMaskFinalPrice();
     }
   };
 
@@ -364,17 +390,51 @@ export default function AddProductsForm() {
               label="Preço base R$"
               placeholder="R$ 0,00"
               register={register}
-              registerName="price"
-              handleOnInput={handleMaskMoney}
+              registerName="basePrice"
+              handleOnInput={handleMaskBasePrice}
             />
             <Input
               errors={errors}
-              label="Desconto no produto %"
+              label="Desconto % (opcional)"
               placeholder="00,0%"
               register={register}
-              registerName="descount"
-              handleOnInput={handleMaskPercentage}
+              registerName="productDescount"
+              handleOnInput={event =>
+                handleMaskPercentage(event, 'productDescount')
+              }
             />
+          </div>
+          <div className="flex gap-4 w-full">
+            <div className="w-1/2">
+              <Input
+                errors={errors}
+                label="Desconto no pix % (opcional)"
+                placeholder="00,0%"
+                register={register}
+                registerName="pixDescount"
+                handleOnInput={event =>
+                  handleMaskPercentage(event, 'pixDescount')
+                }
+              />
+            </div>
+            <div className="flex w-1/2 gap-2">
+              <Input
+                errors={errors}
+                label="Preço final R$"
+                placeholder="R$ 0,00"
+                register={register}
+                registerName="finalPrice"
+                readOnly
+              />
+              <Input
+                errors={errors}
+                label="Preço final no pix R$"
+                placeholder="R$ 0,00"
+                register={register}
+                registerName="pixPrice"
+                readOnly
+              />
+            </div>
           </div>
           <div className="flex gap-4 w-full">
             <Input
@@ -563,6 +623,7 @@ const Input = ({
   registerName,
   errors,
   handleOnInput,
+  readOnly = false,
 }: {
   label: string;
   placeholder: string;
@@ -570,6 +631,7 @@ const Input = ({
   register: UseFormRegister<BodyType>;
   errors: FieldErrors<BodyType>;
   handleOnInput?: FormEventHandler<HTMLInputElement> | undefined;
+  readOnly?: boolean;
 }) => {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -583,9 +645,10 @@ const Input = ({
         type="text"
         id={registerName}
         placeholder={placeholder}
-        className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm ${errors[registerName] ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
+        className={`w-full p-3 rounded-lg ${readOnly ? 'text-gray-500' : 'text-3d3d3d'} font-normal border border-solid text-sm ${errors[registerName] ? 'border-red-600' : 'border-3d3d3d'}`} // eslint-disale-line
         {...register(registerName)}
         onInput={handleOnInput}
+        readOnly={readOnly}
       />
       {errors[registerName] && <ErrorMsg msg={errors[registerName]?.message} />}
     </div>

@@ -13,21 +13,24 @@ export default async function Page() {
 
   try {
     const p1 = fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod Descartável`,
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável`,
       {
         method: 'GET',
+        next: { revalidate: 120 },
       }
     );
     const p2 = fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=launch`,
       {
         method: 'GET',
+        next: { revalidate: 120 },
       }
     );
     const p3 = fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=buy`,
       {
         method: 'GET',
+        next: { revalidate: 120 },
       }
     );
     const allRes = await Promise.all([p1, p2, p3]);
