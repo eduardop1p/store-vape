@@ -22,7 +22,7 @@ import {
 import { FaImages } from 'react-icons/fa';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
-import { upperCase, upperFirst } from 'lodash';
+import { upperFirst } from 'lodash';
 
 import ImageSlides, { ImagesTypes } from './imageSlides';
 import replaceCurrency from '@/services/replaceCurrency';
@@ -110,7 +110,7 @@ export default function AddProductsForm() {
     const newBasePrice = replaceCurrency(body.basePrice) / 100;
     const newFinalPrice = replaceCurrency(body.finalPrice) / 100;
     const newPixPrice = replaceCurrency(body.pixPrice) / 100;
-    formData.append('name', upperCase(body.name.toLowerCase()));
+    formData.append('name', upperFirst(body.name.toLowerCase()));
     formData.append('mark', body.mark.toUpperCase());
     formData.append('basePrice', newBasePrice.toString());
     formData.append('finalPrice', newFinalPrice.toString());
@@ -237,10 +237,15 @@ export default function AddProductsForm() {
 
     if (!isRemoveKey) {
       let value = currentTarget.value.replace(/[^\d]/g, '');
-      if (!value) return;
       if (+value > 1) {
+        setTimeout(() => {
+          currentTarget.setSelectionRange(value.length - 6, value.length - 6);
+        }, 0);
         value = `${value} Itens`;
       } else {
+        setTimeout(() => {
+          currentTarget.setSelectionRange(value.length - 5, value.length - 5);
+        }, 0);
         value = `${value} Item`;
       }
       setValue('qtdItems', value);
@@ -251,8 +256,11 @@ export default function AddProductsForm() {
     const currentTarget = event.currentTarget;
 
     if (!isRemoveKey) {
-      let value = currentTarget.value.replace(/[^\d]/g, '');
-      if (!value) return;
+      let value = currentTarget.value;
+      setTimeout(() => {
+        currentTarget.setSelectionRange(value.length - 2, value.length - 2);
+      }, 0);
+      value = value.replace(/[^\d.]/g, '');
       value = `${value}ml`;
       setValue('ml', value);
     }
@@ -262,8 +270,11 @@ export default function AddProductsForm() {
     const currentTarget = event.currentTarget;
 
     if (!isRemoveKey) {
-      let value = currentTarget.value.replace(/[^\d]/g, '');
-      if (!value) return;
+      let value = currentTarget.value;
+      setTimeout(() => {
+        currentTarget.setSelectionRange(value.length - 2, value.length - 2);
+      }, 0);
+      value = value.replace(/[^\d.]/g, '');
       value = `${value}mg`;
       setValue('nicotina', value);
     }
