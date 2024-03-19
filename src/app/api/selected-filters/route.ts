@@ -8,13 +8,10 @@ export async function GET(req: NextRequest, res: NextResponse) {
     await dbConnect();
     const searchParams = req.nextUrl.searchParams;
     const name = searchParams.get('name');
-
     const category = searchParams.get('category');
     const subcategory2 = searchParams.get('subcategory2');
     const subcategory3 = searchParams.get('subcategory3');
-
     let price: string | null | any[] = searchParams.get('price');
-
     const mark = searchParams.get('mark');
     const status = searchParams.get('status');
     const flavors = searchParams.get('flavors');
@@ -24,6 +21,11 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const ml = searchParams.get('ml');
     const qtdItems = searchParams.get('qtdItems');
     const withBattery = searchParams.get('withBattery');
+    const page = +searchParams.get('page')!;
+
+    const pageLimit = 20;
+    const startIndex = (page - 1) * pageLimit;
+    const endIndex = page * pageLimit;
 
     let classify = searchParams.get('classify');
     let sort = {};
@@ -54,7 +56,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
       return price;
     };
 
-    let findFilters = await vapeModel
+    const total = await vapeModel.countDocuments();
+
+    const results = await vapeModel
       .find({
         $and: [
           { name: name ? new RegExp('^' + name, 'i') : { $exists: true } },
@@ -112,11 +116,15 @@ export async function GET(req: NextRequest, res: NextResponse) {
         ],
       })
       .sort(sort)
-      .limit(20);
+      .skip(startIndex)
+      .limit(pageLimit);
 
     return NextResponse.json({
       success: true,
-      data: findFilters,
+      results,
+      currentPage: page,
+      totalPages: Math.ceil(total / pageLimit),
+      totalResults: total,
     });
   } catch (err) {
     console.log(err);

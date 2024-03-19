@@ -5,21 +5,14 @@ import Container90 from '@/components/container90';
 import Main from '@/components/main';
 import Filters from '@/components/filters';
 import UnavailablePage from '@/components/unavailablePage';
-import { FiltersDbType } from '../api/filters/route';
-import { VapeType } from '../api/models/vape';
-
-export interface VapeDataAndPaginationType {
-  results: VapeType[];
-  currentPage: number;
-  totalPages: number;
-  totalResults: number;
-}
+import { FiltersDbType } from '@/app/api/filters/route';
+import { VapeDataAndPaginationType } from '../page';
 
 export default async function Page() {
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const vapeDataUrl = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=1`;
+  const vapeDataUrl = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=Pod descartável atacado&page=1`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
@@ -37,8 +30,8 @@ export default async function Page() {
     }
     const data1 = await allRes[0].json();
     filters = data1.results;
-    filters.category = filters.category.map(val => {
-      if (val.value == 'Pod descartável') val.checked = true;
+    filters.subcategory2 = filters.subcategory2.map(val => {
+      if (val.value == 'Pod descartável atacado') val.checked = true;
       return val;
     });
 
@@ -56,14 +49,20 @@ export default async function Page() {
           <Link href="/" className="text-ccba00 text-sm font-normal">
             Home
           </Link>
-          <span className="text-555555 text-sm font-normal">
+          <Link
+            href="/pod-descartavel"
+            className="text-ccba00 text-sm font-normal"
+          >
             Pod descartável
+          </Link>
+          <span className="text-555555 text-sm font-normal">
+            Pod descartável atacado
           </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
           <Filters
             filters={filters}
-            title="Pod descartável"
+            title="Pod descartável atacado"
             vapeData={vapeData.results}
             vapeDataUrl={vapeDataUrl}
           />

@@ -18,6 +18,7 @@ export default function ProductsGrid({
     msg: '',
     severity: 'success',
   });
+
   return vapeData.length ? (
     <>
       <div className="fixed">

@@ -42,7 +42,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const ml = await vapeModel.distinct('ml');
     const qtdItems = await vapeModel.distinct('qtdItems');
 
-    const filters: FiltersDbType = {
+    const results: FiltersDbType = {
       category: category.map(val => ({
         value: val,
         checked: false,
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     return NextResponse.json({
       succes: 200,
-      data: filters,
+      results,
     });
   } catch (err) {
     console.log(err);

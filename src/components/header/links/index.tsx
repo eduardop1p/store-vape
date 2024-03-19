@@ -230,6 +230,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
       <Link
         href={`/${replaceStringToLink(name)}`}
         className={` relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
+        onClick={() => setShowMenu(false)}
       >
         {name}
         {menu && <IoIosArrowDown size={16} fill="#fff" />}
@@ -258,6 +259,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
                   key={val.name}
                   className="hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
                   href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.name!)}`}
+                  onClick={() => setShowMenu(false)}
                 >
                   {val.name}
                 </Link>
@@ -296,6 +298,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
                       key={valTitles}
                       className="hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
                       href={`/${replaceStringToLink(name)}/${replaceStringToLink(valTitles)}`}
+                      onClick={() => setShowMenu(false)}
                     >
                       {valTitles}
                     </Link>

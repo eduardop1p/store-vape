@@ -30,19 +30,21 @@ export default function Filters({
   filters,
   title,
   vapeData,
+  vapeDataUrl,
 }: {
   filters: FiltersDbType;
   title: string;
   vapeData: VapeType[];
+  vapeDataUrl: string;
 }) {
-  const filtersInitialState = useRef<FiltersType[]>([
+  const filtersInitialState = [
     {
       title: 'Categoria',
       active: true,
       data: [
-        ...filters.category,
-        ...filters.subcategory2,
-        ...filters.subcategory3,
+        ...filters.category.map(item => ({ ...item })),
+        ...filters.subcategory2.map(item => ({ ...item })),
+        ...filters.subcategory3.map(item => ({ ...item })),
       ],
     },
     {
@@ -102,7 +104,7 @@ export default function Filters({
     {
       title: 'Marca',
       active: false,
-      data: [...filters.mark],
+      data: filters.mark.map(item => ({ ...item })),
     },
     {
       title: 'Status',
@@ -129,12 +131,12 @@ export default function Filters({
     {
       title: 'Sabores',
       active: false,
-      data: [...filters.flavors],
+      data: filters.flavors.map(item => ({ ...item })),
     },
     {
       title: 'Cores',
       active: false,
-      data: [...filters.colors],
+      data: filters.colors.map(item => ({ ...item })),
     },
     {
       title: 'Com ou sem bateria',
@@ -161,24 +163,24 @@ export default function Filters({
     {
       title: 'Com opção ohm',
       active: false,
-      data: [...filters.ohm],
+      data: filters.ohm.map(item => ({ ...item })),
     },
     {
       title: 'Quantidade de nicotina',
       active: true,
-      data: [...filters.nicotina],
+      data: filters.nicotina.map(item => ({ ...item })),
     },
     {
       title: 'Quantidade em ml',
       active: false,
-      data: [...filters.ml],
+      data: filters.ml.map(item => ({ ...item })),
     },
     {
       title: 'Quantidade de itens no produto',
       active: false,
-      data: [...filters.qtdItems],
+      data: filters.qtdItems.map(item => ({ ...item })),
     },
-  ]);
+  ];
 
   const [stateVapeData, setStateVapeData] = useState(vapeData);
   const [isLoading, setIsLoading] = useState(false);
@@ -187,13 +189,11 @@ export default function Filters({
     msg: '',
     severity: 'success',
   });
-  let urlSearchQuery = useRef(
-    new URL(`${process.env.NEXT_PUBLIC_API_URL}/selected-filters`)
-  );
+  let urlSearchQuery = useRef(new URL(vapeDataUrl));
 
-  const [filtersData, setFiltersData] = useState<FiltersType[]>(
-    filtersInitialState.current
-  );
+  const [filtersData, setFiltersData] = useState<FiltersType[]>([
+    ...filtersInitialState,
+  ]);
   const [classify, setClassify] = useState({
     active: false,
     activeValue: 'Relevância',
@@ -233,8 +233,8 @@ export default function Filters({
         cache: 'no-cache',
       });
       if (!res.ok) throw new Error('Error');
-      const { data } = await res.json();
-      setStateVapeData(data);
+      const { results } = await res.json();
+      setStateVapeData(results);
     } catch (err) {
       console.log(err);
       setOpenAlert({
@@ -247,7 +247,7 @@ export default function Filters({
     }
   };
 
-  const handelSearchQuery = async (data: FiltersDataType) => {
+  const handleSearchQuery = async (data: FiltersDataType) => {
     urlSearchQuery.current = new URL(urlSearchQuery.current);
     const searchParams = urlSearchQuery.current.searchParams;
     const { checked, querys } = data;
@@ -268,6 +268,7 @@ export default function Filters({
         searchParams.delete(querys.value, querys.query);
       }
     }
+    console.log(urlSearchQuery.current.search);
     handleGetFilters(urlSearchQuery.current.href);
   };
 
@@ -278,16 +279,10 @@ export default function Filters({
   };
 
   const handleResetFilters = async () => {
-    urlSearchQuery.current = new URL(
-      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters`
-    );
-    await handleGetFilters(urlSearchQuery.current.href);
-    setFiltersData(
-      filtersInitialState.current.map(val => ({
-        ...val,
-        data: val.data.map(_v => ({ ..._v, checked: false })),
-      }))
-    );
+    urlSearchQuery.current = new URL(vapeDataUrl);
+    setStateVapeData(vapeData);
+    setFiltersData(filtersInitialState);
+    setClassify(state => ({ ...state, activeValue: 'Relevância' }));
     document.documentElement.scrollTop = 0;
   };
 
@@ -324,10 +319,9 @@ export default function Filters({
                         key={_i}
                         className="flex items-start gap-1 cursor-pointer group w-fit"
                         onClick={() => {
-                          let newArr = [...filtersData]; // eslint-disable-line
-                          newArr[i].data[_i].checked =
-                            !newArr[i].data[_i].checked;
-                          handelSearchQuery(newArr[i].data[_i]);
+                          let newArr = [...filtersData];
+                          newArr[i].data[_i].checked = !newArr[i].data[_i].checked; // eslint-disable-line
+                          handleSearchQuery(newArr[i].data[_i]);
                           setFiltersData(newArr);
                         }}
                       >

@@ -7,42 +7,42 @@ import { VapeType } from './api/models/vape';
 import UnavailablePage from '@/components/unavailablePage';
 
 export default async function Page() {
-  let podDisposableVapeData: VapeType[] = [];
+  let vapeData: VapeType[] = [];
   let launchVapeData: VapeType[] = [];
   let buyVapeData: VapeType[] = [];
 
   try {
-    const p1 = fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável`,
+    const res1 = fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=1`,
       {
         method: 'GET',
         next: { revalidate: 120 },
       }
     );
-    const p2 = fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=launch`,
+    const res2 = fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=launch&page=1`,
       {
         method: 'GET',
         next: { revalidate: 120 },
       }
     );
-    const p3 = fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=buy`,
+    const res3 = fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=buy&page=1`,
       {
         method: 'GET',
         next: { revalidate: 120 },
       }
     );
-    const allRes = await Promise.all([p1, p2, p3]);
+    const allRes = await Promise.all([res1, res2, res3]);
     for (let res of allRes) {
       if (!res.ok) throw new Error('error');
     }
     const data1 = await allRes[0].json();
-    podDisposableVapeData = data1.data;
+    vapeData = data1.results;
     const data2 = await allRes[1].json();
-    launchVapeData = data2.data;
+    launchVapeData = data2.results;
     const data3 = await allRes[2].json();
-    buyVapeData = data3.data;
+    buyVapeData = data3.results;
   } catch (err) {
     console.log(err);
     return <UnavailablePage />;
@@ -125,7 +125,7 @@ export default async function Page() {
           <p className="text-sm font-medium text-secudary">
             Os melhores Pods Descartáveis você encontra aqui, Confira!
           </p>
-          <ProductsGrid vapeData={podDisposableVapeData} />
+          <ProductsGrid vapeData={vapeData} />
         </div>
         <div className="flex flex-col gap-2">
           <h1 className="text-secudary font-medium text-3xl">Lançamentos</h1>
