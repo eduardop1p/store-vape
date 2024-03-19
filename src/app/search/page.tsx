@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Link from 'next/link';
 
 import Container90 from '@/components/container90';
@@ -52,7 +53,7 @@ export default async function Page({ searchParams }: Props) {
           <span className="text-555555 text-sm font-normal">Pesquisar</span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
-          <Filters filters={filters} />
+          {/* <Filters filters={filters}   /> */}
         </div>
       </Container90>
     </Main>
