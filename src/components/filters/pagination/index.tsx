@@ -3,16 +3,18 @@
 import Link from 'next/link';
 import { Pagination, PaginationItem } from '@mui/material';
 import { usePathname } from 'next/navigation';
-import { MouseEvent } from 'react';
+import { Dispatch, MouseEvent, SetStateAction } from 'react';
 
 export default function PaginationComponent({
   countPages,
   defaultPage,
   resultsLength,
+  setDefaultPage,
 }: {
   countPages: number;
-  defaultPage: number;
   resultsLength: number;
+  defaultPage: number;
+  setDefaultPage: Dispatch<SetStateAction<number>>;
 }) {
   const pathName = usePathname();
 
@@ -30,6 +32,7 @@ export default function PaginationComponent({
         <Pagination
           count={countPages}
           defaultPage={defaultPage}
+          page={defaultPage}
           renderItem={item => {
             const page = item.page;
             if (!page) return;
@@ -42,6 +45,7 @@ export default function PaginationComponent({
                   {...item}
                   size="large"
                   className="!mx-[5px]"
+                  onClick={() => setDefaultPage(item.page!)}
                   onMouseEnter={event =>
                     handleMouse(event, {
                       selected: item.selected,

@@ -3,7 +3,7 @@
 
 import dynamic from 'next/dynamic';
 import { Checkbox } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 import { upperFirst, cloneDeep } from 'lodash'; // cloneDeep vai criar uma copia profuda de determinado objeto ou array
 
@@ -40,6 +40,10 @@ export default function Filters({
   title: string;
   vapeData: VapeDataAndPaginationType;
 }) {
+  useEffect(() => {
+    setStateVapeData(vapeData);
+  }, [vapeData]);
+
   const filtersInitialState = useRef([
     {
       title: 'Categoria',
@@ -186,6 +190,7 @@ export default function Filters({
   ]);
 
   const [stateVapeData, setStateVapeData] = useState(vapeData);
+
   const [isLoading, setIsLoading] = useState(false);
   const [openAlert, setOpenAlert] = useState<OpenAlertType>({
     open: false,
@@ -193,7 +198,9 @@ export default function Filters({
     severity: 'success',
   });
   let urlSearchQuery = useRef(new URL(vapeData.urlApi));
-  const defaultPage = +urlSearchQuery.current.searchParams.get('page')!;
+  const [defaultPage, setDefaultPage] = useState(
+    +urlSearchQuery.current.searchParams.get('page')!
+  );
 
   const [filtersData, setFiltersData] = useState<FiltersType[]>(
     cloneDeep(filtersInitialState.current)
@@ -229,18 +236,6 @@ export default function Filters({
     ],
   });
 
-  const handleResetFilters = useCallback(async () => {
-    urlSearchQuery.current = new URL(vapeData.urlApi);
-    setStateVapeData(vapeData);
-    setFiltersData(filtersInitialState.current);
-    setClassify(state => ({ ...state, activeValue: 'Relevância' }));
-    document.documentElement.scrollTop = 0;
-  }, [vapeData]);
-
-  useEffect(() => {
-    handleResetFilters();
-  }, [vapeData, handleResetFilters]);
-
   const handleGetFilters = async (url: string) => {
     try {
       setIsLoading(true);
@@ -251,6 +246,11 @@ export default function Filters({
       if (!res.ok) throw new Error('Error');
       const data = await res.json();
       setStateVapeData(data);
+      setDefaultPage(1);
+      const newUrl = new URL(location.href);
+      newUrl.searchParams.set('page', '1');
+
+      history.pushState(null, '', newUrl.href);
     } catch (err) {
       console.log(err);
       setOpenAlert({
@@ -285,6 +285,7 @@ export default function Filters({
         searchParams.delete(querys.value, querys.query);
       }
     }
+    urlSearchQuery.current.searchParams.set('page', '1');
     handleGetFilters(urlSearchQuery.current.href);
   };
 
@@ -292,6 +293,14 @@ export default function Filters({
     urlSearchQuery.current = new URL(urlSearchQuery.current);
     urlSearchQuery.current.searchParams.set('classify', query);
     handleGetFilters(urlSearchQuery.current.href);
+  };
+
+  const handleResetFilters = () => {
+    urlSearchQuery.current = new URL(vapeData.urlApi);
+    setStateVapeData(vapeData);
+    setFiltersData(filtersInitialState.current);
+    setClassify(state => ({ ...state, activeValue: 'Relevância' }));
+    document.documentElement.scrollTop = 0;
   };
 
   return (
@@ -427,8 +436,9 @@ export default function Filters({
           />
           <PaginationComponent
             defaultPage={defaultPage}
-            countPages={vapeData.totalPages}
-            resultsLength={vapeData.results.length}
+            setDefaultPage={setDefaultPage}
+            countPages={stateVapeData.totalPages}
+            resultsLength={stateVapeData.results.length}
           />
         </div>
       </div>
