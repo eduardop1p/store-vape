@@ -24,44 +24,50 @@ export default function PaginationComponent({
 
   return (
     <div className="mt-20">
-      <Pagination
-        count={countPages}
-        defaultPage={defaultPage}
-        renderItem={item => {
-          const page = item.page;
-          if (!page) return;
-          const url = new URL(`${window.origin}${pathName}`);
-          url.searchParams.set('page', page.toString());
+      {countPages > 1 ? (
+        <Pagination
+          count={countPages}
+          defaultPage={defaultPage}
+          renderItem={item => {
+            const page = item.page;
+            if (!page) return;
+            const url = new URL(`${window.origin}${pathName}`);
+            url.searchParams.set('page', page.toString());
 
-          return (
-            <Link href={url.href}>
-              <PaginationItem
-                {...item}
-                size="large"
-                className="!mx-[5px]"
-                onMouseEnter={event =>
-                  handleMouse(event, {
-                    selected: item.selected,
-                    bg: '#ccba00',
-                    color: '#fff',
-                  })
-                }
-                onMouseLeave={event =>
-                  handleMouse(event, {
-                    selected: item.selected,
-                    bg: '#eee',
-                    color: '#666',
-                  })
-                }
-                style={{
-                  color: item.selected ? '#fff' : '#666',
-                  backgroundColor: item.selected ? '#ccba00' : '#eee',
-                }}
-              />
-            </Link>
-          );
-        }}
-      />
+            return (
+              <Link href={url.href}>
+                <PaginationItem
+                  {...item}
+                  size="large"
+                  className="!mx-[5px]"
+                  onMouseEnter={event =>
+                    handleMouse(event, {
+                      selected: item.selected,
+                      bg: '#ccba00',
+                      color: '#fff',
+                    })
+                  }
+                  onMouseLeave={event =>
+                    handleMouse(event, {
+                      selected: item.selected,
+                      bg: '#eee',
+                      color: '#666',
+                    })
+                  }
+                  style={{
+                    color: item.selected ? '#fff' : '#666',
+                    backgroundColor: item.selected ? '#ccba00' : '#eee',
+                  }}
+                />
+              </Link>
+            );
+          }}
+        />
+      ) : (
+        <p className="text-red-600 text-base font-normal">
+          Isso é tudo por aqui
+        </p>
+      )}
     </div>
   );
 }

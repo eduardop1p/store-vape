@@ -55,66 +55,61 @@ export async function GET(req: NextRequest, res: NextResponse) {
       });
       return price;
     };
+    const query = {
+      $and: [
+        { name: name ? new RegExp('^' + name, 'i') : { $exists: true } },
+        {
+          category: category ? { $in: category.split(',') } : { $exists: true },
+        },
+        {
+          subcategory2: subcategory2
+            ? { $in: subcategory2.split(',') }
+            : { $exists: true },
+        },
+        {
+          subcategory3: subcategory3
+            ? { $in: subcategory3.split(',') }
+            : { $exists: true },
+        },
+        { $or: [...priceQuery()] },
+        { mark: mark ? { $in: mark.split(',') } : { $exists: true } },
+        { status: status ? { $in: status.split(',') } : { $exists: true } },
+        {
+          flavors: flavors
+            ? {
+                $in: flavors.split(',').map(val => new RegExp(val, 'i')),
+              }
+            : { $exists: true },
+        },
+        {
+          colors: colors
+            ? {
+                $in: colors.split(',').map(val => new RegExp(val, 'i')),
+              }
+            : { $exists: true },
+        },
+        {
+          ohm: ohm ? { $in: ohm.split(',') } : { $exists: true },
+        },
+        {
+          nicotina: nicotina ? { $in: nicotina.split(',') } : { $exists: true },
+        },
+        {
+          ml: ml ? { $in: ml.split(',') } : { $exists: true },
+        },
+        {
+          qtdItems: qtdItems ? { $in: qtdItems.split(',') } : { $exists: true },
+        },
+        {
+          withBattery: withBattery ? withBattery : { $exists: true },
+        },
+      ],
+    };
 
-    const total = await vapeModel.countDocuments();
+    const total = await vapeModel.find(query).countDocuments();
 
     const results = await vapeModel
-      .find({
-        $and: [
-          { name: name ? new RegExp('^' + name, 'i') : { $exists: true } },
-          {
-            category: category
-              ? { $in: category.split(',') }
-              : { $exists: true },
-          },
-          {
-            subcategory2: subcategory2
-              ? { $in: subcategory2.split(',') }
-              : { $exists: true },
-          },
-          {
-            subcategory3: subcategory3
-              ? { $in: subcategory3.split(',') }
-              : { $exists: true },
-          },
-          { $or: [...priceQuery()] },
-          { mark: mark ? { $in: mark.split(',') } : { $exists: true } },
-          { status: status ? { $in: status.split(',') } : { $exists: true } },
-          {
-            flavors: flavors
-              ? {
-                  $in: flavors.split(',').map(val => new RegExp(val, 'i')),
-                }
-              : { $exists: true },
-          },
-          {
-            colors: colors
-              ? {
-                  $in: colors.split(',').map(val => new RegExp(val, 'i')),
-                }
-              : { $exists: true },
-          },
-          {
-            ohm: ohm ? { $in: ohm.split(',') } : { $exists: true },
-          },
-          {
-            nicotina: nicotina
-              ? { $in: nicotina.split(',') }
-              : { $exists: true },
-          },
-          {
-            ml: ml ? { $in: ml.split(',') } : { $exists: true },
-          },
-          {
-            qtdItems: qtdItems
-              ? { $in: qtdItems.split(',') }
-              : { $exists: true },
-          },
-          {
-            withBattery: withBattery ? withBattery : { $exists: true },
-          },
-        ],
-      })
+      .find(query)
       .sort(sort)
       .skip(startIndex)
       .limit(pageLimit);
@@ -123,7 +118,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
       success: true,
       results,
       currentPage: page,
-      totalPages: Math.ceil(total / pageLimit),
+      totalPages: Math.max(Math.ceil(total / pageLimit), 1),
       totalResults: total,
     });
   } catch (err) {
