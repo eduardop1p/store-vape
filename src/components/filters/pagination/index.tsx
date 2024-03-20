@@ -8,9 +8,11 @@ import { MouseEvent } from 'react';
 export default function PaginationComponent({
   countPages,
   defaultPage,
+  resultsLength,
 }: {
   countPages: number;
   defaultPage: number;
+  resultsLength: number;
 }) {
   const pathName = usePathname();
 
@@ -24,7 +26,7 @@ export default function PaginationComponent({
 
   return (
     <div className="mt-20">
-      {countPages > 1 ? (
+      {countPages > 1 && resultsLength ? (
         <Pagination
           count={countPages}
           defaultPage={defaultPage}
@@ -63,11 +65,11 @@ export default function PaginationComponent({
             );
           }}
         />
-      ) : (
-        <p className="text-red-600 text-base font-normal">
+      ) : resultsLength ? (
+        <p className="text-red-600 text-base font-normal -mt-10">
           Isso é tudo por aqui
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

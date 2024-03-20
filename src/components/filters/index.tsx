@@ -428,6 +428,7 @@ export default function Filters({
           <PaginationComponent
             defaultPage={defaultPage}
             countPages={vapeData.totalPages}
+            resultsLength={vapeData.results.length}
           />
         </div>
       </div>

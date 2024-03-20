@@ -31,7 +31,7 @@ export default function ProductsGrid({
       </div>
     </>
   ) : (
-    <h3 className="mx-auto text-center text-secudary font-medium text-2xl">
+    <h3 className="mt-10 mx-auto text-center text-secudary font-medium text-2xl">
       Nenhum resultado encontrado
     </h3>
   );
