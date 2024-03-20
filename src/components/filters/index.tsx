@@ -1,15 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 'use client';
 
+import dynamic from 'next/dynamic';
 import { Checkbox } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
+import { upperFirst, cloneDeep } from 'lodash'; // cloneDeep vai criar uma copia profuda de determinado objeto ou array
+
 import { FiltersDbType } from '@/app/api/filters/route';
-import { upperFirst } from 'lodash';
-import { VapeType } from '@/app/api/models/vape';
 import ProductsGrid from '../products';
 import Loading from '../loading';
 import AlertMsg, { OpenAlertType } from '../alertMsg';
+import { VapeDataAndPaginationType } from '@/app/pod-descartavel/page';
+const PaginationComponent = dynamic(() => import('./pagination'), {
+  ssr: false,
+});
 
 interface FiltersDataType {
   checked?: boolean;
@@ -30,14 +35,12 @@ export default function Filters({
   filters,
   title,
   vapeData,
-  vapeDataUrl,
 }: {
   filters: FiltersDbType;
   title: string;
-  vapeData: VapeType[];
-  vapeDataUrl: string;
+  vapeData: VapeDataAndPaginationType;
 }) {
-  const filtersInitialState = [
+  const filtersInitialState = useRef([
     {
       title: 'Categoria',
       active: true,
@@ -103,7 +106,7 @@ export default function Filters({
     },
     {
       title: 'Marca',
-      active: false,
+      active: true,
       data: filters.mark.map(item => ({ ...item })),
     },
     {
@@ -180,7 +183,7 @@ export default function Filters({
       active: false,
       data: filters.qtdItems.map(item => ({ ...item })),
     },
-  ];
+  ]);
 
   const [stateVapeData, setStateVapeData] = useState(vapeData);
   const [isLoading, setIsLoading] = useState(false);
@@ -189,11 +192,12 @@ export default function Filters({
     msg: '',
     severity: 'success',
   });
-  let urlSearchQuery = useRef(new URL(vapeDataUrl));
+  let urlSearchQuery = useRef(new URL(vapeData.urlApi));
+  const defaultPage = +urlSearchQuery.current.searchParams.get('page')!;
 
-  const [filtersData, setFiltersData] = useState<FiltersType[]>([
-    ...filtersInitialState,
-  ]);
+  const [filtersData, setFiltersData] = useState<FiltersType[]>(
+    cloneDeep(filtersInitialState.current)
+  );
   const [classify, setClassify] = useState({
     active: false,
     activeValue: 'Relevância',
@@ -225,6 +229,18 @@ export default function Filters({
     ],
   });
 
+  const handleResetFilters = useCallback(async () => {
+    urlSearchQuery.current = new URL(vapeData.urlApi);
+    setStateVapeData(vapeData);
+    setFiltersData(filtersInitialState.current);
+    setClassify(state => ({ ...state, activeValue: 'Relevância' }));
+    document.documentElement.scrollTop = 0;
+  }, [vapeData]);
+
+  useEffect(() => {
+    handleResetFilters();
+  }, [vapeData, handleResetFilters]);
+
   const handleGetFilters = async (url: string) => {
     try {
       setIsLoading(true);
@@ -233,8 +249,8 @@ export default function Filters({
         cache: 'no-cache',
       });
       if (!res.ok) throw new Error('Error');
-      const { results } = await res.json();
-      setStateVapeData(results);
+      const data = await res.json();
+      setStateVapeData(data);
     } catch (err) {
       console.log(err);
       setOpenAlert({
@@ -244,6 +260,7 @@ export default function Filters({
       });
     } finally {
       setIsLoading(false);
+      document.documentElement.scrollTop = 0;
     }
   };
 
@@ -268,7 +285,6 @@ export default function Filters({
         searchParams.delete(querys.value, querys.query);
       }
     }
-    console.log(urlSearchQuery.current.search);
     handleGetFilters(urlSearchQuery.current.href);
   };
 
@@ -276,14 +292,6 @@ export default function Filters({
     urlSearchQuery.current = new URL(urlSearchQuery.current);
     urlSearchQuery.current.searchParams.set('classify', query);
     handleGetFilters(urlSearchQuery.current.href);
-  };
-
-  const handleResetFilters = async () => {
-    urlSearchQuery.current = new URL(vapeDataUrl);
-    setStateVapeData(vapeData);
-    setFiltersData(filtersInitialState);
-    setClassify(state => ({ ...state, activeValue: 'Relevância' }));
-    document.documentElement.scrollTop = 0;
   };
 
   return (
@@ -299,7 +307,7 @@ export default function Filters({
               type="button"
               className={`text-start cursor-pointer group text-xl font-medium ${val.active ? 'text-555555' : 'text-secudary hover:text-555555'} transition-all duration-200`}
               onClick={() => {
-                let newArr = [...filtersData];
+                let newArr = cloneDeep(filtersData);
                 newArr[i] = { ...newArr[i], active: !newArr[i].active };
                 setFiltersData(newArr);
               }}
@@ -319,7 +327,7 @@ export default function Filters({
                         key={_i}
                         className="flex items-start gap-1 cursor-pointer group w-fit"
                         onClick={() => {
-                          let newArr = [...filtersData];
+                          let newArr = cloneDeep(filtersData);
                           newArr[i].data[_i].checked = !newArr[i].data[_i].checked; // eslint-disable-line
                           handleSearchQuery(newArr[i].data[_i]);
                           setFiltersData(newArr);
@@ -412,7 +420,16 @@ export default function Filters({
             </div>
           </div>
         </div>
-        <ProductsGrid vapeData={stateVapeData} gridCols="grid-cols-3" />
+        <div className="flex flex-col items-center w-full">
+          <ProductsGrid
+            vapeData={stateVapeData.results}
+            gridCols="grid-cols-3"
+          />
+          <PaginationComponent
+            defaultPage={defaultPage}
+            countPages={vapeData.totalPages}
+          />
+        </div>
       </div>
     </>
   );

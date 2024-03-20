@@ -92,6 +92,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
       qtdItems,
     };
 
+    const containsVape = await vapeModel.findOne({
+      name,
+      mark,
+      basePrice,
+      category,
+    });
+    if (containsVape)
+      throw new Error('Produto já existe na base de dados', {
+        cause: 'user error',
+      });
+
     await dbConnect();
 
     await vapeModel.create(newBody);
@@ -99,12 +110,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
     return NextResponse.json({
       success: 'Produto foi adcionado com sucesso!',
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
     await removeFiles(fileNames);
     return NextResponse.json(
       {
-        error: 'Erro ao adcionar produto, tente novalmente',
+        error: err.cause
+          ? err.message
+          : 'Erro ao adcionar produto, tente novalmente',
       },
       {
         status: 400,

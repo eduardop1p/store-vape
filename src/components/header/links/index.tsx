@@ -123,17 +123,18 @@ export default function Links() {
       menu: [
         {
           titles: [
-            'SMOK',
-            'VAPORESSO',
-            'GEEKVAPE',
-            'VOOPOO',
-            'Hellvape',
             'AIR FACTORY',
             'BAZOOKA',
             'BIG BOOTLE CO',
             'BLACK NOTE',
             'BLVK',
             'CLOWN',
+            'SMOK',
+            'GEEKVAPE',
+            'HELLVAPE',
+            'VAPORESSO',
+            'VOOPOO',
+            'VAPESOUL',
           ],
         },
         {
@@ -146,6 +147,7 @@ export default function Links() {
             'GOLD LEAF LIQUIDS',
             'HALO',
             'HORNY FLAVA',
+            'IGNITE',
             'JOYETECH J',
             'JOY E TECH PREMIUM',
             'KILO',
@@ -153,13 +155,13 @@ export default function Links() {
         },
         {
           titles: [
+            'COLD BREW',
             'KING SCREST',
             'MAGNA',
             'MR. FREEZE',
             'MSML MARSHMALLOW',
             'NAKED',
             'NASTY JUICE',
-            'COLD BREW',
             'NKTR',
             'PACHAMAMA',
             'PROJECT CLOUD',
@@ -168,6 +170,7 @@ export default function Links() {
         },
         {
           titles: [
+            'RIPE VAPES',
             'SALT NICOTINE',
             'SECRET SAUCE',
             'THE MILKMAN',
@@ -178,7 +181,6 @@ export default function Links() {
             'VAPETASIA',
             'VGOD',
             'ZOMO',
-            'RIPE VAPES',
           ],
         },
       ],
@@ -296,7 +298,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
                   {val.titles?.map(valTitles => (
                     <Link
                       key={valTitles}
-                      className="hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
+                      className="w-fit hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
                       href={`/${replaceStringToLink(name)}/${replaceStringToLink(valTitles)}`}
                       onClick={() => setShowMenu(false)}
                     >

@@ -172,15 +172,14 @@ export default function AddProductsForm() {
       });
       reset();
     } catch (err) {
-      console.log(err);
       setOpenAlert({
         msg: 'Internal server error',
         open: true,
         severity: 'error',
       });
-      console.log(err);
     } finally {
       setIsLoading(false);
+      document.documentElement.scrollTop = 0;
     }
   };
 
@@ -363,7 +362,7 @@ export default function AddProductsForm() {
                 register={register}
                 registerName="category"
               />
-              {watch('category') && (
+              {(watch('category') || watch('subcategory2')) && (
                 <div className="w-[90%] ml-[10%] relative before:content-[''] before:absolute before:bg-gray-500 before:w-1 before:h-8 before:-top-2 before:right-2">
                   <Input
                     errors={errors}
@@ -374,7 +373,7 @@ export default function AddProductsForm() {
                   />
                 </div>
               )}
-              {watch('subcategory2') && (
+              {(watch('subcategory2') || watch('subcategory3')) && (
                 <div className="w-[80%] ml-[20%] relative before:content-[''] before:absolute before:bg-gray-500 before:w-1 before:h-8 before:-top-2 before:right-2">
                   <Input
                     errors={errors}

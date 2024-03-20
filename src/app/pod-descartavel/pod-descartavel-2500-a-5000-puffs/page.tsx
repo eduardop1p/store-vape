@@ -17,7 +17,7 @@ export default async function Page({
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=Pod descartável atacado&page=${page}`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=Pod descartável 2500 a 5000 puffs&page=${page}`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
@@ -36,7 +36,7 @@ export default async function Page({
     const data1 = await allRes[0].json();
     filters = data1.results;
     filters.subcategory2 = filters.subcategory2.map(val => {
-      if (val.value == 'Pod descartável atacado') val.checked = true;
+      if (val.value == 'Pod descartável 2500 a 5000 puffs') val.checked = true;
       return val;
     });
 
@@ -61,13 +61,13 @@ export default async function Page({
             Pod descartável
           </Link>
           <span className="text-555555 text-sm font-normal">
-            Pod descartável atacado
+            Pod descartável 2500 a 5000 puffs
           </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
           <Filters
             filters={filters}
-            title="Pod descartável atacado"
+            title="Pod descartável 2500 a 5000 puffs"
             vapeData={{ ...vapeData, urlApi }}
           />
         </div>

@@ -13,20 +13,26 @@ export interface VapeDataAndPaginationType {
   currentPage: number;
   totalPages: number;
   totalResults: number;
+  urlApi: string;
 }
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { page: number };
+}) {
+  const page = searchParams.page || 1;
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const vapeDataUrl = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=1`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=${page}`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
       method: 'GET',
       cache: 'no-cache',
     });
-    const res2 = fetch(vapeDataUrl, {
+    const res2 = fetch(urlApi, {
       method: 'GET',
       cache: 'no-cache',
     });
@@ -64,8 +70,7 @@ export default async function Page() {
           <Filters
             filters={filters}
             title="Pod descartável"
-            vapeData={vapeData.results}
-            vapeDataUrl={vapeDataUrl}
+            vapeData={{ ...vapeData, urlApi }}
           />
         </div>
       </Container90>
