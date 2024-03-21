@@ -16,16 +16,11 @@ export interface VapeDataAndPaginationType {
   urlApi: string;
 }
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: { page: number };
-}) {
-  const page = searchParams.page || 1;
+export default async function Page() {
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=${page}`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=1`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {

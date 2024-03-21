@@ -1,20 +1,19 @@
 'use client';
 
-import Link from 'next/link';
 import { Pagination, PaginationItem } from '@mui/material';
 import { usePathname } from 'next/navigation';
-import { Dispatch, MouseEvent, SetStateAction } from 'react';
+import { MouseEvent } from 'react';
 
 export default function PaginationComponent({
   countPages,
-  defaultPage,
   resultsLength,
-  setDefaultPage,
+  handlePagination,
+  defaultPage,
 }: {
   countPages: number;
   resultsLength: number;
+  handlePagination(page: number): void;
   defaultPage: number;
-  setDefaultPage: Dispatch<SetStateAction<number>>;
 }) {
   const pathName = usePathname();
 
@@ -40,12 +39,12 @@ export default function PaginationComponent({
             url.searchParams.set('page', page.toString());
 
             return (
-              <Link href={url.href}>
+              <button type="button">
                 <PaginationItem
                   {...item}
                   size="large"
                   className="!mx-[5px]"
-                  onClick={() => setDefaultPage(item.page!)}
+                  onClick={() => handlePagination(item.page!)}
                   onMouseEnter={event =>
                     handleMouse(event, {
                       selected: item.selected,
@@ -65,7 +64,7 @@ export default function PaginationComponent({
                     backgroundColor: item.selected ? '#ccba00' : '#eee',
                   }}
                 />
-              </Link>
+              </button>
             );
           }}
         />
