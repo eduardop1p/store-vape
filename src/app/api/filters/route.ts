@@ -11,6 +11,7 @@ interface FiltersValueType {
     query?: string;
   };
   checked: boolean;
+  default?: boolean;
 }
 
 export interface FiltersDbType {

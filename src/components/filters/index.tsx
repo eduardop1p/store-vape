@@ -25,6 +25,7 @@ interface FiltersDataType {
     value: string;
     query?: string;
   };
+  default?: boolean;
 }
 
 interface FiltersType {
@@ -336,21 +337,31 @@ export default function Filters({
                     _v.value && (
                       <div
                         key={_i}
-                        className="flex items-start gap-1 cursor-pointer group w-fit"
+                        className={`flex items-start gap-1 ${_v.checked ? 'cursor-default' : 'cursor-pointer'} group w-fit`}
                         onClick={() => {
+                          if (_v.default) return false;
                           let newArr = cloneDeep(filtersData);
                           newArr[i].data[_i].checked = !newArr[i].data[_i].checked; // eslint-disable-line
                           handleSearchQuery(newArr[i].data[_i]);
                           setFiltersData(newArr);
                         }}
                       >
-                        <Checkbox
-                          checked={_v.checked}
-                          size="small"
-                          className="!p-0 text-secudary font-normal group-hover:text-blue-500"
-                        />
+                        {_v.default ? (
+                          <Checkbox
+                            defaultChecked={_v.checked}
+                            disabled
+                            size="small"
+                            className="!p-0 text-secudary cursor-default font-normal "
+                          />
+                        ) : (
+                          <Checkbox
+                            checked={_v.checked}
+                            size="small"
+                            className="!p-0 text-secudary cursor-pointer font-normal group-hover:text-blue-500"
+                          />
+                        )}
                         <span
-                          className={`${_v.checked ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} font-medium text-[13px]  duration-200 transition-colors`}
+                          className={`${_v.checked ? 'text-bdbdbd' : _v.checked ? 'text-blue-500' : 'group-hover:text-blue-500 text-secudary'} font-medium text-[13px]  duration-200 transition-colors`}
                         >
                           {upperFirst(_v.value)}
                         </span>

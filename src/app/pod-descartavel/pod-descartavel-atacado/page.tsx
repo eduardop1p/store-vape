@@ -8,16 +8,11 @@ import UnavailablePage from '@/components/unavailablePage';
 import { FiltersDbType } from '@/app/api/filters/route';
 import { VapeDataAndPaginationType } from '../page';
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: { page: number };
-}) {
-  const page = searchParams.page || 1;
+export default async function Page() {
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=Pod descartável atacado&page=${page}`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=Pod descartável atacado&page=1`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
@@ -36,7 +31,10 @@ export default async function Page({
     const data1 = await allRes[0].json();
     filters = data1.results;
     filters.subcategory2 = filters.subcategory2.map(val => {
-      if (val.value == 'Pod descartável atacado') val.checked = true;
+      if (val.value == 'Pod descartável atacado') {
+        val.checked = true;
+        val.default = true;
+      }
       return val;
     });
 

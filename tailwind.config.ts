@@ -31,6 +31,7 @@ const config: Config = {
         ccba00: '#ccba00',
         '00000066': '#00000066',
         e5e5e5: '#e5e5e5',
+        bdbdbd: '#bdbdbd',
       },
       boxShadow: {
         'effect-1': '0 0 0 0.2rem #bfdbfe',

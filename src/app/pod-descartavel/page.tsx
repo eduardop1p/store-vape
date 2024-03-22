@@ -39,7 +39,10 @@ export default async function Page() {
     const data1 = await allRes[0].json();
     filters = data1.results;
     filters.category = filters.category.map(val => {
-      if (val.value == 'Pod descartável') val.checked = true;
+      if (val.value == 'Pod descartável') {
+        val.checked = true;
+        val.default = true;
+      }
       return val;
     });
 
