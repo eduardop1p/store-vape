@@ -144,7 +144,7 @@ export default async function Page() {
           <ProductsGrid vapeData={buyVapeData} />
         </div>
       </Container90>
-      <div className="w-full h-[1px] bg-555555"></div>
+      <div className="w-full mt-14 border-b border-solid border-b-gray-300"></div>
     </Main>
   );
 }
