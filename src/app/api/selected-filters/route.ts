@@ -23,6 +23,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const qtdItems = searchParams.get('qtdItems');
     const withBattery = searchParams.get('withBattery');
     const page = +searchParams.get('page')!;
+    const productDescount = searchParams.get('productDescount');
 
     const pageLimit = 20;
     const startIndex = (page - 1) * pageLimit;
@@ -104,6 +105,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         {
           withBattery: withBattery ? withBattery : { $exists: true },
         },
+        { productDescount: productDescount ? { $gt: 0 } : { $exists: true } },
       ],
     };
 
@@ -131,6 +133,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
       totalResults: total,
     });
   } catch (err: any) {
+    console.log(err);
     return NextResponse.json(
       {
         error: err.cause == 'mark not found' ? err.message :'Erro ao filtrar produtos', // eslint-disable-line

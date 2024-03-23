@@ -17,14 +17,14 @@ export interface VapeDataAndPaginationType {
 }
 
 interface Props {
-  markTitle: string;
+  specialOffersTitle: string;
 }
 
-export default async function Mark({ markTitle }: Props) {
+export default async function SpecialOffers({ specialOffersTitle }: Props) {
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&page=1`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&productDescount=true&page=1`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
@@ -57,12 +57,14 @@ export default async function Mark({ markTitle }: Props) {
           <Link href="/" className="text-ccba00 text-sm font-normal">
             Home
           </Link>
-          <span className="text-555555 text-sm font-normal">{markTitle}</span>
+          <span className="text-555555 text-sm font-normal">
+            {specialOffersTitle}
+          </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
           <Filters
             filters={filters}
-            title={markTitle}
+            title={specialOffersTitle}
             vapeData={{ ...vapeData, urlApi }}
           />
         </div>

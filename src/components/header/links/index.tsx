@@ -198,13 +198,6 @@ export default function Links() {
     },
     {
       name: 'Ofertas especiais',
-      type: 'menu-2',
-      menu: [
-        {
-          title: 'PROMOÇÕES',
-          names: ['PROMOÇÕES ATOMIZADORES'],
-        },
-      ],
     },
   ];
 
