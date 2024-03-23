@@ -6,13 +6,24 @@ import Main from '@/components/main';
 import Filters from '@/components/filters';
 import UnavailablePage from '@/components/unavailablePage';
 import { FiltersDbType } from '@/app/api/filters/route';
-import { VapeDataAndPaginationType } from '../page';
+import { VapeDataAndPaginationType } from '@/components/menu/category';
 
-export default async function Page() {
+interface Props {
+  categoryLink: {
+    url: string;
+    title: string;
+  };
+  subCategory2Title: string;
+}
+
+export default async function SubCategory2({
+  categoryLink,
+  subCategory2Title,
+}: Props) {
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=Pod descartável 2500 a 5000 puffs&page=1`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&subcategory2=${subCategory2Title}&page=1`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
@@ -31,7 +42,7 @@ export default async function Page() {
     const data1 = await allRes[0].json();
     filters = data1.results;
     filters.subcategory2 = filters.subcategory2.map(val => {
-      if (val.value == 'Pod descartável 2500 a 5000 puffs') {
+      if (val.value == subCategory2Title) {
         val.checked = true;
         val.default = true;
       }
@@ -53,19 +64,19 @@ export default async function Page() {
             Home
           </Link>
           <Link
-            href="/pod-descartavel"
+            href={categoryLink.url}
             className="text-ccba00 text-sm font-normal"
           >
-            Pod descartável
+            {categoryLink.title}
           </Link>
           <span className="text-555555 text-sm font-normal">
-            Pod descartável 2500 a 5000 puffs
+            {subCategory2Title}
           </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
           <Filters
             filters={filters}
-            title="Pod descartável 2500 a 5000 puffs"
+            title={subCategory2Title}
             vapeData={{ ...vapeData, urlApi }}
           />
         </div>

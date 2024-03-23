@@ -2,6 +2,7 @@
 import dbConnect from '@/lib/dbConnect';
 import { NextRequest, NextResponse } from 'next/server';
 import vapeModel from '../models/vape';
+import { notFound } from 'next/navigation';
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
@@ -106,6 +107,14 @@ export async function GET(req: NextRequest, res: NextResponse) {
       ],
     };
 
+    if (mark) {
+      const existsMark = await vapeModel.findOne({ mark });
+      if (!existsMark)
+        throw new Error('Marca não existe', {
+          cause: 'mark not found',
+        });
+    }
+
     const total = await vapeModel.find(query).countDocuments();
 
     const results = await vapeModel
@@ -118,17 +127,17 @@ export async function GET(req: NextRequest, res: NextResponse) {
       success: true,
       results,
       currentPage: page,
-      totalPages: Math.max(Math.ceil(total / pageLimit), 1),
+      totalPages: Math.ceil(total / pageLimit),
       totalResults: total,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
     return NextResponse.json(
       {
-        error: 'Erro ao filtrar produtos',
+        error: err.cause == 'mark not found' ? err.message :'Erro ao filtrar produtos', // eslint-disable-line
+        cause: err.cause,
       },
       {
-        status: 400,
+        status: err.cause == 'mark not found' ? 404 : 400,
       }
     );
   }

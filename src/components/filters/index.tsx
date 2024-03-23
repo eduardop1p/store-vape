@@ -13,7 +13,7 @@ import { FiltersDbType } from '@/app/api/filters/route';
 import ProductsGrid from '../products';
 import Loading from '../loading';
 import AlertMsg, { OpenAlertType } from '../alertMsg';
-import { VapeDataAndPaginationType } from '@/app/pod-descartavel/page';
+import { VapeDataAndPaginationType } from '../menu/category';
 const PaginationComponent = dynamic(() => import('./pagination'), {
   ssr: false,
 });
@@ -361,7 +361,7 @@ export default function Filters({
                           />
                         )}
                         <span
-                          className={`${_v.checked ? 'text-bdbdbd' : _v.checked ? 'text-blue-500' : 'group-hover:text-blue-500 text-secudary'} font-medium text-[13px]  duration-200 transition-colors`}
+                          className={`${_v.default ? 'text-bdbdbd' : _v.checked ? 'text-blue-500' : 'group-hover:text-blue-500 text-secudary'} font-medium text-[13px]  duration-200 transition-colors`}
                         >
                           {upperFirst(_v.value)}
                         </span>

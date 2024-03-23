@@ -1,5 +1,7 @@
 import { deburr } from 'lodash';
 
 export default function replaceStringToLink(val: string) {
-  return deburr(val).toLowerCase().replaceAll(' ', '-');
+  const valuedDeburr = deburr(val).toLowerCase();
+
+  return valuedDeburr.replaceAll(' - ', '-').replaceAll(' ', '-'); // eslint-disable-line
 }

@@ -5,8 +5,8 @@ import Container90 from '@/components/container90';
 import Main from '@/components/main';
 import Filters from '@/components/filters';
 import UnavailablePage from '@/components/unavailablePage';
-import { FiltersDbType } from '../api/filters/route';
-import { VapeType } from '../api/models/vape';
+import { FiltersDbType } from '@/app/api/filters/route';
+import { VapeType } from '@/app/api/models/vape';
 
 export interface VapeDataAndPaginationType {
   results: VapeType[];
@@ -16,11 +16,15 @@ export interface VapeDataAndPaginationType {
   urlApi: string;
 }
 
-export default async function Page() {
+interface Props {
+  categoryTitle: string;
+}
+
+export default async function Category({ categoryTitle }: Props) {
   let filters: FiltersDbType;
   let vapeData: VapeDataAndPaginationType;
 
-  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=Pod descartável&page=1`;
+  const urlApi = `${process.env.NEXT_PUBLIC_API_URL}/selected-filters?classify=relevance&category=${categoryTitle}&page=1`;
 
   try {
     const res1 = fetch(`${process.env.NEXT_PUBLIC_API_URL}/filters`, {
@@ -39,7 +43,7 @@ export default async function Page() {
     const data1 = await allRes[0].json();
     filters = data1.results;
     filters.category = filters.category.map(val => {
-      if (val.value == 'Pod descartável') {
+      if (val.value == categoryTitle) {
         val.checked = true;
         val.default = true;
       }
@@ -61,13 +65,13 @@ export default async function Page() {
             Home
           </Link>
           <span className="text-555555 text-sm font-normal">
-            Pod descartável
+            {categoryTitle}
           </span>
         </CustomSeparator>
         <div className="w-full flex items-start gap-4">
           <Filters
             filters={filters}
-            title="Pod descartável"
+            title={categoryTitle}
             vapeData={{ ...vapeData, urlApi }}
           />
         </div>

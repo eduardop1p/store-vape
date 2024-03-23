@@ -1,9 +1,11 @@
 'use client';
 
-import replaceStringToLink from '@/services/replaceStringToLink';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
+import { usePathname } from 'next/navigation';
+
+import replaceStringToLink from '@/services/replaceStringToLink';
 
 interface DataMenuType {
   name: string;
@@ -20,15 +22,15 @@ export default function Links() {
   const [hideLinks, setHideLinks] = useState(false);
   const dataMenu: DataMenuType[] = [
     {
-      name: 'Pod Descartável',
+      name: 'Pod descartável',
       type: 'menu-1',
       menu: [
-        { name: 'Pod Descartável Atacado' },
+        { name: 'Pod descartável atacado' },
         {
-          name: 'Pod Descartável 2500 a 5000 Puffs',
+          name: 'Pod descartável 2500 a 5000 puffs',
         },
         {
-          name: 'Pod Descartável 5000 a 10000 Puffs',
+          name: 'Pod descartável 5000 a 10000 puffs',
         },
       ],
     },
@@ -39,44 +41,44 @@ export default function Links() {
         {
           title: 'Vapes',
           names: [
-            'Kits Avançados',
-            'Kits Intermediários',
-            'Kits Iniciante',
+            'Kits avançados',
+            'Kits intermediários',
+            'Kits iniciante',
             'Mods',
           ],
         },
         {
-          title: 'Pods System',
+          title: 'Pods system',
           names: ['Aparelhos', 'Pods juul'],
         },
       ],
     },
     {
-      name: 'E-Liquids',
+      name: 'E-liquids',
       type: 'menu-2',
       menu: [
         {
           title: 'Freebase',
           names: [
-            'Atabacados - Cigarro',
+            'Atabacados - cigarro',
             'Café',
-            'Mentolados - Gelados',
+            'Mentolados - gelados',
             'Frutados',
-            'Doces - Sobremesas',
-            'Refrigerante - Bebidas',
-            'Chicletes - Balas',
+            'Doces - sobremesas',
+            'Refrigerante - bebidas',
+            'Chicletes - balas',
           ],
         },
         {
           title: 'Nic Salt',
           names: [
-            'Refrigerante / Bebidas',
-            'Tabaco / Cigarros',
+            'Refrigerante - bebidas',
+            'Tabaco - cigarros',
             'Café',
-            'Mentolados / Gelados',
+            'Mentolados - gelados',
             'Frutados',
-            'Doces / Sobremesas',
-            'Chicletes / Balas',
+            'Doces - sobremesas',
+            'Chicletes - balas',
           ],
         },
         {
@@ -89,27 +91,27 @@ export default function Links() {
       type: 'menu-3',
       menu: [
         {
-          titles: ['Tanques - Vidros', 'Atomizadores', 'Atomizadores RDA'],
+          titles: ['Tanques - vidros', 'Atomizadores', 'Atomizadores RDA'],
         },
         {
           titles: [
             'Atomizadores RTA',
-            'Atomizadores Sub Ohm',
-            'Algodão Para Vape',
+            'Atomizadores sub ohm',
+            'Algodão para vape',
           ],
         },
         {
           titles: [
-            'Baterias Para Vape',
-            'Bobinas e Resistências - Vape',
-            'Capas - Cases',
+            'Baterias para vape',
+            'Bobinas e resistências - vape',
+            'Capas - cases',
           ],
         },
         {
           titles: [
             'Carregadores',
-            'Kit de Ferramentas',
-            'Cartuchos e Resistências - Pod System',
+            'Kit de ferramentas',
+            'Cartuchos e resistências - pod system',
           ],
         },
       ],
@@ -124,59 +126,68 @@ export default function Links() {
         {
           titles: [
             'AIR FACTORY',
-            'BAZOOKA',
+            'BALMY',
             'BIG BOOTLE CO',
             'BLACK NOTE',
             'BLVK',
+            'BAZOOKA',
+            'CUTTWOOD',
             'CLOWN',
-            'SMOK',
-            'GEEKVAPE',
-            'HELLVAPE',
-            'VAPORESSO',
-            'VOOPOO',
-            'VAPESOUL',
+            'COLD BREW',
+            'DINNER LADY',
+            'DION',
+            'ELFWORLD',
+            'ELEMENT',
+            'ELF BAR',
           ],
         },
         {
           titles: [
-            'CUTTWOOD',
-            'DINNER LADY',
-            'DION',
-            'ELEMENT',
             'GLAS VAPOR',
             'GOLD LEAF LIQUIDS',
+            'GEEK BAR',
+            'GEEKVAPE',
+            'HELLVAPE',
             'HALO',
+            'HQD',
             'HORNY FLAVA',
             'IGNITE',
             'JOYETECH J',
             'JOY E TECH PREMIUM',
             'KILO',
+            'KING SCREST',
+            'LIFE POD',
           ],
         },
         {
           titles: [
-            'COLD BREW',
-            'KING SCREST',
             'MAGNA',
             'MR. FREEZE',
             'MSML MARSHMALLOW',
+            'NIKBAR',
             'NAKED',
             'NASTY JUICE',
             'NKTR',
+            'OXVAR',
+            'OXBAR',
             'PACHAMAMA',
             'PROJECT CLOUD',
             'RIOT SQUAD',
+            'RIPE VAPES',
+            'SMOK',
           ],
         },
         {
           titles: [
-            'RIPE VAPES',
             'SALT NICOTINE',
             'SECRET SAUCE',
             'THE MILKMAN',
             'TOP CLASS',
             'TRUST',
             'TWIT E-LIQUID',
+            'VOOPOO',
+            'VAPESOUL',
+            'VAPORESSO',
             'V8 E-JUICE',
             'VAPETASIA',
             'VGOD',
@@ -222,7 +233,10 @@ export default function Links() {
 }
 
 const LinkCustom = ({ name, menu, type }: DataMenuType) => {
+  const pathName = usePathname();
+
   const [showMenu, setShowMenu] = useState(false);
+
   return (
     <div
       className="flex flex-col"
@@ -231,7 +245,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
     >
       <Link
         href={`/${replaceStringToLink(name)}`}
-        className={` relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 hover:bg-ffffff1F rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
+        className={`${pathName.includes(`/${replaceStringToLink(name)}`) ? 'bg-ffffff1F' : 'hover:bg-ffffff1F'} relative after:absolute after:content-[''] after:h-5 after:w-full after:top-11 after:left-0 whitespace-nowrap h-[50px] flex items-center gap-2 justify-between px-4 rounded-3xl transition-colors duration-200 text-primary font-normal text-sm`}
         onClick={() => setShowMenu(false)}
       >
         {name}
@@ -259,7 +273,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
               {menu.map(val => (
                 <Link
                   key={val.name}
-                  className="hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
+                  className={`${pathName == `/${replaceStringToLink(name)}/${replaceStringToLink(val.name!)}` ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} w-fit transition-colors duration-200 text-[15px] font-medium underline`}
                   href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.name!)}`}
                   onClick={() => setShowMenu(false)}
                 >
@@ -274,7 +288,8 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
                 <div key={val.title} className="flex flex-col gap-1">
                   <Link
                     href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.title!)}`}
-                    className="text-[15px] text-secudary font-medium underline mb-1 hover:text-gray-500 transition-colors duration-200"
+                    className={`${pathName == `/${replaceStringToLink(name)}/${replaceStringToLink(val.title!)}` ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} w-fit text-[15px] font-medium underline mb-1 transition-colors duration-200`}
+                    onClick={() => setShowMenu(false)}
                   >
                     {val.title}
                   </Link>
@@ -282,7 +297,8 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
                     <Link
                       key={val2Names}
                       href={`/${replaceStringToLink(name)}/${replaceStringToLink(val.title!)}/${replaceStringToLink(val2Names!)}`}
-                      className="text-sm text-secudary font-normal underline hover:text-gray-500 transition-colors duration-200 "
+                      className={`${pathName == `/${replaceStringToLink(name)}/${replaceStringToLink(val.title!)}/${replaceStringToLink(val2Names!)}` ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} w-fit text-sm font-normal underline transition-colors duration-200`}
+                      onClick={() => setShowMenu(false)}
                     >
                       {val2Names}
                     </Link>
@@ -298,7 +314,7 @@ const LinkCustom = ({ name, menu, type }: DataMenuType) => {
                   {val.titles?.map(valTitles => (
                     <Link
                       key={valTitles}
-                      className="w-fit hover:text-gray-500 transition-colors duration-200 text-[15px] text-secudary font-medium underline"
+                      className={`${pathName == `/${replaceStringToLink(name)}/${replaceStringToLink(valTitles)}` ? 'text-blue-500' : 'hover:text-blue-500 text-secudary'} w-fit transition-colors duration-200 text-[15px] font-medium underline`}
                       href={`/${replaceStringToLink(name)}/${replaceStringToLink(valTitles)}`}
                       onClick={() => setShowMenu(false)}
                     >
