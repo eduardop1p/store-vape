@@ -30,6 +30,10 @@ export default function Product({
     }
   }, [showAddCart]);
 
+  const handleHrefLink = () => {
+    return `/${replaceStringToLink(product.category)}${product.subcategory2 ? `/${replaceStringToLink(product.subcategory2)}` : ''}${product.subcategory3 ? `/${replaceStringToLink(product.subcategory3)}` : ''}/${product._id}`;
+  };
+
   return (
     <div className="relative border-solid border-gray-300 border rounded-2xl">
       {product.productDescount && product.stock ? (
@@ -62,7 +66,7 @@ export default function Product({
               className={`${hover ? 'opacity-100' : 'opacity-0'} duration-500 transition-opacity absolute w-full h-full`}
             >
               <Link
-                href={`/${replaceStringToLink(product.category)}/${product._id}`}
+                href={handleHrefLink()}
                 className="absolute z-[2] bg-ffffff99 w-full h-full flex items-center justify-center"
               >
                 <span
