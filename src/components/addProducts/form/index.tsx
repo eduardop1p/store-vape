@@ -60,6 +60,12 @@ const zodSchema = z.object({
 
 type BodyType = z.infer<typeof zodSchema>;
 
+export interface DescriptionType {
+  title: string;
+  tag: string;
+  value?: string;
+}
+
 export default function AddProductsForm() {
   const {
     handleSubmit,
@@ -75,6 +81,7 @@ export default function AddProductsForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [previewImages, setPreviewImages] = useState<ImagesTypes[]>([]);
   const [showStatus, setShowStatus] = useState(false);
+  const [description, setDescription] = useState<DescriptionType[]>([]);
   const [flavors, setFlavors] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
   const [openAlert, setOpenAlert] = useState<OpenAlertType>({
@@ -119,7 +126,6 @@ export default function AddProductsForm() {
     formData.append('pixDescount', newPixDescount.toString());
     formData.append('stock', body.stock);
     formData.append('status', JSON.stringify(body.status));
-
     formData.append('category', upperFirst(body.category.toLowerCase()));
     formData.append(
       'subcategory2',
@@ -129,7 +135,7 @@ export default function AddProductsForm() {
       'subcategory3',
       upperFirst(body.subcategory3?.toLowerCase())
     );
-
+    formData.append('description', JSON.stringify(description));
     formData.append('flavors', JSON.stringify(flavors));
     formData.append('colors', JSON.stringify(colors));
     formData.append('withBattery', JSON.stringify(body.withBattery));
@@ -482,6 +488,11 @@ export default function AddProductsForm() {
             />
           </div>
 
+          <Description
+            description={description}
+            setDescription={setDescription}
+          />
+
           <InputColorsAndFlavors
             valuesState={colors}
             register={register}
@@ -625,6 +636,143 @@ export default function AddProductsForm() {
     </>
   );
 }
+
+interface TypeDescriptionType {
+  active: boolean;
+  activeValue: string;
+  tag: 'h1' | 'h3' | 'p' | 'ul';
+}
+export const Description = ({
+  description,
+  setDescription,
+}: {
+  description: DescriptionType[];
+  setDescription: Dispatch<SetStateAction<DescriptionType[]>>;
+}) => {
+  const [typeDescription, setTypeDescription] = useState<TypeDescriptionType>({
+    active: false,
+    activeValue: 'Titulo',
+    tag: 'h1',
+  });
+
+  const handleAddElement = () => {
+    setDescription(state => [
+      ...state,
+      { tag: typeDescription.tag, title: typeDescription.activeValue },
+    ]);
+  };
+
+  const handleRemoveElement = () => {
+    if (description.length) {
+      const newArr = description.slice(0, -1);
+      setDescription(newArr);
+    }
+  };
+
+  const Btn = ({ ...props }: TypeDescriptionType) => (
+    <button
+      type="button"
+      onClick={() => {
+        setTypeDescription(props);
+      }}
+      className="text-[13px] p-2 leading-none hover:text-blue-400 duration-200 transition-colors font-normal text-primary text-left border-b-[1px] border-solid border-gray-400"
+    >
+      {props.activeValue}
+    </button>
+  );
+
+  return (
+    <div className="flex flex-col gap-1 w-full border border-solid border-3d3d3d rounded-lg p-4">
+      <span className="text-3d3d3d text-sm font-medium">
+        Descrição do produto
+      </span>
+      <div className="flex flex-col items-start gap-1 w-full">
+        <div className="flex items-center gap-2 w-full">
+          <div
+            className={`relative p-2 w-full flex items-center justify-between gap-2 border border-solid border-3d3d3d cursor-pointer rounded-lg`} // eslint-disable-line
+            tabIndex={0}
+            onClick={() =>
+              setTypeDescription(state => ({
+                ...state,
+                active: !state.active,
+              }))
+            }
+            onBlur={event => {
+              if (!event.currentTarget.contains(event.relatedTarget))
+                setTypeDescription(state => ({ ...state, active: false }));
+            }}
+          >
+            <span className="text-sm font-normal text-3d3d3d">
+              {typeDescription.activeValue}
+            </span>
+            <IoIosArrowDown size={18} fill="#3d3d3d" />
+            <div
+              className={`absolute top-11 z-[2] left-0 w-[85%] bg-3d3d3d shadow-2xl rounded-md flex-col ${typeDescription.active ? 'flex' : 'hidden'}`} // eslint-disable-lien
+              onClick={event => event.stopPropagation()}
+            >
+              <Btn active={false} activeValue="Titulo" tag="h1" />
+              <Btn active={false} activeValue="Sub titulo" tag="h3" />
+              <Btn active={false} activeValue="Paragrafo" tag="p" />
+              <Btn active={false} activeValue="Lista item" tag="ul" />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2 items-center w-full">
+          <button
+            type="button"
+            className="text-ellipsis overflow-hidden w-1/2 hover:scale-[1.02] duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center"
+            onClick={handleAddElement}
+          >
+            Criar
+          </button>
+          <button
+            type="button"
+            className="text-ellipsis overflow-hidden w-1/2 hover:scale-[1.02] duration-200 transition-transform bg-red-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center"
+            onClick={handleRemoveElement}
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+      {description.length ? (
+        <div className="flex gap-1 flex-col">
+          {description.map((val, i) => (
+            <>
+              <label className=" text-3d3d3d text-sm font-medium">
+                {val.title}
+              </label>
+              {(val.tag.startsWith('h') || val.tag === 'ul') && (
+                <input
+                  key={val.tag}
+                  onChange={event => {
+                    const newArr = [...description];
+                    newArr[i].value = event.currentTarget.value;
+                    setDescription(newArr);
+                  }}
+                  className="w-full p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d"
+                  placeholder={val.tag == 'h1' ? 'Titulo na descrição' : val.tag == 'h3' ? 'Sub titulo na descrição' : 'Item de lista na descrição'} // eslint-disable-line
+                />
+              )}
+              {val.tag === 'p' && (
+                <textarea
+                  key={val.tag}
+                  onChange={event => {
+                    const newArr = [...description];
+                    newArr[i].value = event.currentTarget.value;
+                    setDescription(newArr);
+                  }}
+                  className="w-full resize-none p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d"
+                  rows={12}
+                  placeholder="Paragrafo na descrição"
+                ></textarea>
+              )}
+            </>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 const Input = ({
   label,

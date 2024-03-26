@@ -52,23 +52,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
     let pixDescount = JSON.parse(body.get('pixDescount') as string);
     const stock = +body.get('stock')!;
     let status = JSON.parse(body.get('status') as string);
-    // status = status ? status : undefined;
-
     const category = body.get('category') as string;
     const subcategory2 = body.get('subcategory2') as string;
     const subcategory3 = body.get('subcategory3') as string;
-
+    const description = JSON.parse(body.get('description') as string);
     const flavors = JSON.parse(body.get('flavors') as string);
     const colors = JSON.parse(body.get('colors') as string);
     const withBattery = JSON.parse(body.get('withBattery') as string);
     let ohm = JSON.parse(body.get('ohm') as string);
-    // ohm = ohm ? ohm : undefined;
     let nicotina = JSON.parse(body.get('nicotina') as string);
-    // nicotina = nicotina ? nicotina : undefined;
     let ml = JSON.parse(body.get('ml') as string);
-    // ml = ml ? ml : undefined;
     let qtdItems = JSON.parse(body.get('qtdItems') as string);
-    // qtdItems = qtdItems ? qtdItems : undefined;
     const newBody: VapeType = {
       fileNames,
       name,
@@ -83,6 +77,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       category,
       subcategory2,
       subcategory3,
+      description,
       flavors,
       colors,
       withBattery,
@@ -91,6 +86,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       ml,
       qtdItems,
     };
+
+    await dbConnect();
 
     const containsVape = await vapeModel.findOne({
       name,
@@ -103,14 +100,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
         cause: 'user error',
       });
 
-    await dbConnect();
-
     await vapeModel.create(newBody);
 
     return NextResponse.json({
       success: 'Produto foi adcionado com sucesso!',
     });
   } catch (err: any) {
+    // console.log(err);
     await removeFiles(fileNames);
     return NextResponse.json(
       {

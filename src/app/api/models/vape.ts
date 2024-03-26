@@ -1,3 +1,4 @@
+import { DescriptionType } from '@/components/addProducts/form';
 import { Schema, model, models, type Document, Model } from 'mongoose';
 
 export interface VapeType {
@@ -10,11 +11,10 @@ export interface VapeType {
   pixDescount?: number;
   stock: number;
   status?: string;
-
   category: string;
   subcategory2?: string;
   subcategory3?: string;
-
+  description?: DescriptionType[];
   flavors?: string[];
   colors?: string[];
   withBattery: boolean;
@@ -43,6 +43,13 @@ const vapeSchema = new Schema<VapeDocumentType>({
   category: { type: String, required: true },
   subcategory2: { type: String, required: false },
   subcategory3: { type: String, required: false },
+  description: [
+    new Schema({
+      title: { type: String, require: true },
+      tag: { type: String, require: true },
+      value: { type: String, require: false },
+    }),
+  ],
   flavors: [String],
   colors: [String],
   withBattery: { type: Boolean, required: false },
