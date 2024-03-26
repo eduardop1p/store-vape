@@ -627,6 +627,7 @@ export default function AddProductsForm() {
 
           <button
             type="submit"
+            id="add-product"
             className="rounded-lg mt-4 flex-none h-10 px-10 w-fit flex items-center justify-center font-normal text-primary text-sm bg-blue-500 hover:bg-blue-400 transition-colors duration-200"
           >
             Adcionar produto
@@ -662,6 +663,16 @@ export const Description = ({
     ]);
   };
 
+  useEffect(() => {
+    if (description.length) {
+      const lastIndex = description.length - 1;
+      const elementDescription = document.querySelector(
+        `#${description[lastIndex].tag}-${lastIndex}`
+      ) as HTMLDivElement;
+      document.documentElement.scrollTop = elementDescription.offsetTop - 130;
+    }
+  }, [description]);
+
   const handleRemoveElement = () => {
     if (description.length) {
       const newArr = description.slice(0, -1);
@@ -673,7 +684,7 @@ export const Description = ({
     <button
       type="button"
       onClick={() => {
-        setTypeDescription(props);
+        setTypeDescription({ ...props });
       }}
       className="text-[13px] p-2 leading-none hover:text-blue-400 duration-200 transition-colors font-normal text-primary text-left border-b-[1px] border-solid border-gray-400"
     >
@@ -737,13 +748,12 @@ export const Description = ({
       {description.length ? (
         <div className="flex gap-1 flex-col">
           {description.map((val, i) => (
-            <>
+            <div key={i} className="flex gap-1 flex-col" id={`${val.tag}-${i}`}>
               <label className=" text-3d3d3d text-sm font-medium">
                 {val.title}
               </label>
               {(val.tag.startsWith('h') || val.tag === 'ul') && (
                 <input
-                  key={val.tag}
                   onChange={event => {
                     const newArr = [...description];
                     newArr[i].value = event.currentTarget.value;
@@ -755,7 +765,6 @@ export const Description = ({
               )}
               {val.tag === 'p' && (
                 <textarea
-                  key={val.tag}
                   onChange={event => {
                     const newArr = [...description];
                     newArr[i].value = event.currentTarget.value;
@@ -766,7 +775,7 @@ export const Description = ({
                   placeholder="Paragrafo na descrição"
                 ></textarea>
               )}
-            </>
+            </div>
           ))}
         </div>
       ) : null}
@@ -832,6 +841,23 @@ const InputColorsAndFlavors = ({
   title: string;
   placeholder: string;
 }) => {
+  const handleModifyTypeBtn = (type: 'submit' | 'button') => {
+    const btn = document.querySelector('#add-product') as HTMLButtonElement; // eslint-disable-line
+    btn.type = type;
+  };
+
+  const handleAddOptions = () => {
+    if (watch(registerName)) {
+      setValuesState(state => [
+        ...state,
+        upperFirst(watch(registerName)?.toString().toLowerCase()!),
+      ]);
+      setTimeout(() => {
+        setValue(registerName, '');
+      }, 0);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-1">
       <div className="flex items-end gap-3">
@@ -847,23 +873,21 @@ const InputColorsAndFlavors = ({
             id={registerName}
             placeholder={placeholder}
             className={`p-3 rounded-lg text-3d3d3d font-normal border border-solid text-sm border-3d3d3d`} // eslint-disale-line
-            {...register(registerName)}
+            {...register(registerName, {
+              onBlur() {
+                handleModifyTypeBtn('submit');
+              },
+            })}
+            onFocus={() => {
+              handleModifyTypeBtn('button');
+            }}
+            onKeyDown={event => event.key === 'Enter' && handleAddOptions()}
           />
         </div>
         <button
           type="button"
           className="hover:scale-105 duration-200 transition-transform bg-blue-500 p-2 text-primary font-normal text-[13px] rounded flex items-center justify-center mb-1"
-          onClick={() => {
-            if (watch(registerName)) {
-              setValuesState(state => [
-                ...state,
-                upperFirst(watch(registerName)?.toString().toLowerCase()!),
-              ]);
-              setTimeout(() => {
-                setValue(registerName, '');
-              }, 50);
-            }
-          }}
+          onClick={handleAddOptions}
         >
           Adcionar
         </button>
