@@ -7,6 +7,7 @@ import Tracking from './tracking';
 import MyAccount from './myAccount';
 import Links from './links';
 import { FaShoppingCart } from 'react-icons/fa';
+import { Suspense } from 'react';
 const Cart = dynamic(() => import('./cart'), {
   ssr: false,
   loading: () => (
@@ -30,7 +31,9 @@ export default function Header() {
             <h2 className="text-primary font-normal text-sm">KING VAPES</h2>
           </div>
         </Link>
-        <Search />
+        <Suspense>
+          <Search />
+        </Suspense>
         <Tracking />
         <MyAccount />
         <Cart />
