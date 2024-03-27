@@ -2,29 +2,29 @@
 
 import { useState, type FormEvent, useEffect } from 'react';
 import { IoSearch } from 'react-icons/io5';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import nProgress from 'nprogress';
 
 export default function Search() {
   const router = useRouter();
   const pathName = usePathname();
+  const query = useSearchParams().get('query');
+
+  const [inputFocus, setInputFocus] = useState(query ? true : false);
+  const [searchValue, setSearchValue] = useState(query ? query : '');
 
   useEffect(() => {
     if (pathName !== '/search') {
       setSearchValue('');
-      nProgress.done();
     }
   }, [pathName]);
-
-  const [inputFocus, setInputFocus] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!searchValue) return;
     nProgress.start();
 
-    router.push(`/search?query=${searchValue}`);
+    router.push(`/search?query=${searchValue.trim()}`);
   };
 
   return (

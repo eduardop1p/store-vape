@@ -62,6 +62,9 @@ const vapeSchema = new Schema<VapeDocumentType>({
   createdIn: { type: Date, required: false, default: Date.now },
   fileNames: [String],
 });
+vapeSchema.index({
+  name: 'text',
+});
 
 const vapeModel: Model<VapeDocumentType> = models.Vape || model<VapeDocumentType>('Vape', vapeSchema); // eslint-disable-line
 

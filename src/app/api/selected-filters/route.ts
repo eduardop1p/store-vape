@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import dbConnect from '@/lib/dbConnect';
 import { NextRequest, NextResponse } from 'next/server';
-import vapeModel from '../models/vape';
+import vapeModel, { VapeDocumentType } from '../models/vape';
 import { notFound } from 'next/navigation';
+import { FilterQuery, model } from 'mongoose';
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
@@ -57,9 +58,19 @@ export async function GET(req: NextRequest, res: NextResponse) {
       });
       return price;
     };
+
+    let nameQuery = name || '';
+    let arrNameQuery = nameQuery.split(' ');
+    let regexArray = [];
+    for (let i = 0; i < arrNameQuery.length; i++) {
+      regexArray.push(new RegExp(arrNameQuery[i], 'i'));
+    }
+
     const query = {
       $and: [
-        { name: name ? new RegExp('^' + name, 'i') : { $exists: true } },
+        {
+          name: name ? { $all: regexArray } : { $exists: true },
+        },
         {
           category: category ? { $in: category.split(',') } : { $exists: true },
         },
@@ -107,7 +118,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         },
         { productDescount: productDescount ? { $gt: 0 } : { $exists: true } },
       ],
-    };
+    } as FilterQuery<VapeDocumentType>;
 
     if (mark) {
       const existsMark = await vapeModel.findOne({ mark });

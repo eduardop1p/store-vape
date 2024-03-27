@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 import { upperFirst, cloneDeep } from 'lodash'; // cloneDeep vai criar uma copia profuda de determinado objeto ou array
 import nProgress from 'nprogress';
+import { usePathname } from 'next/navigation';
 
 import { FiltersDbType } from '@/app/api/filters/route';
 import ProductsGrid from '../products';
@@ -43,9 +44,7 @@ export default function Filters({
   title: string;
   vapeData: VapeDataAndPaginationType;
 }) {
-  useEffect(() => {
-    setStateVapeData(vapeData);
-  }, [vapeData]);
+  const pathName = usePathname();
 
   const filtersInitialState = useRef([
     {
@@ -191,18 +190,14 @@ export default function Filters({
       data: filters.qtdItems.map(item => ({ ...item })),
     },
   ]);
-
   const [stateVapeData, setStateVapeData] = useState(vapeData);
-
   const [isLoading, setIsLoading] = useState(false);
   const [openAlert, setOpenAlert] = useState<OpenAlertType>({
     open: false,
     msg: '',
     severity: 'success',
   });
-  let urlSearchQuery = useRef(new URL(vapeData.urlApi));
   const [defaultPage, setDefaultPage] = useState(1);
-
   const [filtersData, setFiltersData] = useState<FiltersType[]>(
     cloneDeep(filtersInitialState.current)
   );
@@ -237,6 +232,19 @@ export default function Filters({
     ],
   });
 
+  let urlSearchQuery = useRef(new URL(vapeData.urlApi));
+
+  useEffect(() => {
+    if (pathName === '/search') {
+      nProgress.done(true);
+      setStateVapeData(vapeData);
+      urlSearchQuery.current = new URL(vapeData.urlApi);
+      setFiltersData(filtersInitialState.current);
+      setClassify(state => ({ ...state, activeValue: 'Relevância' }));
+      document.documentElement.scrollTop = 0;
+    }
+  }, [pathName, vapeData]);
+
   const handleGetFilters = async (url: string) => {
     try {
       // setIsLoading(true);
@@ -263,7 +271,6 @@ export default function Filters({
   };
 
   const handleSearchQuery = async (data: FiltersDataType) => {
-    urlSearchQuery.current = new URL(urlSearchQuery.current);
     const searchParams = urlSearchQuery.current.searchParams;
     const { checked, querys } = data;
     if (checked) {
@@ -287,7 +294,6 @@ export default function Filters({
   };
 
   const handleSearchClassify = async (query: string) => {
-    urlSearchQuery.current = new URL(urlSearchQuery.current);
     urlSearchQuery.current.searchParams.set('classify', query);
     handlePagination(1);
   };
