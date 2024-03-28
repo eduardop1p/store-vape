@@ -40,6 +40,7 @@ export default function Search() {
     if (!searchValue) return;
     nProgress.start();
 
+    setInputFocus(false);
     router.push(`/search?query=${searchValue.trim()}`);
   };
 

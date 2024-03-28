@@ -37,7 +37,7 @@ export default function Product({
   return (
     <div className="relative border-solid border-gray-300 border rounded-2xl">
       {product.productDescount && product.stock ? (
-        <div className="rounded-xl absolute z-[4] -top-[18px] left-1/2 -translate-x-1/2 h-8 w-fit px-3 bg-ccba00 text-[13px] text-primary font-medium flex items-center justify-center">
+        <div className="rounded-2xl absolute z-[4] -top-[18px] left-1/2 -translate-x-1/2 h-8 w-fit px-3 bg-ccba00 text-[13px] text-primary font-medium flex items-center justify-center">
           -{(product.productDescount * 100).toFixed(2)}%
         </div>
       ) : null}
@@ -51,7 +51,7 @@ export default function Product({
       >
         <div className="flex gap-2 flex-col ">
           <div
-            className="relative w-full h-[280px] cursor-pointer overflow-hidden"
+            className={`relative w-full h-[280px] ${product.stock ? 'cursor-pointer' : 'cursor-default'} overflow-hidden`}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
           >
@@ -62,29 +62,31 @@ export default function Product({
               sizes="100%"
               className="absolute"
             />
-            <div
-              className={`${hover ? 'opacity-100' : 'opacity-0'} duration-500 transition-opacity absolute w-full h-full`}
-            >
-              <Link
-                href={handleHrefLink()}
-                className="absolute z-[2] bg-ffffff99 w-full h-full flex items-center justify-center"
+            {product.stock ? (
+              <div
+                className={`${hover ? 'opacity-100' : 'opacity-0'} duration-500 transition-opacity absolute w-full h-full`}
               >
-                <span
-                  className={`${hover ? 'scale-100' : 'scale-0'} duration-[600ms] transition-transform bg-secudary text-sm text-primary font-medium flex items-center justify-center rounded-3xl px-8 h-[50px]`}
+                <Link
+                  href={handleHrefLink()}
+                  className="absolute z-[2] bg-ffffff99 w-full h-full flex items-center justify-center"
                 >
-                  Ver produto
-                </span>
-              </Link>
-              {product.fileNames.length > 1 && (
-                <Image
-                  src={`/uploads/imgs/${product.fileNames[1]}`}
-                  alt={product.name}
-                  fill
-                  sizes="100%"
-                  className={'absolute'}
-                />
-              )}
-            </div>
+                  <span
+                    className={`${hover ? 'scale-100' : 'scale-0'} duration-[600ms] transition-transform bg-secudary text-sm text-primary font-medium flex items-center justify-center rounded-3xl px-8 h-[50px]`}
+                  >
+                    Ver produto
+                  </span>
+                </Link>
+                {product.fileNames.length > 1 && (
+                  <Image
+                    src={`/uploads/imgs/${product.fileNames[1]}`}
+                    alt={product.name}
+                    fill
+                    sizes="100%"
+                    className={'absolute'}
+                  />
+                )}
+              </div>
+            ) : null}
           </div>
           {product.status ? (
             <div className="h-8 w-fit px-3 my-1 text-primary mx-auto bg-secudary text-[13px] font-medium rounded-xl flex items-center justify-center">
@@ -112,9 +114,11 @@ export default function Product({
               <div className={`text-xl font-semibold text-red-600`}>
                 {formatPrice(product.finalPrice)}
               </div>
-              <div className="text-xs font-medium text-center text-00000099">
-                {formatPrice(product.pixPrice)} a vista no Pix
-              </div>
+              {product.pixDescount && (
+                <div className="text-xs font-medium text-center text-00000099">
+                  {formatPrice(product.pixPrice)} a vista no Pix
+                </div>
+              )}
               <div className="text-xs font-medium text-center text-00000099">
                 ou 4x de {formatPrice(product.finalPrice / 4)} sem juros no
                 cartão de credito
@@ -147,12 +151,11 @@ export default function Product({
             />
           </div>
         ) : (
-          <Link
-            href={`/${replaceStringToLink(product.category)}/${product._id}`}
-            className={`hover:scale-105 duration-200 transition-transform bg-secudary text-sm text-primary font-medium flex items-center justify-center rounded-3xl w-full h-[50px]`}
+          <div
+            className={`bg-gray-400 text-sm text-primary font-medium flex items-center justify-center rounded-3xl w-full h-[50px]`}
           >
             Ver produto
-          </Link>
+          </div>
         )}
       </div>
     </div>
